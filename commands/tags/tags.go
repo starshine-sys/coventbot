@@ -1,0 +1,43 @@
+package tags
+
+import (
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/coventbot/bot"
+)
+
+// Bot ...
+type Bot struct {
+	*bot.Bot
+}
+
+// Init ...
+func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
+	s = "Tags"
+
+	b := &Bot{Bot: bot}
+
+	tag := b.Router.AddCommand(&bcr.Command{
+		Name:        "tag",
+		Summary:     "Display a tag.",
+		Description: "Display the given tag. If the invoking message replied to a message, the response will reply to that message too.",
+		Usage:       "<tag>",
+
+		GuildOnly: true,
+		Command:   b.tag,
+	})
+
+	tag.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add a tag.",
+		Usage:   "<name> <response>",
+		Args:    bcr.MinArgs(1),
+
+		GuildOnly:   true,
+		Permissions: discord.PermissionManageMessages,
+
+		Command: b.addTag,
+	})
+
+	return s, append(list, tag)
+}
