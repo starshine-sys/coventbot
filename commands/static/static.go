@@ -3,6 +3,7 @@ package static
 import (
 	"time"
 
+	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/coventbot/bot"
 )
@@ -51,6 +52,17 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "[command]",
 
 		Command: b.CommandList,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "addemoji",
+		Aliases: []string{"addemote", "steal"},
+		Summary: "Add an emoji",
+		Usage:   "-h",
+
+		Permissions: discord.PermissionManageEmojis,
+
+		Command: b.addEmoji,
 	}))
 
 	return s, list

@@ -11,6 +11,7 @@ import (
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
 	"github.com/starshine-sys/coventbot/bot"
+	"github.com/starshine-sys/coventbot/commands/config"
 	"github.com/starshine-sys/coventbot/commands/static"
 	"github.com/starshine-sys/coventbot/commands/tags"
 	"github.com/starshine-sys/coventbot/db"
@@ -28,29 +29,29 @@ func main() {
 	sugar := zap.Sugar()
 
 	// get the config
-	config := getConfig(sugar)
+	c := getConfig(sugar)
 
 	// open the database
-	db, err := db.New(config.DatabaseURL, sugar, config)
+	db, err := db.New(c.DatabaseURL, sugar, c)
 	if err != nil {
 		sugar.Fatalf("Error connecting to database: %v", err)
 	}
 	sugar.Info("Connected to database.")
 
 	// create a new bot
-	r, err := bcr.NewWithIntents(config.Token, config.Owners, config.Prefixes, bcr.RequiredIntents|gateway.IntentGuildMembers)
+	r, err := bcr.NewWithIntents(c.Token, c.Owners, c.Prefixes, bcr.RequiredIntents|gateway.IntentGuildMembers)
 	if err != nil {
 		sugar.Fatal("Error creating bot:", err)
 	}
 	bcrbot := bcrbot.NewWithRouter(r)
 
-	bot := bot.New(bcrbot, sugar, db, config)
+	bot := bot.New(bcrbot, sugar, db, c)
 	// set default embed colour
 	bot.Router.EmbedColor = 0x4C7DAA
 
 	// set the bot's prefix and owners
-	bot.Prefix(config.Prefixes...)
-	bot.Owner(config.Owners...)
+	bot.Prefix(c.Prefixes...)
+	bot.Owner(c.Owners...)
 
 	// add the command handler
 	bot.Router.Session.AddHandler(bot.Router.MessageCreate)
@@ -59,6 +60,8 @@ func main() {
 	bot.Add(static.Init)
 	// add tag commands
 	bot.Add(tags.Init)
+	// add config commands
+	bot.Add(config.Init)
 
 	// connect to discord
 	if err := bot.Start(); err != nil {

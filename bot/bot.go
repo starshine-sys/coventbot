@@ -3,16 +3,19 @@ package bot
 import (
 	"sort"
 
-	"github.com/starshine-sys/coventbot/db"
-	"github.com/starshine-sys/coventbot/types"
+	"github.com/diamondburned/arikawa/v2/state"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
+	"github.com/starshine-sys/coventbot/db"
+	"github.com/starshine-sys/coventbot/types"
 	"go.uber.org/zap"
 )
 
 // Bot is the main bot struct
 type Bot struct {
 	*bcrbot.Bot
+
+	State *state.State
 
 	Config *types.BotConfig
 	Sugar  *zap.SugaredLogger
@@ -33,10 +36,18 @@ func New(
 	config *types.BotConfig) *Bot {
 	b := &Bot{
 		Bot:    bot,
+		State:  bot.Router.Session,
 		Sugar:  sugar,
 		DB:     db,
 		Config: config,
 	}
+
+	// set the prefix checker
+	b.Router.Prefixer = b.CheckPrefix
+
+	// add guild create handler
+	b.State.AddHandler(b.GuildCreate)
+
 	return b
 }
 

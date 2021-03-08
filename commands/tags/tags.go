@@ -39,5 +39,13 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.addTag,
 	})
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "tags",
+		Summary: "Show a list of tags in the current server, or the given server (in DMs).",
+		Usage:   "[server ID]",
+
+		Command: b.list,
+	}))
+
 	return s, append(list, tag)
 }
