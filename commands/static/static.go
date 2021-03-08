@@ -47,6 +47,15 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "serverinfo",
+		Aliases: []string{"si", "guildinfo"},
+		Summary: "Show information about the server.",
+
+		GuildOnly: true,
+		Command:   b.serverInfo,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "help",
 		Summary: "Show a list of commands, or info about a specific command.",
 		Usage:   "[command]",
@@ -57,7 +66,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "addemoji",
 		Aliases: []string{"addemote", "steal"},
-		Summary: "Add an emoji",
+		Summary: "Add an emoji.",
 		Usage:   "-h",
 
 		Permissions: discord.PermissionManageEmojis,
@@ -65,5 +74,38 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.addEmoji,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "avatar",
+		Aliases: []string{"pfp"},
+		Summary: "Show a user's avatar.",
+		Usage:   "[user]",
+
+		Command: b.avatar,
+	}))
+
+	echo := b.Router.AddCommand(&bcr.Command{
+		Name:    "echo",
+		Aliases: []string{"say", "e"},
+		Summary: "Make the bot say something.",
+
+		Permissions: discord.PermissionManageMessages,
+
+		Command: b.echo,
+	})
+
+	// lol
+	echo.AddSubcommand(echo)
+
+	echo.AddSubcommand(&bcr.Command{
+		Name:    "to",
+		Summary: "Echo something to the specified channel.",
+		Usage:   "<channel>",
+
+		Permissions: discord.PermissionManageMessages,
+
+		Command: b.echoTo,
+	})
+
+	list = append(list, echo)
 	return s, list
 }

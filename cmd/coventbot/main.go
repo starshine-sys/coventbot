@@ -15,6 +15,7 @@ import (
 	"github.com/starshine-sys/coventbot/commands/static"
 	"github.com/starshine-sys/coventbot/commands/tags"
 	"github.com/starshine-sys/coventbot/db"
+	"github.com/starshine-sys/coventbot/etc"
 	"go.uber.org/zap"
 )
 
@@ -47,7 +48,7 @@ func main() {
 
 	bot := bot.New(bcrbot, sugar, db, c)
 	// set default embed colour
-	bot.Router.EmbedColor = 0x4C7DAA
+	bot.Router.EmbedColor = etc.ColourBlurple
 
 	// set the bot's prefix and owners
 	bot.Prefix(c.Prefixes...)
