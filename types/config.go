@@ -9,4 +9,12 @@ type BotConfig struct {
 
 	Prefixes []string
 	Owners   []discord.UserID
+
+	GuildLogWebhook *Webhook `yaml:"guild_log"`
+}
+
+// Webhook is a single webhook config
+type Webhook struct {
+	ID    discord.WebhookID
+	Token string
 }

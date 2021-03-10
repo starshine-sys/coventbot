@@ -5,14 +5,19 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/starshine-sys/coventbot/etc"
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/dustin/go-humanize"
 	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/coventbot/etc"
 )
 
 const botVersion = 1
 
 func (bot *Bot) about(ctx *bcr.Context) (err error) {
+	stats := runtime.MemStats{}
+	runtime.ReadMemStats(&stats)
+
+	bot.Counters.Mu.Lock()
 	embed := discord.Embed{
 		Title: "About",
 		Color: ctx.Router.EmbedColor,
@@ -47,11 +52,22 @@ func (bot *Bot) about(ctx *bcr.Context) (err error) {
 				Value:  "https://github.com/starshine-sys/coventbot",
 				Inline: false,
 			},
+			{
+				Name: "Stats since last restart",
+				Value: fmt.Sprintf(`Bot mentions: %v
+Messages: %v
+
+Memory used: %v / %v (%v garbage collected)
+Goroutines: %v`, bot.Counters.Mentions, bot.Counters.Messages,
+					humanize.Bytes(stats.Alloc), humanize.Bytes(stats.Sys), humanize.Bytes(stats.TotalAlloc), humanize.Comma(int64(runtime.NumGoroutine()))),
+				Inline: false,
+			},
 		},
 
 		Timestamp: discord.NowTimestamp(),
 		Footer:    &discord.EmbedFooter{Text: "Made with Arikawa"},
 	}
+	bot.Counters.Mu.Unlock()
 
 	_, err = ctx.Send("", &embed)
 	return

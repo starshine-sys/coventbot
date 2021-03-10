@@ -15,6 +15,8 @@ github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/denisenkom/go-mssqldb v0.0.0-20191124224453-732737034ffd/go.mod h1:xbL0rPBG9cCiLr28tMa8zpbdarY27NDyej4t/EjAShU=
 github.com/diamondburned/arikawa/v2 v2.0.5 h1:X/jPfeEFj/Hzk26kudNJqtVkQb3vnh3tAjEF1mY7GK8=
 github.com/diamondburned/arikawa/v2 v2.0.5/go.mod h1:e+lhS20ni2luFEU06Pc8paCxgZL99/RZb77dOC82CF0=
+github.com/dustin/go-humanize v1.0.0 h1:VSnTsYCnlFHaM2/igO1h6X3HA71jcobQuxemgkq4zYo=
+github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5/go.mod h1:a2zkGnVExMxdzMo3M0Hi/3sEU+cWnZpSni0O6/Yb/P0=
 github.com/georgysavva/scany v0.2.7 h1:SBEuurTvWOUp7FnGBOjeSF9XWaWmVzc91h9baPo6y2s=
 github.com/georgysavva/scany v0.2.7/go.mod h1:bcxPhzeQFQqAUmjlZVwTGlu6AnWFSOiHpalfBe0xQ6U=
@@ -135,8 +137,8 @@ github.com/shopspring/decimal v0.0.0-20200419222939-1884f454f8ea h1:jaXWVFZ98/ih
 github.com/shopspring/decimal v0.0.0-20200419222939-1884f454f8ea/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
 github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMBDgk/93Q=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
-github.com/starshine-sys/bcr v0.12.0 h1:Qe6Htzx/8umvIbX2ckDxVxLL9Hox88X2+IIiqGBMEuU=
-github.com/starshine-sys/bcr v0.12.0/go.mod h1:RbJjgxThrGFChrapaxajZJiUO8oNN65I4mGN+3g2R0I=
+github.com/starshine-sys/bcr v0.13.1-0.20210309190515-8e12e50aecdd h1:ZWSEBvB4t4s1rfOHdfYMj/8Y8NdBETZtQ/otuJz+P6M=
+github.com/starshine-sys/bcr v0.13.1-0.20210309190515-8e12e50aecdd/go.mod h1:RbJjgxThrGFChrapaxajZJiUO8oNN65I4mGN+3g2R0I=
 github.com/starshine-sys/snowflake/v2 v2.0.0/go.mod h1:6E5AYqTPb9DL7bp24tcbTLx0/thTcAmyLgscZIP7tzw=
 github.com/starshine-sys/snowflake/v2 v2.1.0 h1:s/e9oGa6md7mKoyA71J2QGxzUl3zzSGCFSJOR+TUMYQ=
 github.com/starshine-sys/snowflake/v2 v2.1.0/go.mod h1:6E5AYqTPb9DL7bp24tcbTLx0/thTcAmyLgscZIP7tzw=

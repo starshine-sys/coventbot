@@ -11,22 +11,18 @@ import (
 )
 
 func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
-	var m *discord.Member
+	m := ctx.Member
+	m.User = ctx.Author
 
 	if len(ctx.Args) > 0 {
 		m, err = ctx.ParseMember(ctx.RawArgs)
 		if err != nil {
 			return bot.userInfo(ctx)
 		}
-	} else {
-		m, err = ctx.ParseMember(ctx.Author.ID.String())
-	}
-	if err != nil {
-		_, err = ctx.Send(":x: User not found.", nil)
-		return err
 	}
 
-	guildRoles, err := ctx.Session.Roles(ctx.Message.GuildID)
+	// get guild
+	g, err := ctx.Session.Guild(ctx.Message.GuildID)
 	if err != nil {
 		_, err = ctx.Sendf("Internal error occurred:\n```%v```", err)
 		return
@@ -34,7 +30,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 
 	// filter the roles to only the ones the user has
 	var rls etc.Roles
-	for _, gr := range guildRoles {
+	for _, gr := range g.Roles {
 		for _, ur := range m.RoleIDs {
 			if gr.ID == ur {
 				rls = append(rls, gr)
@@ -46,17 +42,10 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 	// get global info
 	// can't do this with a single loop because the loop for colour has to break the moment it's found one
 	var (
-		colour      discord.Color
 		roles       []string
 		userPerms   discord.Permissions
 		highestRole = "No roles"
 	)
-	for _, r := range rls {
-		if r.Color != 0 {
-			colour = r.Color
-			break
-		}
-	}
 	for _, r := range rls {
 		userPerms |= r.Permissions
 		roles = append(roles, r.Mention())
@@ -90,7 +79,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 			URL: m.User.AvatarURL(),
 		},
 		Description: m.User.ID.String(),
-		Color:       colour,
+		Color:       discord.MemberColor(*g, *m),
 
 		Fields: []discord.EmbedField{
 			{

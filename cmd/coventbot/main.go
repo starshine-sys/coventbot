@@ -16,6 +16,7 @@ import (
 	"github.com/starshine-sys/coventbot/commands/tags"
 	"github.com/starshine-sys/coventbot/db"
 	"github.com/starshine-sys/coventbot/etc"
+	"github.com/starshine-sys/coventbot/starboard"
 	"go.uber.org/zap"
 )
 
@@ -54,15 +55,14 @@ func main() {
 	bot.Prefix(c.Prefixes...)
 	bot.Owner(c.Owners...)
 
-	// add the command handler
-	bot.Router.Session.AddHandler(bot.Router.MessageCreate)
-
 	// add basic commands
 	bot.Add(static.Init)
 	// add tag commands
 	bot.Add(tags.Init)
 	// add config commands
 	bot.Add(config.Init)
+	// add starboard
+	bot.Add(starboard.Init)
 
 	// connect to discord
 	if err := bot.Start(); err != nil {

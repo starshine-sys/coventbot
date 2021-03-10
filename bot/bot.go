@@ -2,7 +2,9 @@ package bot
 
 import (
 	"sort"
+	"sync"
 
+	"github.com/diamondburned/arikawa/v2/api/webhook"
 	"github.com/diamondburned/arikawa/v2/state"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
@@ -20,6 +22,15 @@ type Bot struct {
 	Config *types.BotConfig
 	Sugar  *zap.SugaredLogger
 	DB     *db.DB
+
+	GuildLogWebhook *webhook.Client
+
+	Counters struct {
+		Mu sync.Mutex
+
+		Mentions int
+		Messages int
+	}
 }
 
 // Module is a single module/category of commands
@@ -42,11 +53,17 @@ func New(
 		Config: config,
 	}
 
+	if config.GuildLogWebhook != nil {
+		b.GuildLogWebhook = webhook.New(config.GuildLogWebhook.ID, config.GuildLogWebhook.Token)
+	}
+
 	// set the prefix checker
 	b.Router.Prefixer = b.CheckPrefix
 
 	// add guild create handler
 	b.State.AddHandler(b.GuildCreate)
+	// add message create handler
+	b.State.AddHandler(b.MessageCreate)
 
 	return b
 }

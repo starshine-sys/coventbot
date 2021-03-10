@@ -83,6 +83,13 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.avatar,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "invite",
+		Summary: "Get an invite link for the bot.",
+
+		Command: b.invite,
+	}))
+
 	echo := b.Router.AddCommand(&bcr.Command{
 		Name:    "echo",
 		Aliases: []string{"say", "e"},
