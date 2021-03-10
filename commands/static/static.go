@@ -76,11 +76,21 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "avatar",
-		Aliases: []string{"pfp"},
+		Aliases: []string{"pfp", "a"},
 		Summary: "Show a user's avatar.",
 		Usage:   "[user]",
 
 		Command: b.avatar,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "enlarge",
+		Aliases: []string{"e"},
+		Summary: "Enlarge a custom emoji.",
+		Usage:   "<emoji>",
+		Args:    bcr.MinArgs(1),
+
+		Command: b.enlarge,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
@@ -91,17 +101,15 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}))
 
 	echo := b.Router.AddCommand(&bcr.Command{
-		Name:    "echo",
-		Aliases: []string{"say", "e"},
-		Summary: "Make the bot say something.",
+		Name:        "echo",
+		Aliases:     []string{"say"},
+		Summary:     "Make the bot say something.",
+		Description: "To echo something into a different channel, use the `echo to` subcommand.",
 
 		Permissions: discord.PermissionManageMessages,
 
 		Command: b.echo,
 	})
-
-	// lol
-	echo.AddSubcommand(echo)
 
 	echo.AddSubcommand(&bcr.Command{
 		Name:    "to",

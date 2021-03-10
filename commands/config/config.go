@@ -53,7 +53,45 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.watchlistChannel,
 	})
 
+	sb := b.Router.AddCommand(&bcr.Command{
+		Name:    "starboard",
+		Summary: "View or change this server's starboard settings.",
+
+		GuildOnly: true,
+		Command:   b.starboardSettings,
+	})
+
+	sb.AddSubcommand(&bcr.Command{
+		Name:    "channel",
+		Summary: "Change this server's starboard channel.",
+		Usage:   "<new channel|-clear>",
+		Args:    bcr.MinArgs(1),
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.starboardSetChannel,
+	})
+
+	sb.AddSubcommand(&bcr.Command{
+		Name:    "emoji",
+		Summary: "Change this server's starboard emoji.",
+		Usage:   "<new emoji>",
+		Args:    bcr.MinArgs(1),
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.starboardSetEmoji,
+	})
+
+	sb.AddSubcommand(&bcr.Command{
+		Name:    "limit",
+		Summary: "Change this server's starboard limit.",
+		Usage:   "<new limit>",
+		Args:    bcr.MinArgs(1),
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.starboardSetLimit,
+	})
+
 	wl.AddSubcommand(b.Router.AliasMust("show", nil, []string{"watchlist"}, nil))
 
-	return s, append(list, wl)
+	return s, append(list, wl, sb)
 }

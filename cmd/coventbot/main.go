@@ -62,7 +62,7 @@ func main() {
 	// add config commands
 	bot.Add(config.Init)
 	// add starboard
-	bot.Add(starboard.Init)
+	starboard.Init(bot)
 
 	// connect to discord
 	if err := bot.Start(); err != nil {

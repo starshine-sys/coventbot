@@ -1,4 +1,4 @@
-package starboard
+package config
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"github.com/starshine-sys/bcr"
 )
 
-func (bot *Bot) settings(ctx *bcr.Context) (err error) {
+func (bot *Bot) starboardSettings(ctx *bcr.Context) (err error) {
 	var b strings.Builder
 
 	settings, err := bot.DB.Starboard(ctx.Message.GuildID)
@@ -34,7 +34,7 @@ func (bot *Bot) settings(ctx *bcr.Context) (err error) {
 	return err
 }
 
-func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
+func (bot *Bot) starboardSetChannel(ctx *bcr.Context) (err error) {
 	var id discord.ChannelID
 
 	if ctx.RawArgs == "-clear" {
@@ -80,7 +80,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 	return
 }
 
-func (bot *Bot) setEmoji(ctx *bcr.Context) (err error) {
+func (bot *Bot) starboardSetEmoji(ctx *bcr.Context) (err error) {
 	settings, err := bot.DB.Starboard(ctx.Message.GuildID)
 	if err != nil {
 		_, err = ctx.Sendf("Error: %v", err)
@@ -103,7 +103,7 @@ func (bot *Bot) setEmoji(ctx *bcr.Context) (err error) {
 	return
 }
 
-func (bot *Bot) setLimit(ctx *bcr.Context) (err error) {
+func (bot *Bot) starboardSetLimit(ctx *bcr.Context) (err error) {
 	i, err := strconv.Atoi(ctx.Args[0])
 	if err != nil {
 		_, err = ctx.Send("Could not parse your input as a number.", nil)

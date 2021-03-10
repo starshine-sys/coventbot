@@ -1,6 +1,8 @@
 package starboard
 
 import (
+	"sync"
+
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/jackc/pgx/v4"
@@ -9,6 +11,12 @@ import (
 
 // MessageReactionAdd ...
 func (bot *Bot) MessageReactionAdd(ev *gateway.MessageReactionAddEvent) {
+	if bot.mu[ev.MessageID] == nil {
+		bot.mu[ev.MessageID] = &sync.Mutex{}
+	}
+	bot.mu[ev.MessageID].Lock()
+	defer bot.mu[ev.MessageID].Unlock()
+
 	settings, err := bot.DB.Starboard(ev.GuildID)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting starboard settings: %v", err)
@@ -25,11 +33,23 @@ func (bot *Bot) MessageReactionAdd(ev *gateway.MessageReactionAddEvent) {
 
 // MessageReactionDelete ...
 func (bot *Bot) MessageReactionDelete(ev *gateway.MessageReactionRemoveEvent) {
+	if bot.mu[ev.MessageID] == nil {
+		bot.mu[ev.MessageID] = &sync.Mutex{}
+	}
+	bot.mu[ev.MessageID].Lock()
+	defer bot.mu[ev.MessageID].Unlock()
+
 	bot.reactionInner(ev.UserID, ev.ChannelID, ev.MessageID, ev.Emoji, ev.GuildID)
 }
 
 // MessageReactionRemoveEmoji ...
 func (bot *Bot) MessageReactionRemoveEmoji(ev *gateway.MessageReactionRemoveEmojiEvent) {
+	if bot.mu[ev.MessageID] == nil {
+		bot.mu[ev.MessageID] = &sync.Mutex{}
+	}
+	bot.mu[ev.MessageID].Lock()
+	defer bot.mu[ev.MessageID].Unlock()
+
 	settings, err := bot.DB.Starboard(ev.GuildID)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting starboard settings: %v", err)
@@ -53,6 +73,12 @@ func (bot *Bot) MessageReactionRemoveEmoji(ev *gateway.MessageReactionRemoveEmoj
 
 // MessageReactionRemoveAll ...
 func (bot *Bot) MessageReactionRemoveAll(ev *gateway.MessageReactionRemoveAllEvent) {
+	if bot.mu[ev.MessageID] == nil {
+		bot.mu[ev.MessageID] = &sync.Mutex{}
+	}
+	bot.mu[ev.MessageID].Lock()
+	defer bot.mu[ev.MessageID].Unlock()
+
 	settings, err := bot.DB.Starboard(ev.GuildID)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting starboard settings: %v", err)
