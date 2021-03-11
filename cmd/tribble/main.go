@@ -10,6 +10,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
+	"github.com/starshine-sys/tribble/approval"
 	"github.com/starshine-sys/tribble/bot"
 	"github.com/starshine-sys/tribble/commands/config"
 	"github.com/starshine-sys/tribble/commands/static"
@@ -66,6 +67,8 @@ func main() {
 	starboard.Init(bot)
 	// add gatekeeper
 	bot.Add(gatekeeper.Init)
+	// add approval
+	bot.Add(approval.Init)
 
 	// connect to discord
 	if err := bot.Start(); err != nil {
