@@ -84,6 +84,14 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "bubble",
+		Summary: "Bubble wrap!",
+		Usage:   "[-prepop] [-size 1-13]",
+
+		Command: b.bubble,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "enlarge",
 		Aliases: []string{"e"},
 		Summary: "Enlarge a custom emoji.",
@@ -91,6 +99,27 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Args:    bcr.MinArgs(1),
 
 		Command: b.enlarge,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "idtime",
+		Aliases: []string{"snowflake"},
+		Summary: "Get the timestamp for a Discord ID.",
+		Usage:   "<IDs...>",
+		Args:    bcr.MinArgs(1),
+
+		Command: b.idtime,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "makeinvite",
+		Aliases: []string{"createinvite"},
+		Summary: "Make an invite for the current channel, or the given channel.",
+		Usage:   "[channel]",
+		Args:    bcr.MinArgs(1),
+
+		Permissions: discord.PermissionCreateInstantInvite,
+		Command:     b.makeInvite,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
