@@ -100,6 +100,25 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.invite,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "poll",
+		Summary: "Make a poll using an embed.",
+		Usage:   "<question> <option 1> <option 2> [options...]",
+		Args:    bcr.MinArgs(3),
+
+		GuildOnly: true,
+		Command:   b.poll,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "quickpoll",
+		Aliases: []string{"qp"},
+		Summary: "Make a poll on the originating message.",
+		Usage:   "[--options/-o num]",
+
+		Command: b.quickpoll,
+	}))
+
 	echo := b.Router.AddCommand(&bcr.Command{
 		Name:        "echo",
 		Aliases:     []string{"say"},

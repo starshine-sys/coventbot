@@ -24,7 +24,7 @@ type Bot struct {
 
 // Init ...
 func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
-	s = "Gatekeeper"
+	s = "Verification"
 
 	b := &Bot{
 		Bot:        bot,
@@ -44,9 +44,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}))
 
 	conf := b.Router.AddCommand(&bcr.Command{
-		Name:    "gatekeeper",
-		Aliases: []string{"gateway"},
-		Summary: "View or change this server's gatekeeper settings.",
+		Name:    "verify",
+		Aliases: []string{"verification"},
+		Summary: "View or change this server's verification settings.",
 
 		Permissions: discord.PermissionManageGuild,
 		Command:     b.settings,
