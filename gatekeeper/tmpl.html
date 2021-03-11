@@ -6,15 +6,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CoveBot verification</title>
+    <style>
+        body {
+            font-family: "Fira Sans", "Roboto", sans-serif;
+            margin: 40px auto;
+            padding: 10px;
+            max-width: 650px;
+            line-height: 1.6;
+            font-size: 18px;
+            background-color: #fff;
+            color: #444;
+            padding: 0
+        }
+    </style>
 
     <script src="https://hcaptcha.com/1/api.js" async defer></script>
 </head>
 
 <body>
+    <h1>Verification</h1>
+    <p>Please solve this captcha to make sure that you're human.</p>
     <form action="/verify" method="POST">
         <input type="text" name="uuid" value="{{.UUID}}" style="display: none;" />
         <div class="h-captcha" data-sitekey="{{.Config.HCaptchaSitekey}}"></div>
-        <input type="submit" value="Submit" />
+        <input type="submit" value="Verify" />
     </form>
 </body>
 
