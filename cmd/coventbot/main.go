@@ -16,6 +16,7 @@ import (
 	"github.com/starshine-sys/coventbot/commands/tags"
 	"github.com/starshine-sys/coventbot/db"
 	"github.com/starshine-sys/coventbot/etc"
+	"github.com/starshine-sys/coventbot/gatekeeper"
 	"github.com/starshine-sys/coventbot/starboard"
 	"go.uber.org/zap"
 )
@@ -63,6 +64,8 @@ func main() {
 	bot.Add(config.Init)
 	// add starboard
 	starboard.Init(bot)
+	// add gatekeeper
+	bot.Add(gatekeeper.Init)
 
 	// connect to discord
 	if err := bot.Start(); err != nil {

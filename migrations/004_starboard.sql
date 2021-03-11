@@ -18,4 +18,6 @@ alter table servers add column starboard_blacklist bigint[] not null default arr
 
 drop table starboard_messages;
 alter table servers drop column starboard_channel;
+alter table servers drop column starboard_emoji;
+alter table servers drop column starboard_limit;
 alter table servers drop column starboard_blacklist;
