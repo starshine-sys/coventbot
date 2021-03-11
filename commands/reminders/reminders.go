@@ -2,7 +2,7 @@ package reminders
 
 import (
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/coventbot/bot"
+	"github.com/starshine-sys/tribble/bot"
 )
 
 // Bot ...

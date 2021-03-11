@@ -8,8 +8,8 @@ import (
 	"github.com/diamondburned/arikawa/v2/state"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
-	"github.com/starshine-sys/coventbot/db"
-	"github.com/starshine-sys/coventbot/types"
+	"github.com/starshine-sys/tribble/db"
+	"github.com/starshine-sys/tribble/types"
 	"go.uber.org/zap"
 )
 

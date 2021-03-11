@@ -6,8 +6,8 @@ import (
 	"regexp"
 
 	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/starshine-sys/coventbot/db"
-	"github.com/starshine-sys/coventbot/etc"
+	"github.com/starshine-sys/tribble/db"
+	"github.com/starshine-sys/tribble/etc"
 )
 
 func (bot *Bot) deleteMessage(

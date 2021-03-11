@@ -3,7 +3,7 @@ package config
 import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/coventbot/bot"
+	"github.com/starshine-sys/tribble/bot"
 )
 
 // Bot ...

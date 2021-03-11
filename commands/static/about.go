@@ -8,7 +8,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/dustin/go-humanize"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/coventbot/etc"
+	"github.com/starshine-sys/tribble/etc"
 )
 
 const botVersion = 1
@@ -49,7 +49,7 @@ func (bot *Bot) about(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Source code",
-				Value:  "https://github.com/starshine-sys/coventbot",
+				Value:  "https://github.com/starshine-sys/tribble",
 				Inline: false,
 			},
 			{

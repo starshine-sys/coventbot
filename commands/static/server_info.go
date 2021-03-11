@@ -6,7 +6,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/coventbot/etc"
+	"github.com/starshine-sys/tribble/etc"
 )
 
 func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {

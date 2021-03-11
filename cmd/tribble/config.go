@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/starshine-sys/coventbot/types"
+	"github.com/starshine-sys/tribble/types"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )

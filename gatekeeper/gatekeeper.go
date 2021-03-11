@@ -8,7 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/kataras/hcaptcha"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/coventbot/bot"
+	"github.com/starshine-sys/tribble/bot"
 )
 
 // Bot ...

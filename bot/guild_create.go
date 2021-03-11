@@ -6,7 +6,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/api/webhook"
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
-	"github.com/starshine-sys/coventbot/etc"
+	"github.com/starshine-sys/tribble/etc"
 )
 
 // GuildCreate logs the bot joining a server, and creates a database entry if one doesn't exist

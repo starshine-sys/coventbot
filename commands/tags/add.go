@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/coventbot/db"
+	"github.com/starshine-sys/tribble/db"
 )
 
 func (bot *Bot) addTag(ctx *bcr.Context) (err error) {

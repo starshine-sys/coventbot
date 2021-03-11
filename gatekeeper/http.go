@@ -9,7 +9,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
-	"github.com/starshine-sys/coventbot/types"
+	"github.com/starshine-sys/tribble/types"
 )
 
 // PendingUser ...

@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/starshine-sys/coventbot/types"
+	"github.com/starshine-sys/tribble/types"
 	"go.uber.org/zap"
 )
 

@@ -1,4 +1,4 @@
-module github.com/starshine-sys/coventbot
+module github.com/starshine-sys/tribble
 
 go 1.16
 
