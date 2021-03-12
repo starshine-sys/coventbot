@@ -2,6 +2,7 @@ package info
 
 import (
 	"fmt"
+	"os/exec"
 	"runtime"
 	"time"
 
@@ -11,7 +12,19 @@ import (
 	"github.com/starshine-sys/tribble/etc"
 )
 
-const botVersion = 1
+const botVersion = 5
+
+var gitVer string
+
+func init() {
+	git := exec.Command("git", "rev-parse", "--short", "HEAD")
+	// ignoring errors *should* be fine? if there's no output we just fall back to "unknown"
+	b, _ := git.Output()
+	gitVer = string(b)
+	if gitVer == "" {
+		gitVer = "unknown"
+	}
+}
 
 func (bot *Bot) about(ctx *bcr.Context) (err error) {
 	stats := runtime.MemStats{}
@@ -29,7 +42,7 @@ func (bot *Bot) about(ctx *bcr.Context) (err error) {
 		Fields: []discord.EmbedField{
 			{
 				Name:   "Version",
-				Value:  fmt.Sprintf("v%d (bcr v%s)", botVersion, bcr.Version()),
+				Value:  fmt.Sprintf("v%d-%v (bcr v%s)", botVersion, gitVer, bcr.Version()),
 				Inline: true,
 			},
 			{
