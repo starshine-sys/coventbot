@@ -1,4 +1,4 @@
-package static
+package info
 
 import (
 	"github.com/diamondburned/arikawa/v2/discord"
