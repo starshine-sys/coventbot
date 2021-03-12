@@ -140,6 +140,54 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 }
 
 func (bot *Bot) userInfo(ctx *bcr.Context) (err error) {
+	u, err := ctx.ParseUser(ctx.RawArgs)
+	if err != nil {
+		_, err = ctx.Send("User not found.", nil)
+		return
+	}
+
+	e := discord.Embed{
+		Author: &discord.EmbedAuthor{
+			Name: u.Username + "#" + u.Discriminator,
+			Icon: u.AvatarURL(),
+		},
+		Thumbnail: &discord.EmbedThumbnail{
+			URL: u.AvatarURL(),
+		},
+		Description: u.ID.String(),
+		Color:       ctx.Router.EmbedColor,
+
+		Fields: []discord.EmbedField{
+			{
+				Name:  "User information for",
+				Value: u.Mention(),
+			},
+			{
+				Name:   "Avatar",
+				Value:  fmt.Sprintf("[Link](%v?size=1024)", u.AvatarURL()),
+				Inline: true,
+			},
+			{
+				Name:   "Username",
+				Value:  u.Username + "#" + u.Discriminator,
+				Inline: true,
+			},
+			{
+				Name: "Created at",
+				Value: fmt.Sprintf("%v\n(%v)",
+					u.ID.Time().UTC().Format("Jan _2 2006, 15:04:05 MST"),
+					etc.HumanizeTime(etc.DurationPrecisionMinutes, u.ID.Time().UTC()),
+				),
+			},
+		},
+
+		Footer: &discord.EmbedFooter{
+			Text: fmt.Sprintf("ID: %v", u.ID),
+		},
+		Timestamp: discord.NowTimestamp(),
+	}
+
+	_, err = ctx.Send("", &e)
 	return
 }
 

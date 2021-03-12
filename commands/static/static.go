@@ -47,6 +47,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "roleinfo",
+		Aliases: []string{"ri"},
+		Summary: "Show information about a role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+
+		Command: b.roleInfo,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "serverinfo",
 		Aliases: []string{"si", "guildinfo"},
 		Summary: "Show information about the server.",
