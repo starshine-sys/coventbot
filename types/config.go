@@ -12,9 +12,17 @@ type BotConfig struct {
 
 	GuildLogWebhook *Webhook `yaml:"guild_log"`
 
+	VerifyListen    string `yaml:"verify_listen"`
 	VerifyBaseURL   string `yaml:"verify_base_url"`
 	HCaptchaSitekey string `yaml:"hcaptcha_sitekey"`
 	HCaptchaSecret  string `yaml:"hcaptcha_secret"`
+
+	Branding struct {
+		Name string
+
+		Private  bool
+		PublicID discord.UserID `yaml:"public_id"`
+	}
 }
 
 // Webhook is a single webhook config

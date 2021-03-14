@@ -84,7 +84,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	go func() {
 		for {
-			err := http.ListenAndServe(":2580", b.httpRouter)
+			err := http.ListenAndServe(bot.Config.VerifyListen, b.httpRouter)
 			if err != nil {
 				bot.Sugar.Errorf("Error running HTTP server, restarting: %v", err)
 			}
