@@ -40,7 +40,7 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 	// we need to grab the server name
 	g, err := ctx.Session.Guild(discord.GuildID(guildID))
 	if err != nil {
-		_, err = ctx.Send(":x: Internal error occurred.", nil)
+		_, err = ctx.Send(":x: I'm not in the given server, so it has no tags.", nil)
 		return
 	}
 
@@ -49,6 +49,26 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 		return err
 	}
 
-	_, err = ctx.NewDM(ctx.Author.ID).Content(strings.Join(tagNames, ", ")).Send()
+	var msgs []string
+	var b strings.Builder
+	for i, n := range tagNames {
+		if b.Len() >= 1900 {
+			msgs = append(msgs, b.String())
+			b.Reset()
+		}
+		b.WriteString(n)
+		if i != len(tagNames)-1 {
+			b.WriteString(", ")
+		}
+	}
+	msgs = append(msgs, b.String())
+
+	for _, m := range msgs {
+		_, err = ctx.NewDM(ctx.Author.ID).Content(m).Send()
+		if err != nil {
+			return err
+		}
+	}
+
 	return
 }

@@ -38,6 +38,6 @@ func (db *DB) GetTag(guildID discord.GuildID, s string) (t *Tag, err error) {
 
 // Tags returns all tags for the given server
 func (db *DB) Tags(guildID discord.GuildID) (t []*Tag, err error) {
-	err = pgxscan.Select(context.Background(), db.Pool, &t, "select id, server_id, name, response, created_by, created_at from tags where server_id = $1 order by name", guildID)
+	err = pgxscan.Select(context.Background(), db.Pool, &t, "select id, server_id, name, response, created_by, created_at from tags where server_id = $1 order by name, id", guildID)
 	return
 }

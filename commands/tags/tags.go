@@ -17,6 +17,14 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	b := &Bot{Bot: bot}
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "tags",
+		Summary: "Show a list of tags in the current server, or the given server (in DMs).",
+		Usage:   "[server ID]",
+
+		Command: b.list,
+	}))
+
 	tag := b.Router.AddCommand(&bcr.Command{
 		Name:        "tag",
 		Summary:     "Display a tag.",
@@ -30,7 +38,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	tag.AddSubcommand(&bcr.Command{
 		Name:    "add",
 		Summary: "Add a tag.",
-		Usage:   "<name> <response>",
+		Usage:   "<name>\n<response>",
 		Args:    bcr.MinArgs(1),
 
 		GuildOnly:   true,
@@ -39,13 +47,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.addTag,
 	})
 
-	list = append(list, b.Router.AddCommand(&bcr.Command{
-		Name:    "tags",
-		Summary: "Show a list of tags in the current server, or the given server (in DMs).",
-		Usage:   "[server ID]",
-
-		Command: b.list,
-	}))
+	tag.AddSubcommand(b.Router.AliasMust("list", nil, []string{"tags"}, nil))
 
 	return s, append(list, tag)
 }

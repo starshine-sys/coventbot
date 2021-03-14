@@ -80,6 +80,15 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.quickpoll,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "roll",
+		Aliases: []string{"dice"},
+		Summary: "Roll dice, defaults to 1d20.",
+		Usage:   "[int?]d?num",
+
+		Command: b.roll,
+	}))
+
 	echo := b.Router.AddCommand(&bcr.Command{
 		Name:        "echo",
 		Aliases:     []string{"say"},
