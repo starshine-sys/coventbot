@@ -89,6 +89,15 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.roll,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "hello",
+		Aliases: []string{"hi", "hey", "heya"},
+		Summary: "Say hi!",
+		Hidden:  true,
+
+		Command: b.hello,
+	}))
+
 	echo := b.Router.AddCommand(&bcr.Command{
 		Name:        "echo",
 		Aliases:     []string{"say"},

@@ -93,7 +93,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "idtime",
 		Aliases: []string{"snowflake"},
 		Summary: "Get the timestamp for a Discord ID.",
-		Usage:   "<IDs...>",
+		Usage:   "<ID>",
 		Args:    bcr.MinArgs(1),
 
 		Command: b.idtime,

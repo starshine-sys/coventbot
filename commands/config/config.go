@@ -53,6 +53,28 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.watchlistChannel,
 	})
 
+	wl.AddSubcommand(b.Router.AliasMust("show", nil, []string{"watchlist"}, nil))
+
+	wl.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add a user to the watch list.",
+		Usage:   "<user>",
+
+		Args:        bcr.MinArgs(1),
+		Permissions: discord.PermissionKickMembers,
+		Command:     b.watchlistAdd,
+	})
+
+	wl.AddSubcommand(&bcr.Command{
+		Name:    "remove",
+		Summary: "Remove a user from the watch list.",
+		Usage:   "<user>",
+
+		Args:        bcr.MinArgs(1),
+		Permissions: discord.PermissionKickMembers,
+		Command:     b.watchlistRemove,
+	})
+
 	sb := b.Router.AddCommand(&bcr.Command{
 		Name:    "starboard",
 		Summary: "View or change this server's starboard settings.",
@@ -91,8 +113,6 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.starboardSetLimit,
 	})
 
-	wl.AddSubcommand(b.Router.AliasMust("show", nil, []string{"watchlist"}, nil))
-
 	bl := sb.AddSubcommand(&bcr.Command{
 		Name:    "blacklist",
 		Aliases: []string{"block", "bl"},
@@ -106,6 +126,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "add",
 		Summary: "Add a channel to the starboard blacklist.",
 		Usage:   "<channel>",
+		Args:    bcr.MinArgs(1),
 
 		Permissions: discord.PermissionManageGuild,
 		Command:     b.blacklistAdd,
@@ -115,10 +136,14 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "remove",
 		Summary: "Remove a channel from the starboard blacklist.",
 		Usage:   "<channel>",
+		Args:    bcr.MinArgs(1),
 
 		Permissions: discord.PermissionManageGuild,
 		Command:     b.blacklistRemove,
 	})
+
+	// add join handler
+	b.State.AddHandler(b.watchlistMemberAdd)
 
 	return s, append(list, wl, sb)
 }
