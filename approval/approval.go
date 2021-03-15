@@ -19,6 +19,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "approve",
+		Aliases: []string{"g"},
 		Summary: "Approve the given member.",
 		Usage:   "<member>",
 		Args:    bcr.MinArgs(1),

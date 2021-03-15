@@ -28,6 +28,11 @@ func (bot *Bot) MessageReactionAdd(ev *gateway.MessageReactionAddEvent) {
 		return
 	}
 
+	// if the channel is blacklisted, return
+	if bot.DB.IsBlacklisted(ev.GuildID, ev.ChannelID) {
+		return
+	}
+
 	bot.reactionInner(ev.UserID, ev.ChannelID, ev.MessageID, ev.Emoji, ev.GuildID)
 }
 
@@ -38,6 +43,11 @@ func (bot *Bot) MessageReactionDelete(ev *gateway.MessageReactionRemoveEvent) {
 	}
 	bot.mu[ev.MessageID].Lock()
 	defer bot.mu[ev.MessageID].Unlock()
+
+	// if the channel is blacklisted, return
+	if bot.DB.IsBlacklisted(ev.GuildID, ev.ChannelID) {
+		return
+	}
 
 	bot.reactionInner(ev.UserID, ev.ChannelID, ev.MessageID, ev.Emoji, ev.GuildID)
 }
@@ -56,7 +66,12 @@ func (bot *Bot) MessageReactionRemoveEmoji(ev *gateway.MessageReactionRemoveEmoj
 		return
 	}
 
-	if ev.Emoji.String() != settings.StarboardEmoji {
+	if ev.Emoji.String() != settings.StarboardEmoji && ev.Emoji.Name != settings.StarboardEmoji {
+		return
+	}
+
+	// if the channel is blacklisted, return
+	if bot.DB.IsBlacklisted(ev.GuildID, ev.ChannelID) {
 		return
 	}
 
@@ -88,6 +103,11 @@ func (bot *Bot) MessageReactionRemoveAll(ev *gateway.MessageReactionRemoveAllEve
 	star, err := bot.DB.StarboardMessage(ev.MessageID)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting database entry for message: %v", err)
+		return
+	}
+
+	// if the channel is blacklisted, return
+	if bot.DB.IsBlacklisted(ev.GuildID, ev.ChannelID) {
 		return
 	}
 

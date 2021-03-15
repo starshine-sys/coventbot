@@ -93,5 +93,32 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	wl.AddSubcommand(b.Router.AliasMust("show", nil, []string{"watchlist"}, nil))
 
+	bl := sb.AddSubcommand(&bcr.Command{
+		Name:    "blacklist",
+		Aliases: []string{"block", "bl"},
+		Summary: "View this server's starboard blacklist.",
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.blacklist,
+	})
+
+	bl.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add a channel to the starboard blacklist.",
+		Usage:   "<channel>",
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.blacklistAdd,
+	})
+
+	bl.AddSubcommand(&bcr.Command{
+		Name:    "remove",
+		Summary: "Remove a channel from the starboard blacklist.",
+		Usage:   "<channel>",
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.blacklistRemove,
+	})
+
 	return s, append(list, wl, sb)
 }
