@@ -69,6 +69,14 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 			b.WriteString(", ")
 		}
 	}
+	if b.Len() == 0 {
+		b.WriteString("No roles.")
+	}
+
+	colour := discord.MemberColor(*g, *m)
+	if colour == 0 {
+		colour = ctx.Router.EmbedColor
+	}
 
 	e := discord.Embed{
 		Author: &discord.EmbedAuthor{
@@ -79,7 +87,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 			URL: m.User.AvatarURL(),
 		},
 		Description: m.User.ID.String(),
-		Color:       discord.MemberColor(*g, *m),
+		Color:       colour,
 
 		Fields: []discord.EmbedField{
 			{
@@ -124,7 +132,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 				),
 			},
 			{
-				Name:  "Roles",
+				Name:  fmt.Sprintf("Roles (%v)", len(rls)),
 				Value: b.String(),
 			},
 		},
