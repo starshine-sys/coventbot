@@ -98,6 +98,15 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.hello,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "members",
+		Summary: "Show a filtered list of members",
+		Usage:   "--help",
+
+		Permissions: discord.PermissionManageMessages,
+		Command:     b.members,
+	}))
+
 	echo := b.Router.AddCommand(&bcr.Command{
 		Name:        "echo",
 		Aliases:     []string{"say"},

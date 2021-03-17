@@ -18,7 +18,7 @@ var emojiMatch = regexp.MustCompile("<(?P<animated>a)?:(?P<name>\\w+):(?P<emoteI
 func (bot *Bot) addEmoji(ctx *bcr.Context) (err error) {
 	if ctx.RawArgs == "-h" || ctx.RawArgs == "" {
 		e := &discord.Embed{
-			Title: "`addemoji`",
+			Title: "`ADDEMOJI`",
 			Description: "`<source> [name]`" + `
 Available sources are listed below. Name is optional when using the msg, existing, or attachment sources.
 
