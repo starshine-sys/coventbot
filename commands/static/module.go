@@ -90,6 +90,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "embedsource",
+		Aliases: []string{"embed-source"},
+		Summary: "Show the source for a message's embed(s).",
+		Usage:   "<message link>",
+		Args:    bcr.MinArgs(1),
+
+		Command: b.embedSource,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "hello",
 		Aliases: []string{"hi", "hey", "heya"},
 		Summary: "Say hi!",
@@ -100,7 +110,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "members",
-		Summary: "Show a filtered list of members",
+		Summary: "Show a filtered list of members.",
 		Usage:   "--help",
 
 		Permissions: discord.PermissionManageMessages,
