@@ -51,17 +51,6 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
-		Name:    "makeinvite",
-		Aliases: []string{"createinvite"},
-		Summary: "Make an invite for the current channel, or the given channel.",
-		Usage:   "[channel]",
-		Args:    bcr.MinArgs(1),
-
-		Permissions: discord.PermissionCreateInstantInvite,
-		Command:     b.makeInvite,
-	}))
-
-	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "poll",
 		Summary: "Make a poll using an embed.",
 		Usage:   "<question> <option 1> <option 2> [options...]",
@@ -108,36 +97,5 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.hello,
 	}))
 
-	list = append(list, b.Router.AddCommand(&bcr.Command{
-		Name:    "members",
-		Summary: "Show a filtered list of members.",
-		Usage:   "--help",
-
-		Permissions: discord.PermissionManageMessages,
-		Command:     b.members,
-	}))
-
-	echo := b.Router.AddCommand(&bcr.Command{
-		Name:        "echo",
-		Aliases:     []string{"say"},
-		Summary:     "Make the bot say something.",
-		Description: "To echo something into a different channel, use the `echo to` subcommand.",
-
-		Permissions: discord.PermissionManageMessages,
-
-		Command: b.echo,
-	})
-
-	echo.AddSubcommand(&bcr.Command{
-		Name:    "to",
-		Summary: "Echo something to the specified channel.",
-		Usage:   "<channel>",
-
-		Permissions: discord.PermissionManageMessages,
-
-		Command: b.echoTo,
-	})
-
-	list = append(list, echo)
 	return s, list
 }
