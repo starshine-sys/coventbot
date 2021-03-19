@@ -26,6 +26,15 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.members,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "roledump",
+		Aliases: []string{"role-dump"},
+		Summary: "Show a list of *all* roles with permissions and basic information.",
+
+		Permissions: discord.PermissionManageRoles,
+		Command:     b.roleDump,
+	}))
+
 	echo := b.Router.AddCommand(&bcr.Command{
 		Name:        "echo",
 		Aliases:     []string{"say"},
