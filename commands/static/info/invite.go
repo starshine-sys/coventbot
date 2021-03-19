@@ -8,13 +8,19 @@ import (
 )
 
 func (bot *Bot) invite(ctx *bcr.Context) (err error) {
-	perms := discord.PermissionViewChannel | discord.PermissionReadMessageHistory | discord.PermissionAddReactions | discord.PermissionAttachFiles | discord.PermissionBanMembers | discord.PermissionCreateInstantInvite | discord.PermissionUseExternalEmojis | discord.PermissionEmbedLinks | discord.PermissionKickMembers | discord.PermissionManageEmojis | discord.PermissionManageMessages | discord.PermissionManageRoles | discord.PermissionSendMessages
+	perms := discord.PermissionViewChannel | discord.PermissionReadMessageHistory | discord.PermissionAddReactions | discord.PermissionAttachFiles | discord.PermissionCreateInstantInvite | discord.PermissionUseExternalEmojis | discord.PermissionEmbedLinks | discord.PermissionManageEmojis | discord.PermissionManageMessages | discord.PermissionManageRoles | discord.PermissionSendMessages
 
 	if bot.Config.Branding.Private {
 		if bot.Config.Branding.PublicID.IsValid() {
 			u, err := bot.State.User(bot.Config.Branding.PublicID)
 			if err == nil {
-				_, err = ctx.Sendf("This instance of the bot is private, but you can invite %v, the public version of this bot, using the following link: <https://discord.com/api/oauth2/authorize?client_id=%v&permissions=%v&scope=applications.commands%%20bot>", u.Username, u.ID, perms)
+				_, err = ctx.Send(fmt.Sprintf("This instance of the bot is private, but you can invite %v, the public version of this bot.", u.Username), &discord.Embed{
+					Title: "Invite",
+					Description: fmt.Sprintf(`[Invite link (recommended)](https://discord.com/api/oauth2/authorize?client_id=%v&permissions=%v&scope=applications.commands%%20bot)
+
+[Invite link (admin)](https://discord.com/api/oauth2/authorize?client_id=%v&permissions=%v&scope=applications.commands%%20bot)`, u.ID, perms, u.ID, discord.PermissionAdministrator),
+					Color: ctx.Router.EmbedColor,
+				})
 				return err
 			}
 		}
@@ -23,8 +29,16 @@ func (bot *Bot) invite(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	invite := fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%v&permissions=%v&scope=applications.commands%%20bot", ctx.Bot.ID, perms)
+	invite := func(p discord.Permissions) string {
+		invite := fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%v&permissions=%%v&scope=applications.commands%%%%20bot", ctx.Bot.ID)
 
-	_, err = ctx.Sendf("Use this link to invite me to your server: <%v>", invite)
+		return fmt.Sprintf(invite, p)
+	}
+
+	_, err = ctx.Send("", &discord.Embed{
+		Title:       "Invite",
+		Description: fmt.Sprintf("[Invite link (recommended)](%v)\n\n[Invite link (admin)](%v)", invite(perms), invite(discord.PermissionAdministrator)),
+		Color:       ctx.Router.EmbedColor,
+	})
 	return
 }
