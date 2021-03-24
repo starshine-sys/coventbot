@@ -19,6 +19,11 @@ func (bot *Bot) members(ctx *bcr.Context) (err error) {
 		nameContains, nameRegex string
 
 		count, humans, bots bool
+
+		format     string
+		enkoFormat bool
+
+		file bool
 	)
 
 	var b strings.Builder
@@ -33,9 +38,20 @@ func (bot *Bot) members(ctx *bcr.Context) (err error) {
 	fs.StringVarP(&nameContains, "name-contains", "C", "", "Shows members whose names contain the given text")
 	fs.StringVarP(&nameRegex, "name-regex", "R", "", "Shows members whose names match the given regex (use `(?i)` at the beginning for case-insensitive matching)")
 
+	fs.StringVarP(&format, "format", "f", "%in. %u#%d (%id)", `Format to use for the member list.
+Supported options:
+- %in: index
+- %id: user ID
+- %u: username
+- %d: discriminator
+- %n: nickname
+- %m: mention`)
+
 	fs.BoolVarP(&count, "count", "c", false, "Shows a member count instead of a member list")
 	fs.BoolVarP(&humans, "humans", "h", false, "Shows only humans")
 	fs.BoolVarP(&bots, "bots", "b", false, "Shows only bots")
+	fs.BoolVarP(&enkoFormat, "enko-format", "E", false, "Use EnkoMojishia's format for the member list.")
+	fs.BoolVarP(&file, "file", "F", false, "Output to a file instead of a paginated embed.")
 
 	fs.Parse(ctx.Args)
 	// send help if needed
@@ -65,6 +81,10 @@ func (bot *Bot) members(ctx *bcr.Context) (err error) {
 	// we don't need ctx.RawArgs, so just set it to "None" if it's empty
 	if ctx.RawArgs == "" {
 		ctx.RawArgs = "None"
+	}
+
+	if enkoFormat {
+		format = "%in. %u#%d (%id)\n​  - %n"
 	}
 
 	gm, err := bot.State.Session.MembersAfter(ctx.Message.GuildID, 0, 0)
@@ -175,20 +195,29 @@ func (bot *Bot) members(ctx *bcr.Context) (err error) {
 		return
 	}
 
+	var members []string
+
 	for i, m := range gm {
-		b.WriteString(fmt.Sprintf("%v. %v#%v (%v)", i+1, m.User.Username, m.User.Discriminator, m.User.ID))
-		if m.Nick != "" {
-			b.WriteString(fmt.Sprintf("\n%v  - %v", strings.Repeat(" ", len(fmt.Sprint(i+1))), m.Nick))
+		nick := m.Nick
+		if nick == "" {
+			nick = "no nickname"
 		}
-		b.WriteString("\n\n")
+
+		members = append(members, strings.NewReplacer(
+			"%in", fmt.Sprint(i+1),
+			"%id", m.User.ID.String(),
+			"%u", m.User.Username,
+			"%d", m.User.Discriminator,
+			"%n", nick,
+			"%m", m.Mention(),
+		).Replace(format+"\n"))
 	}
 	if len(gm) == 0 {
-		b.WriteString("No results.")
+		members = append(members, "No results.")
 	}
 
-	// if length is longer than 2k, we need to send a text file instead
-	if b.Len() >= 2000 {
-		_, err = ctx.NewMessage().AddFile("members.txt", strings.NewReader(b.String())).Send()
+	if file {
+		_, err = ctx.NewMessage().AddFile("members.txt", strings.NewReader(strings.Join(members, ""))).Send()
 		if err == bcr.ErrBotMissingPermissions {
 			_, err = ctx.Send(":x: I can't attach files in this channel.", nil)
 			return
@@ -196,15 +225,37 @@ func (bot *Bot) members(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	_, err = ctx.Send("", &discord.Embed{
-		Title:       "Members in Query",
-		Description: "```py\n" + b.String() + "\n```",
-		Color:       ctx.Router.EmbedColor,
+	var embeds []discord.Embed
+
+	for _, m := range members {
+		if b.Len()+len(m) > 2000 {
+			embeds = append(embeds, discord.Embed{
+				Title:       "Members",
+				Description: b.String(),
+				Fields: []discord.EmbedField{{
+					Name:  "Query",
+					Value: "```" + ctx.RawArgs + "```",
+				}},
+				Color: ctx.Router.EmbedColor,
+			})
+
+			b.Reset()
+		}
+
+		b.WriteString(m)
+	}
+
+	embeds = append(embeds, discord.Embed{
+		Title:       "Members",
+		Description: b.String(),
 		Fields: []discord.EmbedField{{
 			Name:  "Query",
 			Value: "```" + ctx.RawArgs + "```",
 		}},
+		Color: ctx.Router.EmbedColor,
 	})
+
+	_, err = ctx.PagedEmbed(embeds, false)
 	return
 }
 
