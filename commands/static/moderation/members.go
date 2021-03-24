@@ -227,22 +227,27 @@ Supported options:
 
 	var embeds []discord.Embed
 
-	for _, m := range members {
-		if b.Len()+len(m) > 2000 {
-			embeds = append(embeds, discord.Embed{
-				Title:       "Members",
-				Description: b.String(),
-				Fields: []discord.EmbedField{{
-					Name:  "Query",
-					Value: "```" + ctx.RawArgs + "```",
-				}},
-				Color: ctx.Router.EmbedColor,
-			})
+	{
+		var count int
+		for _, m := range members {
+			count++
+			if b.Len()+len(m) > 2000 || count > 25 {
+				embeds = append(embeds, discord.Embed{
+					Title:       "Members",
+					Description: b.String(),
+					Fields: []discord.EmbedField{{
+						Name:  "Query",
+						Value: "```" + ctx.RawArgs + "```",
+					}},
+					Color: ctx.Router.EmbedColor,
+				})
 
-			b.Reset()
+				b.Reset()
+				count = 0
+			}
+
+			b.WriteString(m)
 		}
-
-		b.WriteString(m)
 	}
 
 	embeds = append(embeds, discord.Embed{
