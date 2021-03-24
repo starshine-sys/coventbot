@@ -25,7 +25,11 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "addemoji",
 		Aliases: []string{"addemote", "steal"},
 		Summary: "Add an emoji.",
-		Usage:   "-h",
+		Description: `Adds an emoji. Source is optional if a file is attached.
+Source can be either a link to an emote, an existing emote, or a link to a message (with the ` + "`-msg`" + ` flag).
+
+If a message link is given as input, and the message has multiple emotes in it, a menu will pop up allowing you to choose the specific emote.`,
+		Usage: "<source> [name]",
 
 		Permissions: discord.PermissionManageEmojis,
 

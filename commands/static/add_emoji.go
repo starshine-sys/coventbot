@@ -11,27 +11,12 @@ import (
 	"strings"
 
 	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
 )
 
 var emojiMatch = regexp.MustCompile("<(?P<animated>a)?:(?P<name>\\w+):(?P<emoteID>\\d{15,})>")
 
 func (bot *Bot) addEmoji(ctx *bcr.Context) (err error) {
-	if ctx.RawArgs == "-h" || (ctx.RawArgs == "" && len(ctx.Message.Attachments) == 0) {
-		e := &discord.Embed{
-			Title: "`ADDEMOJI`",
-			Description: "`<source> [name]`" + `
-
-Source can be either a link to an emote, an existing emote, an attachment, or a link to a message (with the ` + "`-msg`" + ` flag).
-
-If a message link is given as input, and the message has multiple emotes in it, a menu will pop up allowing you to choose the specific emote.`,
-			Color: ctx.Router.EmbedColor,
-		}
-		_, err = ctx.Send("", e)
-		return
-	}
-
 	var (
 		name     string
 		fileType string
