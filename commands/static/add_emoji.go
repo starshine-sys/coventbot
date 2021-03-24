@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	gourl "net/url"
+	"path"
 	"regexp"
 	"strings"
 
@@ -16,21 +18,14 @@ import (
 var emojiMatch = regexp.MustCompile("<(?P<animated>a)?:(?P<name>\\w+):(?P<emoteID>\\d{15,})>")
 
 func (bot *Bot) addEmoji(ctx *bcr.Context) (err error) {
-	if ctx.RawArgs == "-h" || ctx.RawArgs == "" {
+	if ctx.RawArgs == "-h" || (ctx.RawArgs == "" && len(ctx.Message.Attachments) == 0) {
 		e := &discord.Embed{
 			Title: "`ADDEMOJI`",
 			Description: "`<source> [name]`" + `
-Available sources are listed below. Name is optional when using the msg, existing, or attachment sources.
 
-` + "`-msg <link/channel-message>`" + `
-> Add an emoji used in the given message. The bot needs to be able to see the channel and read message history in it.
-> If the message contains more than one emoji, shows a selection menu.
-` + "`-existing <emoji>`" + `
-> Add an existing emoji given as input.
-` + "`-url <url>`" + `
-> Add the image file at the given URL.
-` + "`-attachment`" + `
-> Add the image file attached to the message.`,
+Source can be either a link to an emote, an existing emote, an attachment, or a link to a message (with the ` + "`-msg`" + ` flag).
+
+If a message link is given as input, and the message has multiple emotes in it, a menu will pop up allowing you to choose the specific emote.`,
 			Color: ctx.Router.EmbedColor,
 		}
 		_, err = ctx.Send("", e)
@@ -41,125 +36,111 @@ Available sources are listed below. Name is optional when using the msg, existin
 		name     string
 		fileType string
 
-		msg        string
-		existing   string
-		url        string
-		attachment bool
+		msg string
+		url string
 	)
 
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
-	fs.BoolVar(&attachment, "attachment", false, "Use the given attachment as source")
 	fs.StringVar(&msg, "msg", "", "Use the given message link as source")
-	fs.StringVar(&url, "url", "", "Use the given URL as source")
-	fs.StringVar(&existing, "existing", "", "Use the given emoji as source")
 
 	err = fs.Parse(ctx.Args)
 	if err != nil {
-		_, err = ctx.Send("Invalid source. Please double-check your input.", nil)
 		return
 	}
 	ctx.Args = fs.Args()
 
-	if !attachment && msg == "" && existing == "" && url == "" {
-		_, err = ctx.Send("No source given. Please double-check your input.", nil)
-		return
+	// first we try attachments
+	for _, a := range ctx.Message.Attachments {
+		if !isImage(a.Filename) {
+			continue
+		}
+		url = a.URL
+		name = imageFileName(a.Filename)
+		if len(ctx.Args) > 0 {
+			name = ctx.Args[0]
+		}
+		fileType = imageFileType(a.Filename)
+		break
 	}
-	if attachment && url != "" || existing != "" && url != "" {
-		_, err = ctx.Send("Too many sources given. Please double-check your input.", nil)
-		return
+	if url != "" {
+		goto url
+	}
+
+	if len(ctx.Args) > 0 {
+		if emojiMatch.MatchString(ctx.Args[0]) {
+			extension := ".png"
+			groups := emojiMatch.FindStringSubmatch(ctx.Args[0])
+			if groups[1] == "a" {
+				extension = ".gif"
+			}
+			name = groups[2]
+			url = fmt.Sprintf("https://cdn.discordapp.com/emojis/%v%v", groups[3], extension)
+			fileType = imageFileType(url)
+			goto url
+		}
+
+		if _, err := gourl.Parse(ctx.Args[0]); err == nil {
+			url = ctx.Pop()
+			if ctx.Peek() != "" {
+				name = ctx.Pop()
+			}
+			goto url
+		}
 	}
 
 	if msg != "" {
 		return bot.addEmojiMsg(ctx, msg)
 	}
 
-	if url != "" {
-		if isImage(url) {
-			fileType = imageFileType(url)
-		}
+url:
+
+	resp, err := http.Get(url)
+	if err != nil {
+		_, err = ctx.Sendf("Internal error occurred:\n```%v```", err)
+		return err
 	}
+	defer resp.Body.Close()
 
-	if attachment {
-		if len(ctx.Message.Attachments) == 0 {
-			_, err = ctx.Send("`-attachment` flag specified, but the message has no attachments.", nil)
-			return
-		}
-
-		for _, a := range ctx.Message.Attachments {
-			if !isImage(a.Filename) {
-				continue
-			}
-			url = a.URL
-			name = imageFileName(a.Filename)
-			fileType = imageFileType(a.Filename)
-			break
-		}
-
-		if len(name) > 31 {
-			name = name[:31]
-		}
-	}
-
-	if existing != "" {
-		if !emojiMatch.MatchString(existing) {
-			_, err = ctx.Send("No valid custom emoji given.", nil)
-			return
-		}
-
-		extension := ".png"
-		groups := emojiMatch.FindStringSubmatch(existing)
-		if groups[1] == "a" {
-			extension = ".gif"
-		}
-		name = groups[2]
-		url = fmt.Sprintf("https://cdn.discordapp.com/emojis/%v%v", groups[3], extension)
-		fileType = imageFileType(url)
-	}
-
-	if url != "" {
-		resp, err := http.Get(url)
-		if err != nil {
-			_, err = ctx.Sendf("Internal error occurred:\n```%v```", err)
-			return err
-		}
-		defer resp.Body.Close()
-
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			_, err = ctx.Sendf("Internal error occurred:\n```%v```", err)
-			return err
-		}
-
-		if len(ctx.Args) > 0 {
-			name = ctx.Args[0]
-		}
-
-		img := api.Image{
-			ContentType: fileType,
-			Content:     b,
-		}
-
-		if name == "" {
-			_, err = ctx.Send("No name given. Please double-check your input.", nil)
-			return err
-		}
-
-		ced := api.CreateEmojiData{
-			Name:  name,
-			Image: img,
-		}
-
-		emoji, err := ctx.Session.CreateEmoji(ctx.Message.GuildID, ced)
-		if err != nil {
-			_, err = ctx.Sendf("Error:\n```%v```", err)
-			return err
-		}
-
-		_, err = ctx.Sendf("Added emoji %v with name \"%v\".", emoji.String(), emoji.Name)
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		_, err = ctx.Sendf("Internal error occurred:\n```%v```", err)
 		return err
 	}
 
-	return
+	if len(ctx.Args) > 1 {
+		name = ctx.Args[1]
+	}
+
+	fileType = imageFileType(url)
+
+	img := api.Image{
+		ContentType: fileType,
+		Content:     b,
+	}
+
+	if name == "" {
+		u, err := gourl.Parse(url)
+		if err != nil {
+			_, err = ctx.Send("Couldn't parse the URL!", nil)
+			return err
+		}
+
+		name = imageFileName(path.Base(u.Path))
+	}
+
+	ced := api.CreateEmojiData{
+		Name:  name,
+		Image: img,
+	}
+
+	emoji, err := ctx.Session.CreateEmoji(ctx.Message.GuildID, ced)
+	if err != nil {
+		_, err = ctx.Sendf("Error:\n```%v```", err)
+		return err
+	}
+
+	_, err = ctx.Sendf("Added emoji %v with name \"%v\".", emoji.String(), emoji.Name)
+	return err
 }
 
 func isImage(filename string) bool {
