@@ -19,6 +19,7 @@ import (
 	"github.com/starshine-sys/tribble/db"
 	"github.com/starshine-sys/tribble/etc"
 	"github.com/starshine-sys/tribble/gatekeeper"
+	"github.com/starshine-sys/tribble/names"
 	"github.com/starshine-sys/tribble/starboard"
 	"go.uber.org/zap"
 )
@@ -72,6 +73,8 @@ func main() {
 	bot.Add(gatekeeper.Init)
 	// add approval
 	bot.Add(approval.Init)
+	// add logging
+	bot.Add(names.Init)
 
 	// connect to discord
 	if err := bot.Start(); err != nil {
