@@ -26,9 +26,10 @@ func (bot *Bot) usernames(ctx *bcr.Context) (err error) {
 
 	var e []discord.Embed
 	var buf string
+	var count int
 
 	for i, n := range usernames {
-		if len(buf) >= 1950 {
+		if count >= 10 {
 			e = append(e, discord.Embed{
 				Title:       fmt.Sprintf("Username history for %v#%v", u.Username, u.Discriminator),
 				Description: buf,
@@ -37,9 +38,13 @@ func (bot *Bot) usernames(ctx *bcr.Context) (err error) {
 					Text: fmt.Sprintf("User ID: %v", u.ID),
 				},
 			})
+
+			buf = ""
+			count = 0
 		}
 
-		buf += fmt.Sprintf("%v. %v\n", i+1, n)
+		buf += fmt.Sprintf("%v. %v\n", len(usernames)-i, n)
+		count++
 	}
 
 	e = append(e, discord.Embed{
@@ -75,9 +80,10 @@ func (bot *Bot) nicknames(ctx *bcr.Context) (err error) {
 
 	var e []discord.Embed
 	var buf string
+	var count int
 
 	for i, n := range nicknames {
-		if len(buf) >= 1950 {
+		if count >= 10 {
 			e = append(e, discord.Embed{
 				Title:       fmt.Sprintf("Nickname history for %v#%v", u.Username, u.Discriminator),
 				Description: buf,
@@ -86,9 +92,13 @@ func (bot *Bot) nicknames(ctx *bcr.Context) (err error) {
 					Text: fmt.Sprintf("User ID: %v", u.ID),
 				},
 			})
+
+			buf = ""
+			count = 0
 		}
 
-		buf += fmt.Sprintf("%v. %v\n", i+1, n)
+		buf += fmt.Sprintf("%v. %v\n", len(nicknames)-i, n)
+		count++
 	}
 
 	e = append(e, discord.Embed{
