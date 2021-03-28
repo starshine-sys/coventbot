@@ -35,6 +35,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.roleDump,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "massban",
+		Summary: "Ban all the given members with an optional reason.",
+		Usage:   "<users...> [reason]",
+		Args:    bcr.MinArgs(1),
+
+		Permissions: discord.PermissionBanMembers,
+		Command:     b.massban,
+	}))
+
 	echo := b.Router.AddCommand(&bcr.Command{
 		Name:        "echo",
 		Aliases:     []string{"say"},
