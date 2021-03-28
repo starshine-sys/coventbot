@@ -22,7 +22,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 	}
 
 	// get guild
-	g, err := ctx.Session.Guild(ctx.Message.GuildID)
+	g, err := ctx.State.Guild(ctx.Message.GuildID)
 	if err != nil {
 		_, err = ctx.Sendf("Internal error occurred:\n```%v```", err)
 		return

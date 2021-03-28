@@ -10,12 +10,12 @@ import (
 )
 
 func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
-	g, err := ctx.Session.GuildWithCount(ctx.Message.GuildID)
+	g, err := ctx.State.GuildWithCount(ctx.Message.GuildID)
 	if err != nil {
 		return
 	}
 
-	owner, err := ctx.Session.User(g.OwnerID)
+	owner, err := ctx.State.User(g.OwnerID)
 	if err != nil {
 		return
 	}
@@ -29,7 +29,7 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	channels, err := ctx.Session.Channels(ctx.Message.GuildID)
+	channels, err := ctx.State.Channels(ctx.Message.GuildID)
 	if err != nil {
 		return
 	}

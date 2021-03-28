@@ -85,13 +85,13 @@ func main() {
 	defer func() {
 		db.Pool.Close()
 		sugar.Info("Closed database connection.")
-		bot.Router.Session.Close()
+		bot.Router.State.Close()
 		sugar.Info("Disconnected from Discord.")
 	}()
 
 	sugar.Info("Connected to Discord. Press Ctrl-C or send an interrupt signal to stop.")
 
-	botUser, _ := bot.Router.Session.Me()
+	botUser, _ := bot.Router.State.Me()
 	sugar.Infof("User: %v#%v (%v)", botUser.Username, botUser.Discriminator, botUser.ID)
 
 	sc := make(chan os.Signal, 1)

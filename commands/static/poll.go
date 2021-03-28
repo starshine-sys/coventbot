@@ -50,7 +50,7 @@ func (bot *Bot) poll(ctx *bcr.Context) (err error) {
 	}
 
 	for i := 0; i < len(options); i++ {
-		err = ctx.Session.React(ctx.Channel.ID, msg.ID, discord.APIEmoji(keycaps[i]))
+		err = ctx.State.React(ctx.Channel.ID, msg.ID, discord.APIEmoji(keycaps[i]))
 		if err != nil {
 			return err
 		}
@@ -75,7 +75,7 @@ func (bot *Bot) quickpoll(ctx *bcr.Context) (err error) {
 	}
 
 	// indicate that were processing
-	ctx.Session.React(ctx.Channel.ID, ctx.Message.ID, "🔄")
+	ctx.State.React(ctx.Channel.ID, ctx.Message.ID, "🔄")
 	id := ctx.Message.ID
 
 	// wait a second for pk
@@ -86,21 +86,21 @@ func (bot *Bot) quickpoll(ctx *bcr.Context) (err error) {
 		sf, _ := discord.ParseSnowflake(m.ID)
 		id = discord.MessageID(sf)
 	} else {
-		ctx.Session.Unreact(ctx.Channel.ID, ctx.Message.ID, "🔄")
+		ctx.State.Unreact(ctx.Channel.ID, ctx.Message.ID, "🔄")
 	}
 
 	if reacts < 2 || reacts > 10 {
-		err = ctx.Session.React(ctx.Channel.ID, id, ":greentick:754647778390442025")
+		err = ctx.State.React(ctx.Channel.ID, id, ":greentick:754647778390442025")
 		if err != nil {
 			return err
 		}
-		err = ctx.Session.React(ctx.Channel.ID, id, ":redtick:754647803837415444")
+		err = ctx.State.React(ctx.Channel.ID, id, ":redtick:754647803837415444")
 		if err != nil {
 			return err
 		}
 	} else {
 		for i := 0; i < reacts; i++ {
-			err = ctx.Session.React(ctx.Channel.ID, id, discord.APIEmoji(keycaps[i]))
+			err = ctx.State.React(ctx.Channel.ID, id, discord.APIEmoji(keycaps[i]))
 			if err != nil {
 				return err
 			}

@@ -26,7 +26,7 @@ func (bot *Bot) makeInvite(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	inv, err := ctx.Session.CreateInvite(channel.ID, api.CreateInviteData{
+	inv, err := ctx.State.CreateInvite(channel.ID, api.CreateInviteData{
 		MaxAge:    option.NewUint(0),
 		MaxUses:   0,
 		Temporary: false,

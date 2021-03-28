@@ -118,7 +118,7 @@ url:
 		Image: img,
 	}
 
-	emoji, err := ctx.Session.CreateEmoji(ctx.Message.GuildID, ced)
+	emoji, err := ctx.State.CreateEmoji(ctx.Message.GuildID, ced)
 	if err != nil {
 		_, err = ctx.Sendf("Error:\n```%v```", err)
 		return err

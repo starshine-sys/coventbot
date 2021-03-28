@@ -36,7 +36,7 @@ func (bot *Bot) echoInner(ctx *bcr.Context, ch *discord.Channel) (err error) {
 		return
 	}
 
-	perms, err := ctx.Session.Permissions(ch.ID, ctx.Author.ID)
+	perms, err := ctx.State.Permissions(ch.ID, ctx.Author.ID)
 	if err != nil {
 		_, err = ctx.Sendf("Could not check your permissions: %v", err)
 		return
@@ -54,7 +54,7 @@ func (bot *Bot) echoInner(ctx *bcr.Context, ch *discord.Channel) (err error) {
 			Parse: []api.AllowedMentionType{api.AllowUserMention},
 			Roles: []discord.RoleID{},
 		}
-		roles, err := ctx.Session.Roles(ch.GuildID)
+		roles, err := ctx.State.Roles(ch.GuildID)
 		if err == nil {
 			for _, r := range roles {
 				am.Roles = append(am.Roles, r.ID)

@@ -45,7 +45,7 @@ func (bot *Bot) addEmojiMsg(ctx *bcr.Context, url string) (err error) {
 	channel, _ := discord.ParseSnowflake(groups[1])
 	msgID, _ := discord.ParseSnowflake(groups[2])
 
-	msg, err := ctx.Session.Message(discord.ChannelID(channel), discord.MessageID(msgID))
+	msg, err := ctx.State.Message(discord.ChannelID(channel), discord.MessageID(msgID))
 	if err != nil {
 		_, err = ctx.Send("Couldn't find that message. Are you sure I have access to the channel?", nil)
 		return
@@ -103,7 +103,7 @@ func (bot *Bot) addEmojiMsg(ctx *bcr.Context, url string) (err error) {
 	if err != nil {
 		return err
 	}
-	err = ctx.Session.React(embedMsg.ChannelID, embedMsg.ID, discord.APIEmoji("✅"))
+	err = ctx.State.React(embedMsg.ChannelID, embedMsg.ID, discord.APIEmoji("✅"))
 	if err != nil {
 		bot.Sugar.Errorf("Error adding reaction: %v", err)
 	}
@@ -111,7 +111,7 @@ func (bot *Bot) addEmojiMsg(ctx *bcr.Context, url string) (err error) {
 	c, cancel = context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
-	v = ctx.Session.WaitFor(c, func(v interface{}) bool {
+	v = ctx.State.WaitFor(c, func(v interface{}) bool {
 		ev, ok := v.(*gateway.MessageReactionAddEvent)
 		if !ok {
 			return false
@@ -150,7 +150,7 @@ gotEmoji:
 		},
 	}
 
-	emoji, err := ctx.Session.CreateEmoji(ctx.Message.GuildID, ced)
+	emoji, err := ctx.State.CreateEmoji(ctx.Message.GuildID, ced)
 	if err != nil {
 		_, err = ctx.Sendf("Error:\n```%v```", err)
 		return err

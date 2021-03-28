@@ -47,7 +47,7 @@ func New(
 	config *types.BotConfig) *Bot {
 	b := &Bot{
 		Bot:    bot,
-		State:  bot.Router.Session,
+		State:  bot.Router.State,
 		Sugar:  sugar,
 		DB:     db,
 		Config: config,

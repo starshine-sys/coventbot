@@ -38,7 +38,7 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 	}
 
 	// we need to grab the server name
-	g, err := ctx.Session.Guild(discord.GuildID(guildID))
+	g, err := ctx.State.Guild(discord.GuildID(guildID))
 	if err != nil {
 		_, err = ctx.Send(":x: I'm not in the given server, so it has no tags.", nil)
 		return
