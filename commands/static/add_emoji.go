@@ -78,6 +78,10 @@ func (bot *Bot) addEmoji(ctx *bcr.Context) (err error) {
 	}
 
 url:
+	if url == "" {
+		_, err = ctx.Send("No URL given.", nil)
+		return
+	}
 
 	resp, err := http.Get(url)
 	if err != nil {
