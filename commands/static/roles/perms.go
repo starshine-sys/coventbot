@@ -30,7 +30,7 @@ var (
 		{discord.PermissionManageEmojis, "Manage Emojis"},
 		{discord.PermissionManageMessages, "Manage Messages"},
 
-		{discord.PermissionMentionEveryone, "Mention everyone"},
+		{discord.PermissionMentionEveryone, "Mention Everyone"},
 
 		{discord.PermissionMuteMembers, "Voice Mute Members"},
 		{discord.PermissionDeafenMembers, "Voice Deafen Members"},
