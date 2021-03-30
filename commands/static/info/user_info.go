@@ -7,6 +7,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/tribble/commands/static/roles"
 	"github.com/starshine-sys/tribble/etc"
 )
 
@@ -42,21 +43,28 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 	// get global info
 	// can't do this with a single loop because the loop for colour has to break the moment it's found one
 	var (
-		roles       []string
+		userRoles   []string
 		userPerms   discord.Permissions
 		highestRole = "No roles"
 	)
 	for _, r := range rls {
 		userPerms |= r.Permissions
-		roles = append(roles, r.Mention())
+		userRoles = append(userRoles, r.Mention())
 	}
 	if len(rls) > 0 {
 		highestRole = rls[0].Name
 	}
 
-	perms := strings.Join(bcr.PermStrings(userPerms), ", ")
-	if len(perms) > 1000 {
-		perms = perms[:1000] + "..."
+	var perms []string
+	if g.OwnerID == m.User.ID {
+		perms = append(perms, "Server Owner")
+		userPerms.Add(discord.PermissionAll)
+	}
+	perms = append(perms, roles.PermStringsFor(roles.MajorPerms, userPerms)...)
+
+	permString := strings.Join(perms, ", ")
+	if len(permString) > 1000 {
+		permString = permString[:1000] + "..."
 	}
 	var b strings.Builder
 	for i, r := range rls {
@@ -135,6 +143,10 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 				Name:  fmt.Sprintf("Roles (%v)", len(rls)),
 				Value: b.String(),
 			},
+			{
+				Name:  "Key permissions",
+				Value: permString,
+			},
 		},
 
 		Footer: &discord.EmbedFooter{
@@ -205,4 +217,21 @@ func If(b bool, t, f interface{}) interface{} {
 		return t
 	}
 	return f
+}
+
+// admin isn't in here as we do that one manually, to make sure it shows up at the very beginning
+var majorPerms = map[discord.Permissions]string{
+	discord.PermissionManageNicknames: "Manage Nicknames",
+	discord.PermissionManageRoles:     "Manage Roles",
+	discord.PermissionManageWebhooks:  "Manage Webhooks",
+	discord.PermissionManageEmojis:    "Manage Emojis",
+	discord.PermissionMentionEveryone: "Mention Everyone",
+	discord.PermissionMuteMembers:     "Mute Members",
+	discord.PermissionDeafenMembers:   "Deafen Members",
+	discord.PermissionMoveMembers:     "Move Members",
+	discord.PermissionManageMessages:  "Manage Messages",
+	discord.PermissionKickMembers:     "Kick Members",
+	discord.PermissionBanMembers:      "Ban Members",
+	discord.PermissionManageChannels:  "Manage Channels",
+	discord.PermissionManageGuild:     "Manage Server",
 }
