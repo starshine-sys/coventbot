@@ -99,5 +99,15 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.idtime,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "getinvite",
+		Aliases: []string{"inviteinfo", "invite-info"},
+		Summary: "Get basic information from an invite link.",
+		Usage:   "<invite link/ID>",
+		Args:    bcr.MinArgs(1),
+
+		Command: b.inviteInfo,
+	}))
+
 	return
 }
