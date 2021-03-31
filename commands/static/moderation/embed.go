@@ -41,7 +41,7 @@ func (bot *Bot) embedTo(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	_, err = ctx.Send("✅", nil)
+	_, err = ctx.Send("✅ Sent!", nil)
 	return
 }
 

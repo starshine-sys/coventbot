@@ -70,6 +70,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "embed",
 		Summary: "Send an embed to this channel.",
 		Usage:   "<JSON>",
+		Args:    bcr.MinArgs(1),
 
 		Permissions: discord.PermissionManageMessages,
 
@@ -80,10 +81,22 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "to",
 		Summary: "Send an embed to the given channel.",
 		Usage:   "<channel> <JSON>",
+		Args:    bcr.MinArgs(2),
 
 		Permissions: discord.PermissionManageMessages,
 
 		Command: b.embedTo,
+	})
+
+	embed.AddSubcommand(&bcr.Command{
+		Name:    "edit",
+		Summary: "Edit the given message.",
+		Usage:   "<message> <JSON>",
+		Args:    bcr.MinArgs(2),
+
+		Permissions: discord.PermissionManageMessages,
+
+		Command: b.editEmbed,
 	})
 
 	list = append(list, echo, embed)
