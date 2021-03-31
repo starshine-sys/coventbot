@@ -66,7 +66,27 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.echoTo,
 	})
 
-	list = append(list, echo)
+	embed := b.Router.AddCommand(&bcr.Command{
+		Name:    "embed",
+		Summary: "Send an embed to this channel.",
+		Usage:   "<JSON>",
+
+		Permissions: discord.PermissionManageMessages,
+
+		Command: b.embed,
+	})
+
+	embed.AddSubcommand(&bcr.Command{
+		Name:    "to",
+		Summary: "Send an embed to the given channel.",
+		Usage:   "<channel> <JSON>",
+
+		Permissions: discord.PermissionManageMessages,
+
+		Command: b.embedTo,
+	})
+
+	list = append(list, echo, embed)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "makeinvite",
