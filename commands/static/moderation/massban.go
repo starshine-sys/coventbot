@@ -52,11 +52,11 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 
 	yes, timeout := ctx.YesNoHandler(*msg, ctx.Author.ID)
 	if timeout {
-		_, err = ctx.Send(":x: Timed out.", nil)
+		_, err = ctx.Send("Timed out.", nil)
 		return
 	}
 	if !yes {
-		_, err = ctx.Send(":x: Massban cancelled.", nil)
+		_, err = ctx.Send("Massban cancelled.", nil)
 	}
 
 	ctx.State.DeleteMessage(msg.ChannelID, msg.ID)

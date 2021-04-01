@@ -219,7 +219,7 @@ Supported options:
 	if file {
 		_, err = ctx.NewMessage().AddFile("members.txt", strings.NewReader(strings.Join(members, ""))).Send()
 		if err == bcr.ErrBotMissingPermissions {
-			_, err = ctx.Send(":x: I can't attach files in this channel.", nil)
+			_, err = ctx.Send("I can't attach files in this channel.", nil)
 			return
 		}
 		return

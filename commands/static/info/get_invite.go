@@ -34,23 +34,24 @@ func (bot *Bot) inviteInfo(ctx *bcr.Context) (err error) {
 			URL: g.Guild.IconURL(),
 		},
 
-		Fields: []discord.EmbedField{
-			{
-				Name:   "Created by",
-				Value:  fmt.Sprintf("%v#%v\n%v\nID: %v", g.Inviter.Username, g.Inviter.Discriminator, g.Inviter.Mention(), g.Inviter.ID),
-				Inline: true,
-			},
-			{
-				Name:   "Members",
-				Value:  fmt.Sprintf("👥 %v\n<:online2:826545116838756412> %v", g.ApproximateMembers, g.ApproximatePresences),
-				Inline: true,
-			},
-		},
-
 		Footer: &discord.EmbedFooter{
 			Text: fmt.Sprintf("Invite code: %v", g.Code),
 		},
 	}
+
+	if g.Inviter != nil {
+		e.Fields = append(e.Fields, discord.EmbedField{
+			Name:   "Created by",
+			Value:  fmt.Sprintf("%v#%v\n%v\nID: %v", g.Inviter.Username, g.Inviter.Discriminator, g.Inviter.Mention(), g.Inviter.ID),
+			Inline: true,
+		})
+	}
+
+	e.Fields = append(e.Fields, discord.EmbedField{
+		Name:   "Members",
+		Value:  fmt.Sprintf("👥 %v\n<:online2:826545116838756412> %v", g.ApproximateMembers, g.ApproximatePresences),
+		Inline: true,
+	})
 
 	_, err = ctx.Send("", &e)
 	return

@@ -10,7 +10,7 @@ func (bot *Bot) prefix(ctx *bcr.Context) (err error) {
 	if len(ctx.Args) == 0 {
 		prefixes, err := bot.DB.Prefixes(ctx.Message.GuildID)
 		if err != nil {
-			_, err = ctx.Sendf(":x: Error occurred:\n```%v```", err)
+			_, err = ctx.Sendf("Error occurred:\n```%v```", err)
 			return err
 		}
 
@@ -34,7 +34,7 @@ func (bot *Bot) prefix(ctx *bcr.Context) (err error) {
 
 	err = bot.DB.SetPrefixes(ctx.Message.GuildID, ctx.Args)
 	if err != nil {
-		_, err = ctx.Sendf(":x: Error occurred:\n```%v```", err)
+		_, err = ctx.Sendf("Error occurred:\n```%v```", err)
 		return
 	}
 

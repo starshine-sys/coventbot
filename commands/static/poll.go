@@ -19,7 +19,7 @@ func (bot *Bot) poll(ctx *bcr.Context) (err error) {
 	question := ctx.Args[0]
 	options := ctx.Args[1:]
 	if len(options) > 10 {
-		_, err = ctx.Send(":x: Too many options, maximum 10.", nil)
+		_, err = ctx.Send("Too many options, maximum 10.", nil)
 		return err
 	}
 
@@ -29,11 +29,11 @@ func (bot *Bot) poll(ctx *bcr.Context) (err error) {
 	}
 
 	if len(desc) > 2048 {
-		_, err = ctx.Send(":x: Embed description too long.", nil)
+		_, err = ctx.Send("Embed description too long.", nil)
 		return err
 	}
 	if len(question) > 256 {
-		_, err = ctx.Send(":x: Question too long (maximum 256 characters)", nil)
+		_, err = ctx.Send("Question too long (maximum 256 characters)", nil)
 		return err
 	}
 

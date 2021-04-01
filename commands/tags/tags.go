@@ -1,6 +1,8 @@
 package tags
 
 import (
+	"context"
+
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -9,6 +11,35 @@ import (
 // Bot ...
 type Bot struct {
 	*bot.Bot
+}
+
+func (Bot) String() string {
+	return "Tag moderator"
+}
+
+// Check ...
+func (bot *Bot) Check(ctx *bcr.Context) (b bool, err error) {
+	var id discord.RoleID
+	err = bot.DB.Pool.QueryRow(context.Background(), "select tag_mod_role from servers where id = $1", ctx.Message.GuildID).Scan(&id)
+	if err != nil {
+		return false, err
+	}
+
+	if !id.IsValid() {
+		return true, nil
+	}
+
+	if ctx.Member == nil {
+		return false, nil
+	}
+
+	for _, r := range ctx.Member.RoleIDs {
+		if r == id {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
 
 // Init ...
@@ -41,10 +72,56 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<name>\n<response>",
 		Args:    bcr.MinArgs(1),
 
-		GuildOnly:   true,
-		Permissions: discord.PermissionManageMessages,
+		GuildOnly:         true,
+		CustomPermissions: b,
+		Command:           b.addTag,
+	})
 
-		Command: b.addTag,
+	tag.AddSubcommand(&bcr.Command{
+		Name:    "edit",
+		Summary: "Edit an existing tag.",
+		Usage:   "<name>\n<response>",
+		Args:    bcr.MinArgs(1),
+
+		GuildOnly:         true,
+		CustomPermissions: b,
+		Command:           b.editTag,
+	})
+
+	tag.AddSubcommand(&bcr.Command{
+		Name:    "delete",
+		Summary: "Delete a tag.",
+		Usage:   "<name>",
+		Args:    bcr.MinArgs(1),
+
+		GuildOnly:         true,
+		CustomPermissions: b,
+		Command:           b.deleteTag,
+	})
+
+	tag.AddSubcommand(&bcr.Command{
+		Name:    "info",
+		Summary: "Show info on a tag.",
+		Usage:   "<name>",
+		Args:    bcr.MinArgs(1),
+
+		GuildOnly: true,
+		Command:   b.info,
+	})
+
+	tag.AddSubcommand(&bcr.Command{
+		Name:    "role",
+		Aliases: []string{"moderator"},
+		Summary: "Restrict creating, editing, and deleting tags to a single role.",
+		Description: `Restrict creating, editing, and deleting tags to a single role. If this is not set, anyone will be able to create, edit, or delete tags.
+		
+Tag ownership is bypassed completely with this setting. If there is no mod role set, only the creator of a tag, and anyone with the manage server permission, can edit or delete it.`,
+		Usage: "[new role|-clear]",
+
+		GuildOnly:   true,
+		Permissions: discord.PermissionManageGuild,
+
+		Command: b.tagModerator,
 	})
 
 	tag.AddSubcommand(b.Router.AliasMust("list", nil, []string{"tags"}, nil))

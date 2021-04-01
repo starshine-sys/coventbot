@@ -23,10 +23,10 @@ func (bot *Bot) bubble(ctx *bcr.Context) (err error) {
 	}
 
 	if size > 13 {
-		_, err = ctx.Sendf(":x: A size of %v is too large, maximum 13.", size)
+		_, err = ctx.Sendf("A size of %v is too large, maximum 13.", size)
 		return
 	} else if size < 1 {
-		_, err = ctx.Sendf(":x: A size of %v is too small, minimum 1.", size)
+		_, err = ctx.Sendf("A size of %v is too small, minimum 1.", size)
 		return
 	}
 

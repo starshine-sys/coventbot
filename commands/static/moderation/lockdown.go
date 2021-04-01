@@ -11,12 +11,12 @@ func (bot *Bot) lockdown(ctx *bcr.Context) (err error) {
 	if len(ctx.RawArgs) > 0 {
 		ch, err = ctx.ParseChannel(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send(":x: Could not find that channel!", nil)
+			_, err = ctx.Send("Could not find that channel!", nil)
 			return
 		}
 	}
 	if ch.GuildID != ctx.Message.GuildID {
-		_, err = ctx.Send(":x: That channel is not in this server.", nil)
+		_, err = ctx.Send("That channel is not in this server.", nil)
 		return
 	}
 
@@ -28,7 +28,7 @@ func (bot *Bot) lockdown(ctx *bcr.Context) (err error) {
 
 	// if we don't have perms, return
 	if !perms.Has(discord.PermissionManageRoles) {
-		_, err = ctx.Sendf(":x: I do not have the **Manage Roles** permission in %v.", ch.Mention())
+		_, err = ctx.Sendf("I do not have the **Manage Roles** permission in %v.", ch.Mention())
 		return
 	}
 

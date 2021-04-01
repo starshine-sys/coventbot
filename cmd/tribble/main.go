@@ -12,6 +12,7 @@ import (
 	bcrbot "github.com/starshine-sys/bcr/bot"
 	"github.com/starshine-sys/tribble/approval"
 	"github.com/starshine-sys/tribble/bot"
+	"github.com/starshine-sys/tribble/commands/admin"
 	"github.com/starshine-sys/tribble/commands/config"
 	"github.com/starshine-sys/tribble/commands/static"
 	"github.com/starshine-sys/tribble/commands/static/moderation"
@@ -75,6 +76,8 @@ func main() {
 	bot.Add(approval.Init)
 	// add logging
 	bot.Add(names.Init)
+	// add admin commands
+	bot.Add(admin.Init)
 
 	// connect to discord
 	if err := bot.Start(); err != nil {

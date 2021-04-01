@@ -13,19 +13,19 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 
 	if !ctx.Message.GuildID.IsValid() {
 		if len(ctx.Args) < 1 {
-			_, err = ctx.Send(":x: No server ID provided!", nil)
+			_, err = ctx.Send("No server ID provided!", nil)
 			return
 		}
 		guildID, err = discord.ParseSnowflake(ctx.Args[0])
 		if err != nil {
-			_, err = ctx.Send(":x: No valid server ID provided!", nil)
+			_, err = ctx.Send("No valid server ID provided!", nil)
 			return
 		}
 	}
 
 	tags, err := bot.DB.Tags(discord.GuildID(guildID))
 	if err != nil {
-		_, err = ctx.Send(":x: Internal error occurred.", nil)
+		_, err = ctx.Send("Internal error occurred.", nil)
 		return
 	}
 
@@ -40,11 +40,22 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 	// we need to grab the server name
 	g, err := ctx.State.Guild(discord.GuildID(guildID))
 	if err != nil {
-		_, err = ctx.Send(":x: I'm not in the given server, so it has no tags.", nil)
+		_, err = ctx.Send("I'm not in the given server, so it has no tags.", nil)
 		return
 	}
 
-	_, err = ctx.NewDM(ctx.Author.ID).Content(fmt.Sprintf("Check out `%vhelp` for a list of built-in commands.\n**%v** has the following tags:", ctx.Router.Prefixes[0], g.Name)).Send()
+	prefixes, err := bot.DB.Prefixes(discord.GuildID(guildID))
+	if err != nil || len(prefixes) == 0 {
+		prefixes = ctx.Router.Prefixes[:len(ctx.Router.Prefixes)-2]
+	}
+
+	s := fmt.Sprintf(`**%v**
+Check out `+"`%vhelp`"+` for a list of built-in commands.
+This server's prefixes are: %v
+
+This server has the following tags:`, g.Name, prefixes[0], strings.Join(prefixes, ", "))
+
+	_, err = ctx.NewDM(ctx.Author.ID).Content(s).Send()
 	if err != nil {
 		return err
 	}

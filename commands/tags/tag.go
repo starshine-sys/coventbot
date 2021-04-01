@@ -7,7 +7,7 @@ import (
 func (bot *Bot) tag(ctx *bcr.Context) (err error) {
 	t, err := bot.DB.GetTag(ctx.Message.GuildID, ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send(":x: No tag with that name found.", nil)
+		_, err = ctx.Send("No tag with that name found.", nil)
 		return
 	}
 
