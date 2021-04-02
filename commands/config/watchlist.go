@@ -1,7 +1,9 @@
 package config
 
 import (
+	"context"
 	"fmt"
+	"strings"
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
@@ -53,6 +55,12 @@ func (bot *Bot) watchlistRemove(ctx *bcr.Context) (err error) {
 		return
 	}
 
+	_, err = bot.DB.Pool.Exec(context.Background(), "delete from watch_list_reasons where user_id = $1 and server_id = $2", u.ID, ctx.Message.GuildID)
+	if err != nil {
+		_, err = ctx.Sendf("Error: %v", err)
+		return
+	}
+
 	_, err = ctx.Sendf("Removed %v / **%v#%v** from the watchlist.", u.Mention(), u.Username, u.Discriminator)
 	return
 }
@@ -81,5 +89,42 @@ func (bot *Bot) watchlistAdd(ctx *bcr.Context) (err error) {
 	}
 
 	_, err = ctx.Sendf("Added %v / **%v#%v** to the watchlist.", u.Mention(), u.Username, u.Discriminator)
+	return
+}
+
+func (bot *Bot) watchlistReason(ctx *bcr.Context) (err error) {
+	u, err := ctx.ParseUser(ctx.Args[0])
+	if err != nil {
+		_, err = ctx.Send("I could not find that user.", nil)
+		return
+	}
+
+	if len(ctx.Args) == 1 {
+		var reason string
+		bot.DB.Pool.QueryRow(context.Background(), "select reason from watch_list_reasons where user_id = $1 and server_id = $2", u.ID, ctx.Message.GuildID).Scan(&reason)
+		if reason == "" {
+			_, err = ctx.Send("There is no reason set for that user.", nil)
+			return
+		}
+
+		_, err = ctx.Sendf("Reason for %v#%v:\n> %v", u.Username, u.Discriminator, reason)
+		return
+	}
+
+	// if the user isn't on the watch list, return
+	if !bot.DB.IsWatchlisted(ctx.Message.GuildID, u.ID) {
+		_, err = ctx.Sendf("That user isn't on the watchlist.", nil)
+		return
+	}
+
+	reason := strings.TrimSpace(strings.TrimPrefix(ctx.RawArgs, ctx.Args[0]))
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "insert into watch_list_reasons (user_id, server_id, reason) values ($1, $2, $3) on conflict (user_id, server_id) do update set reason = $3", u.ID, ctx.Message.GuildID, reason)
+	if err != nil {
+		_, err = ctx.Sendf("Error: %v", err)
+		return
+	}
+
+	_, err = ctx.Sendf("Updated watchlist reason for %v#%v.", u.Username, u.Discriminator)
 	return
 }

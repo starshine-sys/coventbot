@@ -75,6 +75,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.watchlistRemove,
 	})
 
+	wl.AddSubcommand(&bcr.Command{
+		Name:    "reason",
+		Summary: "Set the reason for a user on the watchlist.",
+		Usage:   "[user ID] [reason]",
+
+		Args:        bcr.MinArgs(1),
+		Permissions: discord.PermissionKickMembers,
+		Command:     b.watchlistReason,
+	})
+
 	sb := b.Router.AddCommand(&bcr.Command{
 		Name:    "starboard",
 		Summary: "View or change this server's starboard settings.",

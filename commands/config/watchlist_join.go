@@ -44,6 +44,16 @@ func (bot *Bot) watchlistMemberAdd(m *gateway.GuildMemberAddEvent) {
 		Timestamp: discord.NowTimestamp(),
 	}
 
+	var reason string
+	bot.DB.Pool.QueryRow(context.Background(), "select reason from watch_list_reasons where user_id = $1 and server_id = $2", m.User.ID, m.GuildID).Scan(&reason)
+
+	if reason != "" {
+		e.Fields = append(e.Fields, discord.EmbedField{
+			Name:  "Reason",
+			Value: reason,
+		})
+	}
+
 	_, err = bot.State.SendEmbed(ch, e)
 	if err != nil {
 		bot.Sugar.Errorf("Error sending watch list warning: %v", err)
