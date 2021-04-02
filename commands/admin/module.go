@@ -18,7 +18,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "guild",
-		Summary: "Show info for the given server ID",
+		Summary: "Show info for the given server ID.",
 		Usage:   "<ID>",
 		Args:    bcr.MinArgs(1),
 
@@ -26,6 +26,28 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		OwnerOnly: true,
 		Command:   b.serverInfo,
 	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "status",
+		Summary: "Set the bot's status.",
+		Usage:   "[new status]",
+
+		Hidden:    true,
+		OwnerOnly: true,
+		Command:   b.status,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "activity",
+		Summary: "Set the bot's activity.",
+		Usage:   "[type] [new activity]",
+
+		Hidden:    true,
+		OwnerOnly: true,
+		Command:   b.activity,
+	}))
+
+	b.State.AddHandler(b.ready)
 
 	return
 }
