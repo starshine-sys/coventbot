@@ -26,14 +26,38 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.members,
 	}))
 
-	list = append(list, b.Router.AddCommand(&bcr.Command{
-		Name:    "roledump",
-		Aliases: []string{"role-dump"},
+	roles := b.Router.AddCommand(&bcr.Command{
+		Name:    "role",
+		Summary: "Role info and management commands.",
+
+		Command: func(ctx *bcr.Context) (err error) {
+			return nil
+		},
+	})
+
+	roles.AddSubcommand(&bcr.Command{
+		Name:    "dump",
 		Summary: "Show a list of *all* roles with permissions and basic information.",
 
 		Permissions: discord.PermissionManageRoles,
 		Command:     b.roleDump,
-	}))
+	})
+
+	roles.AddSubcommand(&bcr.Command{
+		Name:    "create",
+		Aliases: []string{"add"},
+		Summary: "Create a role.",
+		Usage:   "<name> [colour] [-h: hoist] [-m: mentionable]",
+
+		Permissions: discord.PermissionManageRoles,
+		Command:     b.roleCreate,
+	})
+
+	roles.AddSubcommand(
+		b.Router.AliasMust("info", nil, []string{"roleinfo"}, nil),
+	)
+
+	list = append(list, roles)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "massban",
