@@ -22,6 +22,7 @@ func (bot *Bot) members(ctx *bcr.Context) (err error) {
 
 		format     string
 		enkoFormat bool
+		code       bool
 
 		file bool
 	)
@@ -51,6 +52,7 @@ Supported options:
 	fs.BoolVarP(&humans, "humans", "h", false, "Shows only humans")
 	fs.BoolVarP(&bots, "bots", "b", false, "Shows only bots")
 	fs.BoolVarP(&enkoFormat, "enko-format", "E", false, "Use EnkoMojishia's format for the member list.")
+	fs.BoolVarP(&code, "code", "B", false, "Output as a code block (only in embeds).")
 	fs.BoolVarP(&file, "file", "F", false, "Output to a file instead of a paginated embed.")
 
 	fs.Parse(ctx.Args)
@@ -62,7 +64,7 @@ Supported options:
 			usage += fmt.Sprintf("[-%v %v] ", f.Shorthand, f.Value.Type())
 
 			b.WriteString(
-				fmt.Sprintf("`--%v` (`-%v`): %v\n\n", f.Name, f.Shorthand, f.Usage),
+				fmt.Sprintf("`-%v, --%v`: %v\n", f.Shorthand, f.Name, f.Usage),
 			)
 		})
 
@@ -203,14 +205,22 @@ Supported options:
 			nick = "no nickname"
 		}
 
-		members = append(members, strings.NewReplacer(
-			"%in", fmt.Sprint(i+1),
-			"%id", m.User.ID.String(),
-			"%u", m.User.Username,
-			"%d", m.User.Discriminator,
-			"%n", nick,
-			"%m", m.Mention(),
-		).Replace(format+"\n"))
+		if !enkoFormat {
+			members = append(members, strings.NewReplacer(
+				"%in", fmt.Sprint(i+1),
+				"%id", m.User.ID.String(),
+				"%u", m.User.Username,
+				"%d", m.User.Discriminator,
+				"%n", nick,
+				"%m", m.Mention(),
+			).Replace(format+"\n"))
+		} else {
+			s := fmt.Sprintf("%v. %v#%v (%v)\n", i+1, m.User.Username, m.User.Discriminator, m.User.ID)
+			if m.Nick != "" {
+				s += fmt.Sprintf("  - %v\n", m.Nick)
+			}
+			members = append(members, s)
+		}
 	}
 	if len(gm) == 0 {
 		members = append(members, "No results.")
@@ -232,9 +242,16 @@ Supported options:
 		for _, m := range members {
 			count++
 			if b.Len()+len(m) > 2000 || count > 25 {
+				var desc string
+				if enkoFormat || code {
+					desc = "```py\n" + b.String() + "\n```"
+				} else {
+					desc = b.String()
+				}
+
 				embeds = append(embeds, discord.Embed{
 					Title:       "Members",
-					Description: b.String(),
+					Description: desc,
 					Fields: []discord.EmbedField{{
 						Name:  "Query",
 						Value: "```" + ctx.RawArgs + "```",
@@ -250,9 +267,16 @@ Supported options:
 		}
 	}
 
+	var desc string
+	if enkoFormat || code {
+		desc = "```py\n" + b.String() + "\n```"
+	} else {
+		desc = b.String()
+	}
+
 	embeds = append(embeds, discord.Embed{
 		Title:       "Members",
-		Description: b.String(),
+		Description: desc,
 		Fields: []discord.EmbedField{{
 			Name:  "Query",
 			Value: "```" + ctx.RawArgs + "```",
