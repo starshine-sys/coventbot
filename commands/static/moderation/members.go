@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	flag "github.com/spf13/pflag"
 
@@ -46,7 +47,9 @@ Supported options:
 - %u: username
 - %d: discriminator
 - %n: nickname
-- %m: mention`)
+- %m: mention
+- %cd: creation date
+- %jd: join date`)
 
 	fs.BoolVarP(&count, "count", "c", false, "Shows a member count instead of a member list")
 	fs.BoolVarP(&humans, "humans", "h", false, "Shows only humans")
@@ -213,6 +216,8 @@ Supported options:
 				"%d", m.User.Discriminator,
 				"%n", nick,
 				"%m", m.Mention(),
+				"%cd", m.User.ID.Time().UTC().Format(time.RFC1123),
+				"%jd", m.Joined.Time().UTC().Format(time.RFC1123),
 			).Replace(format+"\n"))
 		} else {
 			s := fmt.Sprintf("%v. %v#%v (%v)\n", i+1, m.User.Username, m.User.Discriminator, m.User.ID)
