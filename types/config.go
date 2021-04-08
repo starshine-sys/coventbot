@@ -10,7 +10,7 @@ type BotConfig struct {
 	Prefixes []string
 	Owners   []discord.UserID
 
-	GuildLogWebhook *Webhook `yaml:"guild_log"`
+	GuildLogWebhook Webhook `yaml:"guild_log"`
 
 	VerifyListen    string `yaml:"verify_listen"`
 	VerifyBaseURL   string `yaml:"verify_base_url"`
@@ -23,6 +23,13 @@ type BotConfig struct {
 		Private  bool
 		PublicID discord.UserID `yaml:"public_id"`
 	}
+
+	DMs struct {
+		Open    bool
+		Webhook Webhook
+
+		BlockedUsers []discord.UserID `yaml:"blocked_users"`
+	} `yaml:"dms"`
 }
 
 // Webhook is a single webhook config

@@ -53,7 +53,7 @@ func New(
 		Config: config,
 	}
 
-	if config.GuildLogWebhook != nil {
+	if config.GuildLogWebhook.ID.IsValid() {
 		b.GuildLogWebhook = webhook.New(config.GuildLogWebhook.ID, config.GuildLogWebhook.Token)
 	}
 
