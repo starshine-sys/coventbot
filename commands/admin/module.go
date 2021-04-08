@@ -49,6 +49,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "dm",
+		Aliases: []string{"dmuser", "admindm"},
 		Summary: "DM the given user a text-only message.",
 		Usage:   "<user> <message>",
 
