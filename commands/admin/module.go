@@ -47,6 +47,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:   b.activity,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "dm",
+		Summary: "DM the given user a text-only message.",
+		Usage:   "<user> <message>",
+
+		Hidden:    true,
+		OwnerOnly: true,
+		Command:   b.dm,
+	}))
+
 	b.State.AddHandler(b.ready)
 
 	return
