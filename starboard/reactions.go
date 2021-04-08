@@ -11,6 +11,10 @@ import (
 
 // MessageReactionAdd ...
 func (bot *Bot) MessageReactionAdd(ev *gateway.MessageReactionAddEvent) {
+	if !ev.GuildID.IsValid() {
+		return
+	}
+
 	if bot.mu[ev.MessageID] == nil {
 		bot.mu[ev.MessageID] = &sync.Mutex{}
 	}
@@ -38,6 +42,10 @@ func (bot *Bot) MessageReactionAdd(ev *gateway.MessageReactionAddEvent) {
 
 // MessageReactionDelete ...
 func (bot *Bot) MessageReactionDelete(ev *gateway.MessageReactionRemoveEvent) {
+	if !ev.GuildID.IsValid() {
+		return
+	}
+
 	if bot.mu[ev.MessageID] == nil {
 		bot.mu[ev.MessageID] = &sync.Mutex{}
 	}
@@ -54,6 +62,10 @@ func (bot *Bot) MessageReactionDelete(ev *gateway.MessageReactionRemoveEvent) {
 
 // MessageReactionRemoveEmoji ...
 func (bot *Bot) MessageReactionRemoveEmoji(ev *gateway.MessageReactionRemoveEmojiEvent) {
+	if !ev.GuildID.IsValid() {
+		return
+	}
+
 	if bot.mu[ev.MessageID] == nil {
 		bot.mu[ev.MessageID] = &sync.Mutex{}
 	}
@@ -88,6 +100,10 @@ func (bot *Bot) MessageReactionRemoveEmoji(ev *gateway.MessageReactionRemoveEmoj
 
 // MessageReactionRemoveAll ...
 func (bot *Bot) MessageReactionRemoveAll(ev *gateway.MessageReactionRemoveAllEvent) {
+	if !ev.GuildID.IsValid() {
+		return
+	}
+
 	if bot.mu[ev.MessageID] == nil {
 		bot.mu[ev.MessageID] = &sync.Mutex{}
 	}
