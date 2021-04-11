@@ -65,6 +65,8 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 	permString := strings.Join(perms, ", ")
 	if len(permString) > 1000 {
 		permString = permString[:1000] + "..."
+	} else if permString == "" {
+		permString = "No special permissions"
 	}
 	var b strings.Builder
 	for i, r := range rls {
