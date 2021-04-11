@@ -21,6 +21,7 @@ import (
 	"github.com/starshine-sys/tribble/etc"
 	"github.com/starshine-sys/tribble/gatekeeper"
 	"github.com/starshine-sys/tribble/names"
+	"github.com/starshine-sys/tribble/pklog"
 	"github.com/starshine-sys/tribble/starboard"
 	"go.uber.org/zap"
 )
@@ -76,6 +77,8 @@ func main() {
 	bot.Add(approval.Init)
 	// add logging
 	bot.Add(names.Init)
+	// add PK logging
+	bot.Add(pklog.Init)
 	// add admin commands
 	bot.Add(admin.Init)
 
@@ -96,6 +99,7 @@ func main() {
 
 	botUser, _ := bot.Router.State.Me()
 	sugar.Infof("User: %v#%v (%v)", botUser.Username, botUser.Discriminator, botUser.ID)
+	bot.Router.Bot = botUser
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
