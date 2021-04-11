@@ -7,6 +7,8 @@ type BotConfig struct {
 	Token       string
 	DatabaseURL string `yaml:"database_url"`
 
+	AESKey string `yaml:"aes_key"`
+
 	Prefixes []string
 	Owners   []discord.UserID
 

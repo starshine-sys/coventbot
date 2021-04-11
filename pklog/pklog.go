@@ -15,13 +15,18 @@ type Bot struct {
 	*bot.Bot
 
 	WebhookCache *ttlcache.Cache
+
+	AESKey [32]byte
 }
 
 // Init ...
 func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	s = "PluralKit logging"
 
-	b := &Bot{Bot: bot}
+	b := &Bot{
+		Bot: bot,
+	}
+	copy(b.AESKey[:], bot.Config.AESKey)
 
 	b.WebhookCache = ttlcache.NewCache()
 	b.WebhookCache.SetCacheSizeLimit(2000)

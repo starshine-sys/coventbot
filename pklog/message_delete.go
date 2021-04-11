@@ -21,6 +21,11 @@ func (bot *Bot) messageDelete(m *gateway.MessageDeleteEvent) {
 	// try getting the message
 	msg, err := bot.Get(m.ID)
 	if err != nil {
+		if err == ErrNotExists {
+			return
+		}
+
+		bot.Sugar.Errorf("Error getting message: %v", err)
 		return
 	}
 
