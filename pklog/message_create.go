@@ -1,91 +1,52 @@
 package pklog
 
 import (
-	"context"
-	"regexp"
+	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/starshine-sys/pkgo"
 )
 
-var botsToCheck = []discord.UserID{466378653216014359}
+var pk = pkgo.NewSession(nil)
 
-var (
-	linkRegex   = regexp.MustCompile(`^https:\/\/discord.com\/channels\/\d+\/(\d+)\/\d+$`)
-	footerRegex = regexp.MustCompile(`^System ID: (\w{5,6}) \| Member ID: (\w{5,6}) \| Sender: .+ \((\d+)\) \| Message ID: (\d+) \| Original Message ID: \d+$`)
-)
-
-func (bot *Bot) pkMessageCreate(m *gateway.MessageCreateEvent) {
-	var shouldLog bool
-	bot.DB.Pool.QueryRow(context.Background(), "select (pk_log_channel != 0) from servers where id = $1", m.GuildID).Scan(&shouldLog)
-	if !shouldLog {
+// messageCreate is used as a backup for pkMessageCreate in case proxy logging isn't enabled.
+func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
+	// only check webhook messages
+	if !m.WebhookID.IsValid() {
 		return
 	}
 
-	// only handle PK message events
-	var isPK bool
-	for _, u := range botsToCheck {
-		if m.Author.ID == u {
-			isPK = true
-			break
-		}
-	}
-	if !isPK {
+	// wait 5 seconds
+	time.Sleep(5 * time.Second)
+
+	// check if the message exists in the database; if so, return
+	_, err := bot.Get(m.ID)
+	if err == nil {
 		return
 	}
 
-	// only handle events that are *probably* a log message
-	if len(m.Embeds) == 0 || !linkRegex.MatchString(m.Content) {
-		return
-	}
-	if m.Embeds[0].Footer == nil {
-		return
-	}
-	if !footerRegex.MatchString(m.Embeds[0].Footer.Text) {
-		return
-	}
-
-	groups := footerRegex.FindStringSubmatch(m.Embeds[0].Footer.Text)
-
-	var (
-		sysID     = groups[1]
-		memberID  = groups[2]
-		userID    discord.UserID
-		msgID     discord.MessageID
-		channelID discord.ChannelID
-	)
-
-	{
-		sf, _ := discord.ParseSnowflake(groups[3])
-		userID = discord.UserID(sf)
-		sf, _ = discord.ParseSnowflake(groups[4])
-		msgID = discord.MessageID(sf)
-		sf, _ = discord.ParseSnowflake(linkRegex.FindStringSubmatch(m.Content)[1])
-		channelID = discord.ChannelID(sf)
-	}
-
-	// get full message
-	msg, err := bot.State.Message(channelID, msgID)
+	pkm, err := pk.GetMessage(m.ID.String())
 	if err != nil {
-		bot.Sugar.Errorf("Error retrieving original message: %v", err)
+		// Message is either not proxied or we got an error from the PK API. Either way, return
 		return
 	}
 
-	dbMsg := Message{
-		MsgID:     msgID,
-		UserID:    userID,
-		ChannelID: channelID,
+	u, _ := discord.ParseSnowflake(pkm.Sender)
+
+	msg := Message{
+		MsgID:     m.ID,
+		UserID:    discord.UserID(u),
+		ChannelID: m.ChannelID,
 		ServerID:  m.GuildID,
 
-		Username: msg.Author.Username,
-		Member:   memberID,
-		System:   sysID,
+		Username: m.Author.Username,
+		Member:   pkm.Member.ID,
+		System:   pkm.System.ID,
 
-		Content: msg.Content,
+		Content: m.Content,
 	}
 
-	err = bot.Insert(dbMsg)
-	if err != nil {
-		bot.Sugar.Errorf("Error inserting message %v: %v", msgID, err)
-	}
+	// insert the message, ignore errors as those shouldn't impact anything
+	bot.Insert(msg)
 }

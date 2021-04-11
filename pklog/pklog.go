@@ -33,6 +33,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	b.WebhookCache.SetTTL(1 * time.Hour)
 
 	b.State.AddHandler(b.pkMessageCreate)
+	b.State.AddHandler(b.messageCreate)
 	b.State.AddHandler(b.messageDelete)
 
 	c := b.Router.AddCommand(&bcr.Command{
