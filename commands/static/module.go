@@ -74,6 +74,13 @@ If a message link is given as input, and the message has multiple emotes in it, 
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "meow",
+		Summary: "Send a random meowmoji.",
+
+		Command: b.meow,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "roll",
 		Aliases: []string{"dice"},
 		Summary: "Roll dice, defaults to 1d20.",
