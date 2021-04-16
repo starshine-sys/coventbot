@@ -1,6 +1,7 @@
 package pklog
 
 import (
+	"context"
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -12,6 +13,12 @@ var pk = pkgo.NewSession(nil)
 
 // messageCreate is used as a backup for pkMessageCreate in case proxy logging isn't enabled.
 func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
+	var shouldLog bool
+	bot.DB.Pool.QueryRow(context.Background(), "select (pk_log_channel != 0) from servers where id = $1", m.GuildID).Scan(&shouldLog)
+	if !shouldLog {
+		return
+	}
+
 	// only check webhook messages
 	if !m.WebhookID.IsValid() {
 		return
