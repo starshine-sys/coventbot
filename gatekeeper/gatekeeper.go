@@ -32,6 +32,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		HCaptcha:   hcaptcha.New(bot.Config.HCaptchaSecret),
 	}
 
+	b.httpRouter.ServeFiles("/style/*filepath", http.Dir("../../gatekeeper/style"))
 	b.httpRouter.GET("/gatekeeper/:uuid", b.GatekeeperGET)
 	b.httpRouter.POST("/verify", b.VerifyPOST)
 
