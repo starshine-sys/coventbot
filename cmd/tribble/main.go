@@ -92,6 +92,7 @@ func main() {
 		db.Pool.Close()
 		sugar.Info("Closed database connection.")
 		bot.Router.State.Close()
+		bot.Router.State.Gateway.Close()
 		sugar.Info("Disconnected from Discord.")
 	}()
 

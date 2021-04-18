@@ -72,13 +72,23 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:   b.serverInfo,
 	}))
 
-	list = append(list, b.Router.AddCommand(&bcr.Command{
+	help := b.Router.AddCommand(&bcr.Command{
 		Name:    "help",
-		Summary: "Show a list of commands, or info about a specific command.",
+		Summary: "Show info about the bot, or info about a specific command.",
 		Usage:   "[command]",
 
+		Command: b.help,
+	})
+
+	help.AddSubcommand(&bcr.Command{
+		Name:    "commands",
+		Aliases: []string{"cmds"},
+		Summary: "Show a list of all commands.",
+
 		Command: b.CommandList,
-	}))
+	})
+
+	list = append(list, help)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "avatar",

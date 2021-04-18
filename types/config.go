@@ -24,6 +24,8 @@ type BotConfig struct {
 
 		Private  bool
 		PublicID discord.UserID `yaml:"public_id"`
+
+		SupportServer string `yaml:"support_server"`
 	}
 
 	DMs struct {
