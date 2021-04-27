@@ -35,7 +35,7 @@ func (bot *Bot) inviteInfo(ctx *bcr.Context) (err error) {
 		},
 
 		Footer: &discord.EmbedFooter{
-			Text: fmt.Sprintf("Invite code: %v", g.Code),
+			Text: fmt.Sprintf("Server ID: %v", g.Guild.ID),
 		},
 	}
 
