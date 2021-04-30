@@ -13,8 +13,7 @@ func (bot *Bot) tagModerator(ctx *bcr.Context) (err error) {
 		var id discord.RoleID
 		err = bot.DB.Pool.QueryRow(context.Background(), "select tag_mod_role from servers where id = $1", ctx.Message.GuildID).Scan(&id)
 		if err != nil {
-			_, err = ctx.Sendf("Internal error occurred: %v", err)
-			return
+			return bot.Report(ctx, err)
 		}
 
 		s := "There is currently no tag mod role set. Anyone can create, edit, and delete tags."

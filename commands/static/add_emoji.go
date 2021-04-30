@@ -85,15 +85,13 @@ url:
 
 	resp, err := http.Get(url)
 	if err != nil {
-		_, err = ctx.Sendf("Internal error occurred:\n```%v```", err)
-		return err
+		return bot.Report(ctx, err)
 	}
 	defer resp.Body.Close()
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		_, err = ctx.Sendf("Internal error occurred:\n```%v```", err)
-		return err
+		return bot.Report(ctx, err)
 	}
 
 	if len(ctx.Args) > 1 {

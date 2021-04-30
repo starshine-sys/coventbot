@@ -10,8 +10,7 @@ func (bot *Bot) agree(ctx *bcr.Context) (err error) {
 	settings, err := bot.serverSettings(ctx.Message.GuildID)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting server settings: %v", err)
-		_, err = ctx.Send("Internal error occurred.", nil)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if !settings.MemberRole.IsValid() {
@@ -27,8 +26,7 @@ func (bot *Bot) agree(ctx *bcr.Context) (err error) {
 	p, err := bot.pendingUser(ctx.Message.GuildID, ctx.Author.ID)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting user: %v", err)
-		_, err = ctx.Send("Internal error occurred.", nil)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	url := fmt.Sprintf("%v/gatekeeper/%v", bot.Config.VerifyBaseURL, p.Key)

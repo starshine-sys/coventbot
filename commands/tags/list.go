@@ -25,8 +25,7 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 
 	tags, err := bot.DB.Tags(discord.GuildID(guildID))
 	if err != nil {
-		_, err = ctx.Send("Internal error occurred.", nil)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	var tagNames []string

@@ -35,8 +35,7 @@ func (bot *Bot) embedSource(ctx *bcr.Context) (err error) {
 	for _, e := range msg.Embeds {
 		b, err := json.MarshalIndent(e, "", "    ")
 		if err != nil {
-			_, err = ctx.Sendf("Internal error: %v", err)
-			return err
+			return bot.Report(ctx, err)
 		}
 		embedJSON = append(embedJSON, b)
 	}

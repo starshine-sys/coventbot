@@ -25,8 +25,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 	// get guild
 	g, err := ctx.State.Guild(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Internal error occurred:\n```%v```", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	// filter the roles to only the ones the user has
