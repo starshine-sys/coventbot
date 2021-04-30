@@ -36,8 +36,7 @@ Available values are:
 
 	err = bot.SetSettings(s)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	bot.updateStatus()

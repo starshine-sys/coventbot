@@ -16,8 +16,7 @@ func (bot *Bot) approve(ctx *bcr.Context) (err error) {
 
 	s, err := bot.serverSettings(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if len(s.ApproveAddRoles) == 0 {
@@ -28,15 +27,13 @@ func (bot *Bot) approve(ctx *bcr.Context) (err error) {
 	for _, r := range s.ApproveAddRoles {
 		err = bot.State.AddRole(ctx.Message.GuildID, m.User.ID, discord.RoleID(r))
 		if err != nil {
-			_, err = ctx.Sendf("Error adding role: %v", err)
-			return
+			return bot.Report(ctx, err)
 		}
 	}
 	for _, r := range s.ApproveRemoveRoles {
 		err = bot.State.RemoveRole(ctx.Message.GuildID, m.User.ID, discord.RoleID(r))
 		if err != nil {
-			_, err = ctx.Sendf("Erorr removing role: %v", err)
-			return
+			return bot.Report(ctx, err)
 		}
 	}
 
@@ -45,7 +42,7 @@ func (bot *Bot) approve(ctx *bcr.Context) (err error) {
 			strings.NewReplacer("{mention}", m.Mention()).Replace(s.ApproveWelcomeMessage),
 		).Send()
 		if err != nil {
-			_, err = ctx.Sendf("Error sending welcome message: %v", err)
+			return bot.Report(ctx, err)
 		}
 	}
 

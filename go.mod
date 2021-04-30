@@ -3,10 +3,12 @@ module github.com/starshine-sys/tribble
 go 1.16
 
 require (
+	emperror.dev/errors v0.8.0
 	github.com/ReneKroon/ttlcache/v2 v2.1.0
 	github.com/diamondburned/arikawa/v2 v2.0.5
 	github.com/dustin/go-humanize v1.0.0
 	github.com/georgysavva/scany v0.2.7
+	github.com/getsentry/sentry-go v0.10.0
 	github.com/google/uuid v1.2.0
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/julienschmidt/httprouter v1.3.0

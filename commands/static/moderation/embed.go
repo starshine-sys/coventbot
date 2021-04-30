@@ -24,8 +24,7 @@ func (bot *Bot) embedTo(ctx *bcr.Context) (err error) {
 
 	g, err := ctx.State.Guild(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Send("Error getting guild info.", nil)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if !discord.CalcOverwrites(*g, *ctx.Channel, *ctx.Member).Has(discord.PermissionViewChannel | discord.PermissionSendMessages) {
@@ -37,7 +36,6 @@ func (bot *Bot) embedTo(ctx *bcr.Context) (err error) {
 
 	err = bot.embedInner(ctx, ch.ID, []byte(args))
 	if err != nil {
-		_, err = ctx.Sendf("Error sending message: %v", err)
 		return
 	}
 
@@ -49,8 +47,7 @@ func (bot *Bot) embedInner(ctx *bcr.Context, ch discord.ChannelID, input []byte)
 	var e discord.Embed
 	err = json.Unmarshal(input, &e)
 	if err != nil {
-		ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.NewMessage(ch).Embed(&e).Send()

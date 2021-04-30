@@ -152,8 +152,7 @@ gotEmoji:
 
 	emoji, err := ctx.State.CreateEmoji(ctx.Message.GuildID, ced)
 	if err != nil {
-		_, err = ctx.Sendf("Error:\n```%v```", err)
-		return err
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Sendf("Added emoji %v with name \"%v\".", emoji.String(), emoji.Name)

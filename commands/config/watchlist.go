@@ -13,7 +13,7 @@ import (
 func (bot *Bot) watchlist(ctx *bcr.Context) (err error) {
 	b, err := bot.DB.Watchlist(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
+		return bot.Report(ctx, err)
 	}
 
 	var x string
@@ -51,14 +51,12 @@ func (bot *Bot) watchlistRemove(ctx *bcr.Context) (err error) {
 			return err
 		}
 
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = bot.DB.Pool.Exec(context.Background(), "delete from watch_list_reasons where user_id = $1 and server_id = $2", u.ID, ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Sendf("Removed %v / **%v#%v** from the watchlist.", u.Mention(), u.Username, u.Discriminator)
@@ -84,8 +82,7 @@ func (bot *Bot) watchlistAdd(ctx *bcr.Context) (err error) {
 			return err
 		}
 
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Sendf("Added %v / **%v#%v** to the watchlist.", u.Mention(), u.Username, u.Discriminator)
@@ -121,8 +118,7 @@ func (bot *Bot) watchlistReason(ctx *bcr.Context) (err error) {
 
 	_, err = bot.DB.Pool.Exec(context.Background(), "insert into watch_list_reasons (user_id, server_id, reason) values ($1, $2, $3) on conflict (user_id, server_id) do update set reason = $3", u.ID, ctx.Message.GuildID, reason)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Sendf("Updated watchlist reason for %v#%v.", u.Username, u.Discriminator)

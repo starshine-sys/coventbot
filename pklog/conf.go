@@ -27,8 +27,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 
 	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set pk_log_channel = $1 where id = $2", id, ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error setting channel: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if id == 0 {

@@ -13,8 +13,7 @@ func (bot *Bot) settings(ctx *bcr.Context) (err error) {
 
 	settings, err := bot.serverSettings(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if !settings.MemberRole.IsValid() {
@@ -59,8 +58,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 
 	settings, err := bot.serverSettings(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if settings.WelcomeChannel == id {
@@ -71,8 +69,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 	settings.WelcomeChannel = id
 	err = bot.setSettings(settings)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if id == 0 {
@@ -86,8 +83,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 func (bot *Bot) setMessage(ctx *bcr.Context) (err error) {
 	settings, err := bot.serverSettings(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if settings.WelcomeMessage == ctx.RawArgs {
@@ -98,8 +94,7 @@ func (bot *Bot) setMessage(ctx *bcr.Context) (err error) {
 	settings.WelcomeMessage = ctx.RawArgs
 	err = bot.setSettings(settings)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Send("Welcome message changed!", nil)
@@ -123,8 +118,7 @@ func (bot *Bot) setRole(ctx *bcr.Context) (err error) {
 
 	settings, err := bot.serverSettings(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if settings.MemberRole == id {
@@ -135,8 +129,7 @@ func (bot *Bot) setRole(ctx *bcr.Context) (err error) {
 	settings.MemberRole = id
 	err = bot.setSettings(settings)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if id == 0 {

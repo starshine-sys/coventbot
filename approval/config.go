@@ -29,8 +29,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 
 	settings, err := bot.serverSettings(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if settings.ApproveWelcomeChannel == id {
@@ -41,8 +40,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 	settings.ApproveWelcomeChannel = id
 	err = bot.setSettings(settings)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if id == 0 {
@@ -56,8 +54,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 func (bot *Bot) setMessage(ctx *bcr.Context) (err error) {
 	settings, err := bot.serverSettings(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if settings.ApproveWelcomeMessage == ctx.RawArgs {
@@ -68,8 +65,7 @@ func (bot *Bot) setMessage(ctx *bcr.Context) (err error) {
 	settings.ApproveWelcomeMessage = ctx.RawArgs
 	err = bot.setSettings(settings)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Send("Welcome message changed!", nil)
@@ -97,15 +93,13 @@ func (bot *Bot) setAddRoles(ctx *bcr.Context) (err error) {
 
 	settings, err := bot.serverSettings(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	settings.ApproveAddRoles = roles
 	err = bot.setSettings(settings)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if len(roles) == 0 {
@@ -137,15 +131,13 @@ func (bot *Bot) setRemoveRoles(ctx *bcr.Context) (err error) {
 
 	settings, err := bot.serverSettings(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	settings.ApproveRemoveRoles = roles
 	err = bot.setSettings(settings)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if len(roles) == 0 {

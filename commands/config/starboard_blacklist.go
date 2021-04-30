@@ -11,7 +11,7 @@ import (
 func (bot *Bot) blacklist(ctx *bcr.Context) (err error) {
 	b, err := bot.DB.StarboardBlacklist(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
+		return bot.Report(ctx, err)
 	}
 
 	var x string
@@ -53,8 +53,7 @@ func (bot *Bot) blacklistRemove(ctx *bcr.Context) (err error) {
 			return err
 		}
 
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Sendf("Removed %v from the blacklist.", ch.Mention())
@@ -84,8 +83,7 @@ func (bot *Bot) blacklistAdd(ctx *bcr.Context) (err error) {
 			return err
 		}
 
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Sendf("Added %v to the blacklist.", ch.Mention())

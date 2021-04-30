@@ -45,9 +45,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}))
 
 	conf := b.Router.AddCommand(&bcr.Command{
-		Name:    "verify",
-		Aliases: []string{"verification"},
-		Summary: "View or change this server's verification settings.",
+		Name:    "captcha",
+		Aliases: []string{"verify", "verification"},
+		Summary: "View or change this server's captcha verification settings.",
 
 		Permissions: discord.PermissionManageGuild,
 		Command:     b.settings,

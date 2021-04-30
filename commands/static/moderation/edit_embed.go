@@ -24,14 +24,12 @@ func (bot *Bot) editEmbed(ctx *bcr.Context) (err error) {
 	var e discord.Embed
 	err = json.Unmarshal(args, &e)
 	if err != nil {
-		ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Edit(msg, "", &e)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Send("Message edited!", nil)

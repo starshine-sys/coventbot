@@ -54,8 +54,7 @@ func (bot *Bot) deleteTag(ctx *bcr.Context) (err error) {
 
 	_, err = bot.DB.Pool.Exec(context.Background(), "delete from tags where id = $1 and server_id = $2", t.ID, ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error deleting tag: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Send("Tag deleted.", nil)

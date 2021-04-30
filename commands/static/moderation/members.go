@@ -94,8 +94,7 @@ Supported options:
 
 	gm, err := bot.State.Session.MembersAfter(ctx.Message.GuildID, 0, 0)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	// filter stuff

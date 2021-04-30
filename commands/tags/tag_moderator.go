@@ -43,8 +43,7 @@ func (bot *Bot) tagModerator(ctx *bcr.Context) (err error) {
 
 	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set tag_mod_role = $1 where id = $2", id, ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	desc := fmt.Sprintf("Tag mod role set to %v. Note that users without this role will not be able to create, edit, or delete tags.", id.Mention())

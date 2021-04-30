@@ -6,6 +6,7 @@ import "github.com/diamondburned/arikawa/v2/discord"
 type BotConfig struct {
 	Token       string
 	DatabaseURL string `yaml:"database_url"`
+	SentryURL   string `yaml:"sentry_url"`
 
 	AESKey string `yaml:"aes_key"`
 

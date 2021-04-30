@@ -14,8 +14,7 @@ func (bot *Bot) starboardSettings(ctx *bcr.Context) (err error) {
 
 	settings, err := bot.DB.Starboard(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if !settings.StarboardChannel.IsValid() {
@@ -56,8 +55,7 @@ func (bot *Bot) starboardSetChannel(ctx *bcr.Context) (err error) {
 
 	settings, err := bot.DB.Starboard(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if settings.StarboardChannel == id {
@@ -68,8 +66,7 @@ func (bot *Bot) starboardSetChannel(ctx *bcr.Context) (err error) {
 	settings.StarboardChannel = id
 	err = bot.DB.SetStarboard(ctx.Message.GuildID, settings)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if id == 0 {
@@ -83,8 +80,7 @@ func (bot *Bot) starboardSetChannel(ctx *bcr.Context) (err error) {
 func (bot *Bot) starboardSetEmoji(ctx *bcr.Context) (err error) {
 	settings, err := bot.DB.Starboard(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if settings.StarboardEmoji == ctx.RawArgs {
@@ -95,8 +91,7 @@ func (bot *Bot) starboardSetEmoji(ctx *bcr.Context) (err error) {
 	settings.StarboardEmoji = ctx.RawArgs
 	err = bot.DB.SetStarboard(ctx.Message.GuildID, settings)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.NewMessage().Content(fmt.Sprintf("Starboard emoji changed to %v.", ctx.RawArgs)).BlockMentions().Send()
@@ -112,8 +107,7 @@ func (bot *Bot) starboardSetLimit(ctx *bcr.Context) (err error) {
 
 	settings, err := bot.DB.Starboard(ctx.Message.GuildID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	if settings.StarboardLimit == i {
@@ -124,8 +118,7 @@ func (bot *Bot) starboardSetLimit(ctx *bcr.Context) (err error) {
 	settings.StarboardLimit = i
 	err = bot.DB.SetStarboard(ctx.Message.GuildID, settings)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Sendf("Starboard limit changed to %v stars.", i)

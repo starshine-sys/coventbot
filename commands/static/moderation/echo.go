@@ -65,8 +65,7 @@ func (bot *Bot) echoInner(ctx *bcr.Context, ch *discord.Channel) (err error) {
 	for _, a := range ctx.Message.Attachments {
 		resp, err := http.Get(a.URL)
 		if err != nil {
-			_, err = ctx.Sendf("Error occurred: %v", err)
-			return err
+			return bot.Report(ctx, err)
 		}
 		defer resp.Body.Close()
 		msg.AddFile(a.Filename, resp.Body)

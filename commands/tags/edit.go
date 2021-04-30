@@ -53,8 +53,7 @@ func (bot *Bot) editTag(ctx *bcr.Context) (err error) {
 		t.ID,
 	)
 	if err != nil {
-		_, err = ctx.Sendf("Error updating tag: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Send("Tag updated!", nil)

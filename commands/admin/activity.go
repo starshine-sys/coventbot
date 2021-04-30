@@ -41,8 +41,7 @@ func (bot *Bot) activity(ctx *bcr.Context) (err error) {
 
 		err = bot.SetSettings(s)
 		if err != nil {
-			_, err = ctx.Sendf("Error: %v", err)
-			return
+			return bot.Report(ctx, err)
 		}
 		bot.updateStatus()
 
@@ -73,8 +72,7 @@ func (bot *Bot) activity(ctx *bcr.Context) (err error) {
 
 	err = bot.SetSettings(s)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	bot.updateStatus()

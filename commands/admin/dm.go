@@ -27,8 +27,7 @@ func (bot *Bot) dm(ctx *bcr.Context) (err error) {
 		Color:       ctx.Router.EmbedColor,
 	}).Send()
 	if err != nil {
-		_, err = ctx.Sendf("Error sending message to %v: %v", u.ID, err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.Send("> DM sent!", &discord.Embed{

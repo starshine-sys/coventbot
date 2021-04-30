@@ -22,8 +22,7 @@ func (bot *Bot) lockdown(ctx *bcr.Context) (err error) {
 
 	perms, err := bot.State.Permissions(ch.ID, ctx.Bot.ID)
 	if err != nil {
-		_, err = ctx.Sendf("Error: %v", err)
-		return
+		return bot.Report(ctx, err)
 	}
 
 	// if we don't have perms, return

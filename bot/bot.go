@@ -3,9 +3,11 @@ package bot
 import (
 	"sort"
 	"sync"
+	"time"
 
 	"github.com/diamondburned/arikawa/v2/api/webhook"
 	"github.com/diamondburned/arikawa/v2/state"
+	"github.com/getsentry/sentry-go"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
 	"github.com/starshine-sys/tribble/db"
@@ -31,6 +33,8 @@ type Bot struct {
 		Mentions int
 		Messages int
 	}
+
+	Hub *sentry.Hub
 }
 
 // Module is a single module/category of commands
@@ -51,6 +55,23 @@ func New(
 		Sugar:  sugar,
 		DB:     db,
 		Config: config,
+	}
+
+	// create a Sentry config
+	if config.SentryURL != "" {
+		err := sentry.Init(sentry.ClientOptions{
+			Dsn: config.SentryURL,
+		})
+		if err != nil {
+			sugar.Fatalf("sentry.Init: %s", err)
+		}
+		sugar.Infof("Initialised Sentry")
+		// defer this to flush buffered events
+		defer sentry.Flush(2 * time.Second)
+	}
+	b.Hub = sentry.CurrentHub()
+	if config.SentryURL == "" {
+		b.Hub = nil
 	}
 
 	if config.GuildLogWebhook.ID.IsValid() {
