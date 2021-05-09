@@ -45,7 +45,7 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 
 	prefixes, err := bot.DB.Prefixes(discord.GuildID(guildID))
 	if err != nil || len(prefixes) == 0 {
-		prefixes = ctx.Router.Prefixes[:len(ctx.Router.Prefixes)-2]
+		prefixes = ctx.Router.Prefixes
 	}
 
 	s := fmt.Sprintf(`**%v**

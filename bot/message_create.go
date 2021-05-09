@@ -7,6 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/api/webhook"
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/starshine-sys/bcr"
 )
 
 // MessageCreate is run on a message create event
@@ -99,4 +100,31 @@ func (bot *Bot) MessageCreate(m *gateway.MessageCreateEvent) {
 		bot.Sugar.Errorf("Error executing commands: %v", err)
 		return
 	}
+
+	// handle tags as commands
+	err = bot.handleTagCommand(ctx)
+	if err != nil {
+		bot.Sugar.Errorf("Error sending message: %v", err)
+		return
+	}
+}
+
+func (bot *Bot) handleTagCommand(ctx *bcr.Context) (err error) {
+	name := ctx.Command + " " + ctx.RawArgs
+	if ctx.RawArgs == "" {
+		name = ctx.Command
+	}
+
+	t, err := bot.DB.GetTag(ctx.Message.GuildID, name)
+	if err != nil {
+		return nil
+	}
+
+	m := ctx.NewMessage().Content(t.Response).BlockMentions()
+	// reply to the same message the invocation replied to
+	if ctx.Message.Reference != nil {
+		m.Reference(ctx.Message.Reference.MessageID)
+	}
+	_, err = m.Send()
+	return err
 }
