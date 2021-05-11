@@ -7,7 +7,6 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/tribble/commands/static/roles"
 )
 
 func (bot *Bot) roleDump(ctx *bcr.Context) (err error) {
@@ -46,7 +45,7 @@ func (bot *Bot) roleDump(ctx *bcr.Context) (err error) {
 			b.Reset()
 		}
 		// do this thrice, once for each type of perms
-		m := strings.Join(roles.PermStringsFor(roles.MajorPerms, r.Permissions), ", ")
+		m := strings.Join(bcr.PermStringsFor(bcr.MajorPerms, r.Permissions), ", ")
 		if b.Len()+len(m) > 1900 {
 			msgs = append(msgs, b.String())
 			b.Reset()
@@ -55,7 +54,7 @@ func (bot *Bot) roleDump(ctx *bcr.Context) (err error) {
 			b.WriteString("\n- " + m)
 		}
 
-		m = strings.Join(roles.PermStringsFor(roles.NotablePerms, r.Permissions), ", ")
+		m = strings.Join(bcr.PermStringsFor(bcr.NotablePerms, r.Permissions), ", ")
 		if b.Len()+len(m) > 1900 {
 			msgs = append(msgs, b.String())
 			b.Reset()
@@ -64,7 +63,7 @@ func (bot *Bot) roleDump(ctx *bcr.Context) (err error) {
 			b.WriteString("\n+ " + m)
 		}
 
-		m = strings.Join(roles.PermStringsFor(roles.MinorPerms, r.Permissions), ", ")
+		m = strings.Join(bcr.PermStringsFor(bcr.MinorPerms, r.Permissions), ", ")
 		if b.Len()+len(m) > 1900 {
 			msgs = append(msgs, b.String())
 			b.Reset()

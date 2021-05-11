@@ -5,7 +5,7 @@ go 1.16
 require (
 	emperror.dev/errors v0.8.0
 	github.com/ReneKroon/ttlcache/v2 v2.1.0
-	github.com/diamondburned/arikawa/v2 v2.0.5
+	github.com/diamondburned/arikawa/v2 v2.0.7-0.20210411235605-20166f33cc8d
 	github.com/dustin/go-humanize v1.0.0
 	github.com/georgysavva/scany v0.2.7
 	github.com/getsentry/sentry-go v0.10.0
@@ -15,8 +15,8 @@ require (
 	github.com/kataras/hcaptcha v0.0.0-20200711031247-2927d4faf32f
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/pflag v1.0.5
-	github.com/starshine-sys/bcr v0.14.2
-	github.com/starshine-sys/pkgo v0.3.0
+	github.com/starshine-sys/bcr v0.15.2-0.20210511205955-c2aa44e86739
+	github.com/starshine-sys/pkgo v0.3.2
 	github.com/starshine-sys/snowflake/v2 v2.1.0
 	go.uber.org/zap v1.16.0
 	gopkg.in/yaml.v2 v2.4.0

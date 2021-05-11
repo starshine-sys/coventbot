@@ -7,7 +7,6 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/tribble/commands/static/roles"
 	"github.com/starshine-sys/tribble/etc"
 )
 
@@ -59,7 +58,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 		perms = append(perms, "Server Owner")
 		userPerms.Add(discord.PermissionAll)
 	}
-	perms = append(perms, roles.PermStringsFor(roles.MajorPerms, userPerms)...)
+	perms = append(perms, bcr.PermStringsFor(bcr.MajorPerms, userPerms)...)
 
 	permString := strings.Join(perms, ", ")
 	if len(permString) > 1000 {

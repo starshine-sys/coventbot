@@ -6,7 +6,6 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/tribble/commands/static/roles"
 	"github.com/starshine-sys/tribble/etc"
 )
 
@@ -64,7 +63,7 @@ func (bot *Bot) roleInfo(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Permissions",
-				Value:  fmt.Sprintf("%v", If(r.Permissions != 0, strings.Join(roles.PermStrings(r.Permissions), ", "), "None")),
+				Value:  fmt.Sprintf("%v", If(r.Permissions != 0, strings.Join(bcr.PermStrings(r.Permissions), ", "), "None")),
 				Inline: false,
 			},
 		},
