@@ -52,6 +52,6 @@ func (bot *Bot) hello(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.Send(greeting, nil)
+	_, err = ctx.NewMessage().Content(greeting).BlockMentions().Send()
 	return err
 }
