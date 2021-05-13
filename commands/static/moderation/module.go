@@ -2,6 +2,7 @@ package moderation
 
 import (
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -145,6 +146,66 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Permissions: discord.PermissionManageRoles,
 		Command:     b.lockdown,
 	}))
+
+	slowmode := b.Router.AddCommand(&bcr.Command{
+		Name:    "slowmode",
+		Aliases: []string{"slow", "sm"},
+		Summary: "Configure slowmode settings.",
+
+		Command: func(ctx *bcr.Context) (err error) { return },
+	})
+
+	slowmode.AddSubcommand(&bcr.Command{
+		Name:    "discord",
+		Summary: "Set the given channel's Discord slowmode.",
+		Usage:   "<duration> [channel]",
+		Args:    bcr.MinArgs(1),
+
+		Command: b.discordSlowmode,
+	})
+
+	slowmode.AddSubcommand(&bcr.Command{
+		Name:    "set",
+		Summary: "Set the slowmode for the given channel.",
+		Usage:   "<channel> <duration>",
+		Args:    bcr.MinArgs(1),
+
+		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.BoolP("clear", "c", false, "Clear the channel's slowmode.")
+
+			return fs
+		},
+
+		Command: b.cmdSetSlowmode,
+
+		Permissions: discord.PermissionManageGuild,
+	})
+
+	slowmode.AddSubcommand(&bcr.Command{
+		Name:    "reset",
+		Summary: "Reset the slowmode for the given user.",
+		Usage:   "<user> [channel]",
+		Args:    bcr.MinArgs(1),
+
+		Command: b.resetSlowmode,
+
+		Permissions: discord.PermissionManageMessages,
+	})
+
+	slowmode.AddSubcommand(&bcr.Command{
+		Name:    "role",
+		Summary: "Set the role that will ignore slowmode. (All bots automatically ignore slowmode)",
+		Usage:   "[role|--clear]",
+		Args:    bcr.MinArgs(1),
+
+		Command: b.slowmodeRole,
+
+		Permissions: discord.PermissionManageGuild,
+	})
+
+	list = append(list, slowmode)
+
+	bot.State.AddHandler(b.slowmodeMessage)
 
 	return
 }
