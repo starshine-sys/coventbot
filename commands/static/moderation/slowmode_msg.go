@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) slowmodeMessage(m *gateway.MessageCreateEvent) {
@@ -45,7 +47,15 @@ func (bot *Bot) slowmodeMessage(m *gateway.MessageCreateEvent) {
 			return
 		}
 
-		bot.State.SendText(ch.ID, msg)
+		bot.State.SendMessage(ch.ID, msg, &discord.Embed{
+			Author: &discord.EmbedAuthor{
+				Name: m.Author.Username,
+				Icon: m.Author.AvatarURL(),
+			},
+			Description: m.Content,
+			Color:       bcr.ColourBlurple,
+			Timestamp:   discord.NowTimestamp(),
+		})
 		return
 	}
 
