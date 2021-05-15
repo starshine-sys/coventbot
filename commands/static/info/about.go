@@ -30,6 +30,12 @@ func (bot *Bot) about(ctx *bcr.Context) (err error) {
 	stats := runtime.MemStats{}
 	runtime.ReadMemStats(&stats)
 
+	creator := "<@!694563574386786314>"
+	u, err := ctx.State.User(694563574386786314)
+	if err == nil {
+		creator = fmt.Sprintf("<@!%v> / %v#%v", u.ID, u.Username, u.Discriminator)
+	}
+
 	bot.Counters.Mu.Lock()
 	embed := discord.Embed{
 		Title: "About",
@@ -52,7 +58,7 @@ func (bot *Bot) about(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Creator",
-				Value:  "<@!694563574386786314> / starshine system 🌠✨#0001",
+				Value:  creator,
 				Inline: false,
 			},
 			{
