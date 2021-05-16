@@ -43,7 +43,7 @@ Either way, here are some commonly used commands:`, ctx.Router.Prefixes[0], ctx.
 			},
 			{
 				Name:   "Moderation",
-				Value:  "`lock`: lock a channel from @everyone\n`makeinvite`: make an invite\n`massban`: ban multiple people at once\n`watchlist`: get warned when people join\n`nicknames`\n`usernames`: track name changes",
+				Value:  "`lock`: lock a channel from @everyone\n`makeinvite`: make an invite\n`massban`: ban multiple people at once\n`watchlist`: get warned when people join\n`nicknames`\n`usernames`: track name changes\n`slowmode`: set slowmode (Discord and custom)\n`channelban`\n`unchannelban`: block users from channels",
 				Inline: true,
 			},
 		},
