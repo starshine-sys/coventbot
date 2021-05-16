@@ -207,5 +207,31 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	bot.State.AddHandler(b.slowmodeMessage)
 
+	list = append(list, bot.Router.AddCommand(&bcr.Command{
+		Name:    "channelban",
+		Summary: "Ban a member from using a channel.",
+		Usage:   "[channel] <member>",
+		Args:    bcr.MinArgs(1),
+
+		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.BoolP("full", "f", false, "Also hide the channel from the user.")
+
+			return fs
+		},
+
+		Command: b.channelban,
+	}))
+
+	list = append(list, bot.Router.AddCommand(&bcr.Command{
+		Name:    "unchannelban",
+		Summary: "Ban a member from using a channel.",
+		Usage:   "[channel] <member>",
+		Args:    bcr.MinArgs(1),
+
+		Command: b.unchannelban,
+	}))
+
+	bot.State.AddHandler(b.channelbanOnJoin)
+
 	return
 }
