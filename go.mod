@@ -3,6 +3,7 @@ module github.com/starshine-sys/tribble
 go 1.16
 
 require (
+	codeberg.org/eviedelta/detctime v0.0.0-20201201223733-52d0e0a1ba3d
 	emperror.dev/errors v0.8.0
 	github.com/ReneKroon/ttlcache/v2 v2.1.0
 	github.com/diamondburned/arikawa/v2 v2.0.7-0.20210411235605-20166f33cc8d
