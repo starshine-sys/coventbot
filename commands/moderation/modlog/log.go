@@ -134,3 +134,37 @@ func (bot *ModLog) Unchannelban(guildID discord.GuildID, channel discord.Channel
 	_, err = bot.State.SendText(ch, text)
 	return
 }
+
+// Warn logs a warn
+func (bot *ModLog) Warn(guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
+	entry, err := bot.insertEntry(guildID, userID, modID, "warn", reason)
+	if err != nil {
+		return err
+	}
+
+	ch := bot.logChannelFor(guildID)
+	if !ch.IsValid() {
+		return
+	}
+
+	if len(entry.Reason) > 1000 {
+		entry.Reason = entry.Reason[:1000] + "..."
+	}
+
+	user, err := bot.State.User(userID)
+	if err != nil {
+		return err
+	}
+	mod, err := bot.State.User(modID)
+	if err != nil {
+		return err
+	}
+
+	text := fmt.Sprintf(`**Warn | Case %v**
+**User:** %v#%v (%v)
+**Reason:** %v
+**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
+
+	_, err = bot.State.SendText(ch, text)
+	return
+}

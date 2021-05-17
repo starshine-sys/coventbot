@@ -21,6 +21,8 @@ func (bot *Bot) getBool(sql string, params ...interface{}) (b bool, err error) {
 }
 
 func (bot *Bot) channelban(ctx *bcr.Context) (err error) {
+	go func() { ctx.State.Typing(ctx.Channel.ID) }()
+
 	channel := ctx.Channel
 
 	if channelRe.MatchString(ctx.Args[0]) {
@@ -119,6 +121,8 @@ func (bot *Bot) channelban(ctx *bcr.Context) (err error) {
 }
 
 func (bot *Bot) unchannelban(ctx *bcr.Context) (err error) {
+	go func() { ctx.State.Typing(ctx.Channel.ID) }()
+
 	channel := ctx.Channel
 
 	if channelRe.MatchString(ctx.Args[0]) {
