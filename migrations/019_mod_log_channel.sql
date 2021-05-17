@@ -1,3 +1,7 @@
+alter table servers add column mod_log_channel bigint not null default 0;
+
+drop table mod_log;
+
 create table mod_log (
     id          bigint,
     server_id   bigint,
@@ -12,16 +16,3 @@ create table mod_log (
 
     unique(id, server_id)
 );
-
-create index mod_log_user_idx on mod_log (user_id, server_id);
-
-create table server_mod_settings (
-    id  bigint primary key,
-
-    mute_role   bigint  not null    default 0
-);
-
----- create above / drop below ----
-
-drop table mod_log;
-drop table server_mod_settings;

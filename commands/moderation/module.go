@@ -5,18 +5,24 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
+	"github.com/starshine-sys/tribble/commands/moderation/modlog"
 )
 
 // Bot ...
 type Bot struct {
 	*bot.Bot
+
+	ModLog *modlog.ModLog
 }
 
 // Init ...
 func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	s = "Moderation commands"
 
-	b := &Bot{Bot: bot}
+	b := &Bot{
+		Bot:    bot,
+		ModLog: modlog.New(bot),
+	}
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "members",
@@ -233,5 +239,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	bot.State.AddHandler(b.channelbanOnJoin)
 
+	_, modLogList := modlog.InitCommands(bot)
+
+	list = append(list, modLogList...)
 	return
 }

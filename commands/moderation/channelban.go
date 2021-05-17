@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -99,6 +100,17 @@ func (bot *Bot) channelban(ctx *bcr.Context) (err error) {
 		return
 	}
 
+	// get reason
+	var reason string
+	if len(ctx.Args) > 1 {
+		reason = strings.Join(ctx.Args[1:], " ")
+	}
+
+	err = bot.ModLog.Channelban(ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
+	if err != nil {
+		bot.Sugar.Errorf("Error logging channelban: %v", err)
+	}
+
 	_, err = ctx.Send("", &discord.Embed{
 		Color:       bcr.ColourBlurple,
 		Description: fmt.Sprintf("Banned %v from %v", member.Mention(), channel.Mention()),
@@ -179,6 +191,17 @@ func (bot *Bot) unchannelban(ctx *bcr.Context) (err error) {
 	if err != nil {
 		_, err = ctx.Sendf("I was unable to change the permissions in %v.", channel.Mention())
 		return
+	}
+
+	// get reason
+	var reason string
+	if len(ctx.Args) > 1 {
+		reason = strings.Join(ctx.Args[1:], " ")
+	}
+
+	err = bot.ModLog.Unchannelban(ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
+	if err != nil {
+		bot.Sugar.Errorf("Error logging unchannelban: %v", err)
 	}
 
 	_, err = ctx.Send("", &discord.Embed{
