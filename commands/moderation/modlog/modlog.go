@@ -38,6 +38,23 @@ func InitCommands(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.setchannel,
 	})
 
+	cfg.AddSubcommand(&bcr.Command{
+		Name:    "export",
+		Summary: "Export a user's (or the entire server's) mod log.",
+		Usage:   "[user]",
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.export,
+	})
+
+	cfg.AddSubcommand(&bcr.Command{
+		Name:    "import",
+		Summary: "Import a mod log. *This will overwrite any existing entries.*",
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.cmdImport,
+	})
+
 	return s, append(list, cfg)
 }
 
