@@ -18,7 +18,7 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	reason := "None"
+	reason := "N/A"
 	users, n := ctx.GreedyUserParser(ctx.Args)
 	if n == 0 {
 		_, err = ctx.Sendf("Couldn't parse any users.", nil)
@@ -71,6 +71,8 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 			_, err = ctx.Sendf("I could not ban **%v#%v**, aborting.", u.Username, u.Discriminator)
 			return
 		}
+
+		bot.ModLog.Ban(ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
 	}
 
 	_, err = ctx.Sendf("Banned %v members.", len(users))
