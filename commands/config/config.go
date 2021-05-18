@@ -152,6 +152,37 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.blacklistRemove,
 	})
 
+	triggers := b.Router.AddCommand(&bcr.Command{
+		Name:    "triggers",
+		Summary: "Add or remove triggers (reactions that trigger commands)",
+
+		GuildOnly: true,
+		Command:   func(ctx *bcr.Context) (err error) { return },
+	})
+
+	triggers.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add a trigger",
+		Usage:   "<message> <emoji> <command>",
+		Args:    bcr.MinArgs(3),
+
+		GuildOnly: true,
+		Command:   b.addTrigger,
+	})
+
+	triggers.AddSubcommand(&bcr.Command{
+		Name:    "remove",
+		Summary: "Remove a trigger",
+		Usage:   "<message> <emoji>",
+		Args:    bcr.MinArgs(2),
+
+		GuildOnly: true,
+		Command:   b.delTrigger,
+	})
+
+	// add trigger handler
+	b.State.AddHandler(b.triggerReactionAdd)
+
 	// add join handler
 	b.State.AddHandler(b.watchlistMemberAdd)
 

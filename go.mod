@@ -16,7 +16,7 @@ require (
 	github.com/kataras/hcaptcha v0.0.0-20200711031247-2927d4faf32f
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/pflag v1.0.5
-	github.com/starshine-sys/bcr v0.15.2-0.20210511205955-c2aa44e86739
+	github.com/starshine-sys/bcr v0.15.2-0.20210518200043-df8d8335858a
 	github.com/starshine-sys/pkgo v0.3.2
 	github.com/starshine-sys/snowflake/v2 v2.1.0
 	go.uber.org/zap v1.16.0
