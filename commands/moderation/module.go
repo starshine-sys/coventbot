@@ -241,7 +241,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "warn",
 		Summary: "Warn a member.",
 		Usage:   "<member> <reason>",
-		Args:    bcr.MinArgs(1),
+		Args:    bcr.MinArgs(2),
 
 		Permissions: discord.PermissionManageMessages,
 		Command:     b.warn,
