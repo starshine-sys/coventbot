@@ -138,8 +138,10 @@ func (bot *Bot) triggerReactionAdd(ev *gateway.MessageReactionAddEvent) {
 	ctx.Command = t.Command[0]
 
 	ctx.Args = []string{}
+	ctx.RawArgs = ""
 	if len(t.Command) > 1 {
 		ctx.Args = t.Command[1:]
+		ctx.RawArgs = strings.Join(t.Command[1:], " ")
 	}
 
 	ctx.AdditionalParams = make(map[string]interface{})
