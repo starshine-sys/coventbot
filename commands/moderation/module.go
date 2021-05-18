@@ -247,6 +247,26 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.warn,
 	}))
 
+	list = append(list, bot.Router.AddCommand(&bcr.Command{
+		Name:    "ban",
+		Summary: "Ban a user.",
+		Usage:   "<user> [reason]",
+		Args:    bcr.MinArgs(1),
+
+		Permissions: discord.PermissionBanMembers,
+		Command:     b.ban,
+	}))
+
+	list = append(list, bot.Router.AddCommand(&bcr.Command{
+		Name:    "unban",
+		Summary: "Unban a user.",
+		Usage:   "<user> [reason]",
+		Args:    bcr.MinArgs(1),
+
+		Permissions: discord.PermissionBanMembers,
+		Command:     b.unban,
+	}))
+
 	bot.State.AddHandler(b.channelbanOnJoin)
 
 	_, modLogList := modlog.InitCommands(bot)

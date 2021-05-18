@@ -46,7 +46,7 @@ Reason: %v`, mod.Username, mod.Discriminator, entry.Reason),
 		})
 	}
 
-	embeds := FieldPaginator("Mod logs", "", bcr.ColourBlurple, fields, 5)
+	embeds := FieldPaginator("Mod logs", fmt.Sprintf("%v#%v - %v", u.Username, u.Discriminator, u.Mention()), bcr.ColourBlurple, fields, 5)
 
 	_, err = ctx.PagedEmbed(embeds, false)
 	return err

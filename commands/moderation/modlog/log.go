@@ -11,16 +11,16 @@ import (
 
 // Entry ...
 type Entry struct {
-	ID       int64
-	ServerID discord.GuildID
+	ID       int64           `json:"id"`
+	ServerID discord.GuildID `json:"-"`
 
-	UserID discord.UserID
-	ModID  discord.UserID
+	UserID discord.UserID `json:"user_id"`
+	ModID  discord.UserID `json:"mod_id"`
 
-	ActionType ActionType
-	Reason     string
+	ActionType ActionType `json:"action_type"`
+	Reason     string     `json:"reason,omitempty"`
 
-	Time time.Time
+	Time time.Time `json:"timestamp"`
 }
 
 func (bot *ModLog) logChannelFor(guildID discord.GuildID) (logChannel discord.ChannelID) {
@@ -161,6 +161,74 @@ func (bot *ModLog) Warn(guildID discord.GuildID, userID, modID discord.UserID, r
 	}
 
 	text := fmt.Sprintf(`**Warn | Case %v**
+**User:** %v#%v (%v)
+**Reason:** %v
+**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
+
+	_, err = bot.State.SendText(ch, text)
+	return
+}
+
+// Ban logs a ban
+func (bot *ModLog) Ban(guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
+	entry, err := bot.insertEntry(guildID, userID, modID, "ban", reason)
+	if err != nil {
+		return err
+	}
+
+	ch := bot.logChannelFor(guildID)
+	if !ch.IsValid() {
+		return
+	}
+
+	if len(entry.Reason) > 1000 {
+		entry.Reason = entry.Reason[:1000] + "..."
+	}
+
+	user, err := bot.State.User(userID)
+	if err != nil {
+		return err
+	}
+	mod, err := bot.State.User(modID)
+	if err != nil {
+		return err
+	}
+
+	text := fmt.Sprintf(`**Ban | Case %v**
+**User:** %v#%v (%v)
+**Reason:** %v
+**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
+
+	_, err = bot.State.SendText(ch, text)
+	return
+}
+
+// Unban logs a unban
+func (bot *ModLog) Unban(guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
+	entry, err := bot.insertEntry(guildID, userID, modID, "unban", reason)
+	if err != nil {
+		return err
+	}
+
+	ch := bot.logChannelFor(guildID)
+	if !ch.IsValid() {
+		return
+	}
+
+	if len(entry.Reason) > 1000 {
+		entry.Reason = entry.Reason[:1000] + "..."
+	}
+
+	user, err := bot.State.User(userID)
+	if err != nil {
+		return err
+	}
+	mod, err := bot.State.User(modID)
+	if err != nil {
+		return err
+	}
+
+	text := fmt.Sprintf(`**Unban | Case %v**
 **User:** %v#%v (%v)
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
