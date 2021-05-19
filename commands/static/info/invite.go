@@ -20,7 +20,9 @@ func (bot *Bot) invite(ctx *bcr.Context) (err error) {
 		discord.PermissionManageRoles |
 		discord.PermissionSendMessages |
 		discord.PermissionBanMembers |
-		discord.PermissionManageWebhooks
+		discord.PermissionManageWebhooks |
+		discord.PermissionManageChannels |
+		discord.PermissionMentionEveryone
 
 	invite := func(u discord.UserID, p discord.Permissions) string {
 		return fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%v&permissions=%v&scope=applications.commands%%20bot", ctx.Bot.ID, p)
