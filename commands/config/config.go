@@ -182,6 +182,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	// add trigger handler
 	b.State.AddHandler(b.triggerReactionAdd)
+	b.State.AddHandler(b.triggerMessageDelete)
 
 	// add join handler
 	b.State.AddHandler(b.watchlistMemberAdd)

@@ -24,6 +24,7 @@ import (
 	"github.com/starshine-sys/tribble/names"
 	"github.com/starshine-sys/tribble/pklog"
 	"github.com/starshine-sys/tribble/starboard"
+	"github.com/starshine-sys/tribble/tickets"
 	"go.uber.org/zap"
 )
 
@@ -70,6 +71,8 @@ func main() {
 	bot.Add(reminders.Init)
 	// add tag commands
 	bot.Add(tags.Init)
+	// add ticket commands
+	bot.Add(tickets.Init)
 	// add config commands
 	bot.Add(config.Init)
 	// add starboard

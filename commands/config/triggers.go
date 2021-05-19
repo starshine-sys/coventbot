@@ -143,6 +143,7 @@ func (bot *Bot) triggerReactionAdd(ev *gateway.MessageReactionAddEvent) {
 		ctx.Args = t.Command[1:]
 		ctx.RawArgs = strings.Join(t.Command[1:], " ")
 	}
+	ctx.InternalArgs = ctx.Args
 
 	ctx.AdditionalParams = make(map[string]interface{})
 
@@ -156,4 +157,8 @@ func (bot *Bot) triggerReactionAdd(ev *gateway.MessageReactionAddEvent) {
 	if err != nil {
 		bot.Sugar.Errorf("Error executing command `%v`: %v", t.Command, err)
 	}
+}
+
+func (bot *Bot) triggerMessageDelete(ev *gateway.MessageDeleteEvent) {
+	bot.DB.Pool.Exec(context.Background(), "delete from triggers where message_id = $1", ev.ID)
 }
