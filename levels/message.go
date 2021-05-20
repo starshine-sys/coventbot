@@ -20,6 +20,10 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		return
 	}
 
+	if !sc.LevelsEnabled {
+		return
+	}
+
 	uc, err := bot.getUser(m.GuildID, m.Author.ID)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting user: %v", err)
