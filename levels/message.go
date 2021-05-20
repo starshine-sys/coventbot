@@ -86,6 +86,13 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		return
 	}
 
+	// don't announce/log roles the user already has
+	for _, r := range m.Member.RoleIDs {
+		if r == reward.RoleReward {
+			return
+		}
+	}
+
 	err = bot.State.AddRole(m.GuildID, m.Author.ID, reward.RoleReward)
 	if err != nil {
 		bot.Sugar.Errorf("Error adding role to user: %v", err)
