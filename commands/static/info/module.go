@@ -45,6 +45,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "colour",
+		Aliases: []string{"color"},
+		Summary: "Preview a colour.",
+		Usage:   "<hex code>",
+		Args:    bcr.MinArgs(1),
+
+		Command: b.colour,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "userinfo",
 		Aliases: []string{"i", "profile", "whois"},
 		Summary: "Show information about a user or yourself.",
