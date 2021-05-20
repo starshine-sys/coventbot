@@ -35,16 +35,20 @@ Note that this bot is currently **very** undocumented; use at your own risk.`, c
 			Value: "`addemoji`: add a custom emoji\n`embedsource`: get the JSON source from an embed\n`enlarge`: enlarge a custom emote\n`meow`: show a random meowmoji\n`poll` & `quickpoll`: run polls\n`roll`: roll for initiative\n`echo`: send messages as the bot\n`members`: show a filtered list of members",
 		},
 		{
+			Name:  "Reminders",
+			Value: "`remindme`: set a reminder for yourself\n`reminders`: show your current reminders\n`delreminder`: delete one of your reminders",
+		},
+		{
+			Name:  "Levels",
+			Value: "`lvl`: show your or another user's level\n`lvl config`: configure levels\n`leaderboard`: show this server's leaderboard",
+		},
+		{
 			Name:  "Moderation",
 			Value: "`lock`: lock or unlock a channel from @everyone\n`makeinvite`: make a permanent invite for a channel\n`massban`: ban multiple people at once\n`watchlist`: get warned when people join\n`nicknames`\n`usernames`: track username and nickname changes",
 		},
 		{
 			Name:  "Moderation (cont.)",
 			Value: "`slowmode`: set slowmode (both Discord and custom)\n`channelban`\n`unchannelban`: block/unblock users from channels\n`warn`: warn members",
-		},
-		{
-			Name:  "Reminders",
-			Value: "`remindme`: set a reminder for yourself\n`reminders`: show your current reminders\n`delreminder`: delete one of your reminders",
 		},
 	}
 

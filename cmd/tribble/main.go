@@ -21,6 +21,7 @@ import (
 	"github.com/starshine-sys/tribble/db"
 	"github.com/starshine-sys/tribble/etc"
 	"github.com/starshine-sys/tribble/gatekeeper"
+	"github.com/starshine-sys/tribble/levels"
 	"github.com/starshine-sys/tribble/names"
 	"github.com/starshine-sys/tribble/pklog"
 	"github.com/starshine-sys/tribble/starboard"
@@ -73,6 +74,8 @@ func main() {
 	bot.Add(tags.Init)
 	// add ticket commands
 	bot.Add(tickets.Init)
+	// add level commands
+	bot.Add(levels.Init)
 	// add config commands
 	bot.Add(config.Init)
 	// add starboard
