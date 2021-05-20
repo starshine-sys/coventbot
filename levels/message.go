@@ -7,6 +7,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
@@ -21,6 +22,10 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	}
 
 	if !sc.LevelsEnabled {
+		return
+	}
+
+	if bot.isBlacklisted(m.GuildID, m.Author.ID) {
 		return
 	}
 
@@ -94,5 +99,25 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		if err == nil {
 			bot.State.SendText(ch.ID, txt)
 		}
+	}
+
+	if sc.RewardLog.IsValid() {
+		e := discord.Embed{
+			Title:       "Level reward given",
+			Description: fmt.Sprintf("%v reached level `%v`.", m.Author.Mention(), newLvl),
+			Fields: []discord.EmbedField{
+				{
+					Name:  "Reward given",
+					Value: reward.RoleReward.Mention(),
+				},
+				{
+					Name:  "Message",
+					Value: fmt.Sprintf("https://discord.com/channels/%v/%v/%v", m.GuildID, m.ChannelID, m.ID),
+				},
+			},
+			Color: bcr.ColourBlurple,
+		}
+
+		bot.State.SendEmbed(sc.RewardLog, e)
 	}
 }

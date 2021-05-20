@@ -1,7 +1,10 @@
 package levels
 
 import (
+	"sync"
+
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -120,5 +123,41 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:   b.leaderboard,
 	}))
 
-	return s, append(list, lvl)
+	nolevels := bot.Router.AddCommand(&bcr.Command{
+		Name:    "nolevels",
+		Aliases: []string{"nolevel"},
+		Summary: "Manage the user blacklist for levels.",
+
+		Permissions: discord.PermissionManageMessages,
+		Command:     b.nolevelsList,
+	})
+
+	nolevels.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Blacklist a user.",
+		Usage:   "<user> [time]",
+		Args:    bcr.MinArgs(1),
+
+		Permissions: discord.PermissionManageMessages,
+		Command:     b.nolevelsAdd,
+	})
+
+	nolevels.AddSubcommand(&bcr.Command{
+		Name:    "remove",
+		Summary: "Unblacklist a user.",
+		Usage:   "<user>",
+		Args:    bcr.MinArgs(1),
+
+		Permissions: discord.PermissionManageMessages,
+		Command:     b.nolevelsRemove,
+	})
+
+	var o sync.Once
+	bot.State.AddHandler(func(_ *gateway.ReadyEvent) {
+		o.Do(func() {
+			go b.nolevelLoop()
+		})
+	})
+
+	return s, append(list, lvl, nolevels)
 }

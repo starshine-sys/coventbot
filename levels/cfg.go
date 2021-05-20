@@ -31,6 +31,18 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 
 		e.Description = fmt.Sprintf("`levels_enabled`: %v\n`leaderboard_mod_only`: %v\n`show_next_reward`: %v\n`between_xp`: %v", sc.LevelsEnabled, sc.LeaderboardModOnly, sc.ShowNextReward, sc.BetweenXP)
 
+		if sc.RewardLog.IsValid() {
+			e.Description += "\n`reward_log`: " + sc.RewardLog.Mention()
+		} else {
+			e.Description += "\n`reward_log`: None"
+		}
+
+		if sc.NolevelsLog.IsValid() {
+			e.Description += "\n`nolevels_log`: " + sc.NolevelsLog.Mention()
+		} else {
+			e.Description += "\n`nolevels_log`: None"
+		}
+
 		rewards, err := bot.getAllRewards(ctx.Message.GuildID)
 		if err == nil && len(rewards) > 0 {
 			var buf string
@@ -52,6 +64,11 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 
 		_, err = ctx.Send("", &e)
 		return err
+	}
+
+	if len(ctx.Args) < 2 {
+		_, err = ctx.Send("Not enough arguments: you must give both a key and a new value.", nil)
+		return
 	}
 
 	switch strings.ToLower(ctx.Args[0]) {
@@ -109,6 +126,37 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 			Message: fmt.Sprintf("```%v```", text),
 		})
 		return err
+	case "reward_log", "nolevels_log":
+		id := discord.ChannelID(0)
+		if ctx.Args[1] != "clear" {
+			ch, err := ctx.ParseChannel(ctx.Args[1])
+			if err != nil || ch.Type != discord.GuildText || ch.GuildID != ctx.Message.GuildID {
+				_, err = ctx.Send("I couldn't find that channel.", nil)
+				return err
+			}
+			id = ch.ID
+		}
+
+		_, err = bot.DB.Pool.Exec(
+			context.Background(),
+			"update server_levels set "+ctx.Args[0]+" = $1 where id = $2",
+			id, ctx.Message.GuildID,
+		)
+		if err != nil {
+			return bot.Report(ctx, err)
+		}
+
+		if id == 0 {
+			_, err = ctx.SendEmbed(bcr.SED{
+				Message: fmt.Sprintf("Cleared `%v`.", ctx.Args[0]),
+			})
+			return
+		}
+
+		_, err = ctx.SendEmbed(bcr.SED{
+			Message: fmt.Sprintf("Set `%v` to %v.", ctx.Args[0], id.Mention()),
+		})
+		return
 	}
 
 	return

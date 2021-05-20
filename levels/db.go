@@ -16,6 +16,9 @@ type Server struct {
 	BlockedRoles      []uint64
 	BlockedCategories []uint64
 
+	RewardLog   discord.ChannelID
+	NolevelsLog discord.ChannelID
+
 	BetweenXP  time.Duration
 	RewardText string
 
@@ -109,4 +112,32 @@ func (bot *Bot) getAllRewards(guildID discord.GuildID) (rwds []Reward, err error
 func (bot *Bot) getLeaderboard(guildID discord.GuildID) (lb []Levels, err error) {
 	err = pgxscan.Select(context.Background(), bot.DB.Pool, &lb, "select * from levels where server_id = $1 order by xp desc", guildID)
 	return
+}
+
+func (bot *Bot) setNolevels(guildID discord.GuildID, userID discord.UserID, expires bool, expiry time.Time) (err error) {
+	_, err = bot.DB.Pool.Exec(context.Background(), `insert into nolevels
+	(server_id, user_id, expires, expiry) values ($1, $2, $3, $4)
+	on conflict (server_id, user_id) do update
+	set expires = $3, expiry = $4`, guildID, userID, expires, expiry)
+	return
+}
+
+// Nolevels ...
+type Nolevels struct {
+	ServerID discord.GuildID
+	UserID   discord.UserID
+	Expires  bool
+	Expiry   time.Time
+
+	LogChannel discord.ChannelID
+}
+
+func (bot *Bot) guildNolevels(guildID discord.GuildID) (list []Nolevels, err error) {
+	err = pgxscan.Select(context.Background(), bot.DB.Pool, &list, "select * from nolevels where server_id = $1 order by user_id", guildID)
+	return
+}
+
+func (bot *Bot) isBlacklisted(guildID discord.GuildID, userID discord.UserID) (blacklisted bool) {
+	bot.DB.Pool.QueryRow(context.Background(), "select exists(select user_id from nolevels where server_id = $1 and user_id = $2)", guildID, userID).Scan(&blacklisted)
+	return blacklisted
 }
