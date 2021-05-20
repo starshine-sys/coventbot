@@ -31,6 +31,8 @@ type Levels struct {
 
 	XP int64
 
+	Colour discord.Color
+
 	NextTime time.Time
 }
 

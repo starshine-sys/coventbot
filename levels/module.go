@@ -40,6 +40,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.setXP,
 	})
 
+	lvl.AddSubcommand(&bcr.Command{
+		Name:    "colour",
+		Aliases: []string{"color"},
+		Summary: "Set the colour used in your level embed.",
+		Usage:   "[new colour|clear]",
+
+		GuildOnly: true,
+		Command:   b.colour,
+	})
+
 	cfg := lvl.AddSubcommand(&bcr.Command{
 		Name:    "config",
 		Aliases: []string{"cfg"},
