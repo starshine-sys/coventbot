@@ -29,6 +29,17 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:   b.level,
 	})
 
+	lvl.AddSubcommand(&bcr.Command{
+		Name:    "setxp",
+		Aliases: []string{"setexp", "set-xp", "set-exp"},
+		Summary: "Set the given user's XP.",
+		Usage:   "<user> <new XP>",
+		Args:    bcr.MinArgs(2),
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.setXP,
+	})
+
 	cfg := lvl.AddSubcommand(&bcr.Command{
 		Name:    "config",
 		Aliases: []string{"cfg"},

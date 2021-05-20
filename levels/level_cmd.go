@@ -34,6 +34,17 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 
 	lvl := currentLevel(uc.XP)
 	xpForNext := expForNextLevel(lvl)
+	xpForPrev := expForNextLevel(lvl - 1)
+
+	var percent int64
+	{
+		progress := uc.XP - xpForPrev
+		needed := xpForNext - xpForPrev
+
+		p := float64(progress) / float64(needed)
+
+		percent = int64(p * 100)
+	}
 
 	// get leaderboard (for rank)
 	var rank int
@@ -59,13 +70,14 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		},
 		Title: fmt.Sprintf("Level %v - Rank #%v", lvl, rank),
 		Description: fmt.Sprintf(
-			"%v/%v XP",
+			"**%v%%**\n%v/%v XP", percent,
 			humanize.Comma(uc.XP), humanize.Comma(xpForNext),
 		),
 		Color: clr,
 		Footer: &discord.EmbedFooter{
 			Text: fmt.Sprintf("%v#%v", u.Username, u.Discriminator),
 		},
+		Timestamp: discord.NowTimestamp(),
 	}
 
 	// get next reward
