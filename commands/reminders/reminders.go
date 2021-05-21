@@ -13,7 +13,7 @@ import (
 func (bot *Bot) reminders(ctx *bcr.Context) (err error) {
 	rms := []Reminder{}
 
-	err = pgxscan.Select(context.Background(), bot.DB.Pool, &rms, "select * from reminders where user_id = $1 order by id asc", ctx.Author.ID)
+	err = pgxscan.Select(context.Background(), bot.DB.Pool, &rms, "select * from reminders where user_id = $1 order by expires asc", ctx.Author.ID)
 	if err != nil {
 		bot.Report(ctx, err)
 	}
