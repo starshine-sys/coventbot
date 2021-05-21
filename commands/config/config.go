@@ -17,17 +17,35 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	b := &Bot{Bot: bot}
 
-	list = append(list, b.Router.AddCommand(&bcr.Command{
-		Name:        "prefix",
-		Aliases:     []string{"prefixes"},
-		Summary:     "Show the server's current prefixes, or set new prefixes (maximum of 10, space separated).",
-		Description: "Use `-clear` to clear custom prefixes.",
-		Usage:       "[new prefixes...]",
-
-		Permissions: discord.PermissionManageGuild,
+	prefix := b.Router.AddCommand(&bcr.Command{
+		Name:    "prefix",
+		Aliases: []string{"prefixes"},
+		Summary: "Show the server's current prefixes.",
 
 		Command: b.prefix,
-	}))
+	})
+
+	prefix.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add a prefix.",
+		Usage:   "<prefix>",
+		Args:    bcr.MinArgs(1),
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.prefixAdd,
+	})
+
+	prefix.AddSubcommand(&bcr.Command{
+		Name:    "remove",
+		Summary: "Remove a prefix.",
+		Usage:   "<prefix>",
+		Args:    bcr.MinArgs(1),
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.prefixRemove,
+	})
+
+	list = append(list, prefix)
 
 	wl := b.Router.AddCommand(&bcr.Command{
 		Name:        "watchlist",
