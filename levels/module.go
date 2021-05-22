@@ -44,6 +44,17 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	})
 
 	lvl.AddSubcommand(&bcr.Command{
+		Name:    "setlvl",
+		Aliases: []string{"setlevel", "set-lvl", "set-level"},
+		Summary: "Set the given user's XP to the minimum needed for the given level.",
+		Usage:   "<user> <new level>",
+		Args:    bcr.MinArgs(2),
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.setlvl,
+	})
+
+	lvl.AddSubcommand(&bcr.Command{
 		Name:    "colour",
 		Aliases: []string{"color"},
 		Summary: "Set the colour used in your level embed.",

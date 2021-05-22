@@ -28,7 +28,7 @@ func (bot *Bot) nolevelsList(ctx *bcr.Context) (err error) {
 		if l.Expires {
 			buf += fmt.Sprintf("expires %v UTC\n", l.Expiry.Format("2006-02-01 15:04:05"))
 		} else {
-			buf += fmt.Sprintf("does not expire\n")
+			buf += "does not expire\n"
 		}
 		s = append(s, buf)
 	}
@@ -51,6 +51,7 @@ func (bot *Bot) nolevelsAdd(ctx *bcr.Context) (err error) {
 		dur, err := durationparser.Parse(ctx.Args[1])
 		if err != nil {
 			_, err = ctx.Send("Couldn't parse your input as a valid duration.", nil)
+			return err
 		}
 		expiry = expiry.Add(dur)
 		expires = true

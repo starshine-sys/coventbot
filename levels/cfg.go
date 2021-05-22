@@ -76,6 +76,7 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 		b, err := strconv.ParseBool(ctx.Args[1])
 		if err != nil {
 			_, err = ctx.Send("You must give either `true` or `false` for the new value.", nil)
+			return err
 		}
 		_, err = bot.DB.Pool.Exec(
 			context.Background(),
@@ -106,6 +107,7 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 		_, err = ctx.SendEmbed(bcr.SED{
 			Message: fmt.Sprintf("Set `%v` to `%v`.", ctx.Args[0], t),
 		})
+		return err
 	case "reward_text", "reward":
 		text := strings.TrimSpace(strings.TrimPrefix(ctx.RawArgs, ctx.Args[0]))
 		if len(text) >= 1024 {
