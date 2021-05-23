@@ -36,16 +36,6 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	xpForNext := expForNextLevel(lvl)
 	xpForPrev := expForNextLevel(lvl - 1)
 
-	var percent int64
-	{
-		progress := uc.XP - xpForPrev
-		needed := xpForNext - xpForPrev
-
-		p := float64(progress) / float64(needed)
-
-		percent = int64(p * 100)
-	}
-
 	// get leaderboard (for rank)
 	var rank int
 	lb, err := bot.getLeaderboard(ctx.Message.GuildID)
@@ -73,14 +63,27 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		},
 		Title: fmt.Sprintf("Level %v - Rank #%v", lvl, rank),
 		Description: fmt.Sprintf(
-			"**%v%%**\n%v/%v XP", percent,
-			humanize.Comma(uc.XP), humanize.Comma(xpForNext),
+			"%v/%v XP", humanize.Comma(uc.XP), humanize.Comma(xpForNext),
 		),
 		Color: clr,
 		Footer: &discord.EmbedFooter{
 			Text: fmt.Sprintf("%v#%v", u.Username, u.Discriminator),
 		},
 		Timestamp: discord.NowTimestamp(),
+	}
+
+	{
+		progress := uc.XP - xpForPrev
+		needed := xpForNext - xpForPrev
+
+		p := float64(progress) / float64(needed)
+
+		percent := int64(p * 100)
+
+		e.Fields = append(e.Fields, discord.EmbedField{
+			Name:  "Progress to next level",
+			Value: fmt.Sprintf("%v%% (%v/%v XP)", percent, humanize.Comma(progress), humanize.Comma(needed)),
+		})
 	}
 
 	// get next reward
