@@ -24,6 +24,7 @@ import (
 	"github.com/starshine-sys/tribble/levels"
 	"github.com/starshine-sys/tribble/names"
 	"github.com/starshine-sys/tribble/pklog"
+	"github.com/starshine-sys/tribble/reactroles"
 	"github.com/starshine-sys/tribble/starboard"
 	"github.com/starshine-sys/tribble/tickets"
 	"go.uber.org/zap"
@@ -68,6 +69,8 @@ func main() {
 	bot.Add(static.Init)
 	// add mod commands
 	bot.Add(moderation.Init)
+	// add role commands
+	bot.Add(reactroles.Init)
 	// add reminder commands
 	bot.Add(reminders.Init)
 	// add tag commands
