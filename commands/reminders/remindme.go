@@ -15,6 +15,7 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 	dur, err := durationparser.Parse(ctx.Args[0])
 	if err != nil {
 		_, err = ctx.Sendf("I couldn't parse ``%v`` as a valid duration.", bcr.EscapeBackticks(ctx.Args[0]))
+		return
 	}
 
 	rm := "N/A"

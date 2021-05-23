@@ -35,6 +35,12 @@ func (bot *Bot) nicknameChange(m *gateway.GuildMemberUpdateEvent) {
 func (bot *Bot) usernameChange(m *gateway.GuildMemberUpdateEvent) {
 	user := m.User.Username + "#" + m.User.Discriminator
 
+	var optedOut bool
+	bot.DB.Pool.QueryRow(context.Background(), "select usernames_opt_out from user_config where user_id = $1", m.User.ID).Scan(&optedOut)
+	if optedOut {
+		return
+	}
+
 	var oldUser string
 	err := bot.DB.Pool.QueryRow(context.Background(), "select name from usernames where user_id = $1 order by time desc limit 1", m.User.ID).Scan(&oldUser)
 	if err != nil && err != pgx.ErrNoRows {

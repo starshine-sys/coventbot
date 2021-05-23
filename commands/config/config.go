@@ -17,6 +17,15 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	b := &Bot{Bot: bot}
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "user-cfg",
+		Aliases: []string{"userconf", "user-config", "userconfig", "usercfg", "user-conf"},
+		Summary: "Show or edit your user settings.",
+		Usage:   "[show|<key> <value>]",
+
+		Command: b.userCfg,
+	}))
+
 	prefix := b.Router.AddCommand(&bcr.Command{
 		Name:    "prefix",
 		Aliases: []string{"prefixes"},

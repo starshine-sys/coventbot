@@ -85,6 +85,8 @@ func New(
 	b.State.AddHandler(b.GuildCreate)
 	// add message create handler
 	b.State.AddHandler(b.MessageCreate)
+	// add member update handler (this isn't handled by default apparently?)
+	b.State.AddHandler(b.guildMemberUpdate)
 
 	return b
 }

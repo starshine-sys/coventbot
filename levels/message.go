@@ -1,6 +1,7 @@
 package levels
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -100,11 +101,16 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	}
 
 	if sc.RewardText != "" {
-		txt := strings.NewReplacer("{lvl}", fmt.Sprint(newLvl)).Replace(sc.RewardText)
+		var msgsDisabled bool
+		bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", m.Author.ID).Scan(&msgsDisabled)
 
-		ch, err := bot.State.CreatePrivateChannel(m.Author.ID)
-		if err == nil {
-			bot.State.SendText(ch.ID, txt)
+		if !msgsDisabled {
+			txt := strings.NewReplacer("{lvl}", fmt.Sprint(newLvl)).Replace(sc.RewardText)
+
+			ch, err := bot.State.CreatePrivateChannel(m.Author.ID)
+			if err == nil {
+				bot.State.SendText(ch.ID, txt)
+			}
 		}
 	}
 
