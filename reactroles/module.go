@@ -5,6 +5,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -56,6 +57,13 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Create a new message with the given roles.",
 		Usage:   "<channel> <name> <roles...>",
 		Args:    bcr.MinArgs(3),
+
+		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.BoolP("mention", "m", false, "Show roles as @mentions")
+			fs.StringP("description", "d", "", "A description to show before the role list")
+
+			return fs
+		},
 
 		Permissions: discord.PermissionManageRoles,
 		Command:     b.simple,

@@ -60,8 +60,19 @@ func (bot *Bot) simple(ctx *bcr.Context) (err error) {
 		},
 	}
 
+	description, _ := ctx.Flags.GetString("description")
+	if description != "" {
+		e.Description = description + "\n\n"
+	}
+
+	showAsMention, _ := ctx.Flags.GetBool("mention")
+
 	for i, r := range rls {
-		e.Description += fmt.Sprintf("<:emoji:%v> %v\n", simpleEmotes[i], r.Name)
+		if showAsMention {
+			e.Description += fmt.Sprintf("<:emoji:%v> %v\n", simpleEmotes[i], r.Mention())
+		} else {
+			e.Description += fmt.Sprintf("<:emoji:%v> %v\n", simpleEmotes[i], r.Name)
+		}
 	}
 
 	m, err := bot.State.SendEmbed(ch.ID, e)

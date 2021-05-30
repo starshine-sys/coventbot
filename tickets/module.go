@@ -90,7 +90,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	cfg.AddSubcommand(&bcr.Command{
 		Name:        "mention",
 		Summary:     "Set the mention for a category.",
-		Description: "Set the mention for a category. `{mention}` will be replaced with the user's mention, `{channel}` will be replaced with a link to the channel.",
+		Description: "Set the mention for a category. `{mention}` will be replaced with the user's mention, `{channel}` will be replaced with a link to the channel, `{here}` and `{everyone}` will be replaced with @here and @everyone, respectively.",
 		Usage:       "<category> <mention|-clear>",
 		Args:        bcr.MinArgs(2),
 

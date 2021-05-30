@@ -31,7 +31,7 @@ func (bot *Bot) GuildCreate(g *gateway.GuildCreateEvent) {
 		owner = fmt.Sprintf("%v#%v (%v)", o.Username, o.Discriminator, o.Mention())
 	}
 
-	if bot.GuildLogWebhook.ID.IsValid() {
+	if bot.GuildLogWebhook != nil {
 		bot.GuildLogWebhook.Execute(webhook.ExecuteData{
 			Username:  fmt.Sprintf("%v server join", botUser.Username),
 			AvatarURL: botUser.AvatarURL(),

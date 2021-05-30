@@ -91,14 +91,18 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 	mention := strings.NewReplacer(
 		"{mention}", user.Mention(),
 		"{channel}", ch.Mention(),
+		"{here}", "@here",
+		"{everyone}", "@everyone",
 	).Replace(cat.Mention)
 
 	e := &discord.Embed{
-		Color:       ctx.Router.EmbedColor,
-		Description: cat.Description + "\n\nReact with :x: to close this ticket.",
+		Title: cat.Name,
+		Color: ctx.Router.EmbedColor,
 	}
-	if e.Description == "" {
-		e = nil
+	if cat.CanCreatorClose {
+		e.Description = cat.Description + "\n\nReact with :x: to close this ticket."
+	} else {
+		e.Description = cat.Description
 	}
 
 	m, err := bot.State.SendMessage(ch.ID, mention, e)
