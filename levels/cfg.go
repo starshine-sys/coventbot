@@ -115,6 +115,10 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 			return
 		}
 
+		if text == "clear" || text == "-clear" || text == "--clear" {
+			text = ""
+		}
+
 		_, err = bot.DB.Pool.Exec(
 			context.Background(),
 			"update server_levels set reward_text = $1 where id = $2",
