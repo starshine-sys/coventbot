@@ -43,11 +43,7 @@ func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 		))
 	}
 
-	name := "Leaderboard"
-	g, err := ctx.State.Guild(ctx.Message.GuildID)
-	if err == nil {
-		name = "Leaderboard for " + g.Name
-	}
+	name := "Leaderboard for " + ctx.Guild.Name
 
 	_, err = ctx.PagedEmbed(
 		StringPaginator(name, bcr.ColourBlurple, strings, 15),

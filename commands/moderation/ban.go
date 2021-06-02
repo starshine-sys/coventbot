@@ -44,12 +44,7 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 	}
 
 	if isMember {
-		g, err := ctx.State.Guild(ctx.Message.GuildID)
-		if err != nil {
-			return bot.Report(ctx, err)
-		}
-
-		_, err = ctx.NewDM(target.ID).Content(fmt.Sprintf("You were banned from %v.\nReason: %v", g.Name, reason)).Send()
+		_, err = ctx.NewDM(target.ID).Content(fmt.Sprintf("You were banned from %v.\nReason: %v", ctx.Guild.Name, reason)).Send()
 		if err != nil {
 			ctx.Send("I was unable to DM the user about their ban.", nil)
 		}

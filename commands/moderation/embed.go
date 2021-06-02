@@ -22,12 +22,7 @@ func (bot *Bot) embedTo(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	g, err := ctx.State.Guild(ctx.Message.GuildID)
-	if err != nil {
-		return bot.Report(ctx, err)
-	}
-
-	if !discord.CalcOverwrites(*g, *ctx.Channel, *ctx.Member).Has(discord.PermissionViewChannel | discord.PermissionSendMessages) {
+	if !discord.CalcOverwrites(*ctx.Guild, *ctx.Channel, *ctx.Member).Has(discord.PermissionViewChannel | discord.PermissionSendMessages) {
 		_, err = ctx.Send("You do not have permission to send messages in that channel.", nil)
 		return
 	}

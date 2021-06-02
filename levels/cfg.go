@@ -13,13 +13,8 @@ import (
 
 func (bot *Bot) config(ctx *bcr.Context) (err error) {
 	if len(ctx.Args) == 0 {
-		g, err := ctx.State.Guild(ctx.Message.GuildID)
-		if err != nil {
-			return bot.Report(ctx, err)
-		}
-
 		e := discord.Embed{
-			Title: "Level config for " + g.Name,
+			Title: "Level config for " + ctx.Guild.Name,
 
 			Color: bcr.ColourBlurple,
 		}

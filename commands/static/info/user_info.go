@@ -21,15 +21,9 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	// get guild
-	g, err := ctx.State.Guild(ctx.Message.GuildID)
-	if err != nil {
-		return bot.Report(ctx, err)
-	}
-
 	// filter the roles to only the ones the user has
 	var rls etc.Roles
-	for _, gr := range g.Roles {
+	for _, gr := range ctx.Guild.Roles {
 		for _, ur := range m.RoleIDs {
 			if gr.ID == ur {
 				rls = append(rls, gr)
@@ -54,7 +48,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 	}
 
 	var perms []string
-	if g.OwnerID == m.User.ID {
+	if ctx.Guild.OwnerID == m.User.ID {
 		perms = append(perms, "Server Owner")
 		userPerms.Add(discord.PermissionAll)
 	}
@@ -81,7 +75,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 		b.WriteString("No roles.")
 	}
 
-	colour := discord.MemberColor(*g, *m)
+	colour := discord.MemberColor(*ctx.Guild, *m)
 	if colour == 0 {
 		colour = ctx.Router.EmbedColor
 	}
