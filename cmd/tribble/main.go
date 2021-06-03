@@ -10,6 +10,8 @@ import (
 	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
+	"go.uber.org/zap"
+
 	"github.com/starshine-sys/tribble/approval"
 	"github.com/starshine-sys/tribble/bot"
 	"github.com/starshine-sys/tribble/commands/admin"
@@ -21,6 +23,7 @@ import (
 	"github.com/starshine-sys/tribble/db"
 	"github.com/starshine-sys/tribble/etc"
 	"github.com/starshine-sys/tribble/gatekeeper"
+	"github.com/starshine-sys/tribble/keyroles"
 	"github.com/starshine-sys/tribble/levels"
 	"github.com/starshine-sys/tribble/names"
 	"github.com/starshine-sys/tribble/pklog"
@@ -28,7 +31,6 @@ import (
 	"github.com/starshine-sys/tribble/starboard"
 	"github.com/starshine-sys/tribble/tickets"
 	"github.com/starshine-sys/tribble/todos"
-	"go.uber.org/zap"
 )
 
 func main() {
@@ -86,6 +88,7 @@ func main() {
 	reminders.Init(bot)
 	tags.Init(bot)
 	tickets.Init(bot)
+	keyroles.Init(bot)
 
 	// connect to discord
 	if err := bot.Start(); err != nil {

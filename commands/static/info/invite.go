@@ -19,6 +19,7 @@ func (bot *Bot) invite(ctx *bcr.Context) (err error) {
 		discord.PermissionManageMessages |
 		discord.PermissionManageRoles |
 		discord.PermissionSendMessages |
+		discord.PermissionViewAuditLog |
 		discord.PermissionBanMembers |
 		discord.PermissionManageWebhooks |
 		discord.PermissionManageChannels |
