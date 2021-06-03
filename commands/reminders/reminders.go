@@ -39,7 +39,7 @@ func (bot *Bot) reminders(ctx *bcr.Context) (err error) {
 		slice = append(slice, fmt.Sprintf(`**#%v**: %v
 %v UTC ([link](https://discord.com/channels/%v/%v/%v))
 
-`, r.ID, r.Reminder, r.Expires.Format("2006-01-02 | 15:04"), linkServer, r.ChannelID, r.MessageID))
+`, r.ID, text, r.Expires.Format("2006-01-02 | 15:04"), linkServer, r.ChannelID, r.MessageID))
 	}
 
 	_, err = ctx.PagedEmbed(StringPaginator(fmt.Sprintf("Reminders (%v)", len(rms)), bcr.ColourBlurple, slice, 5), false)
