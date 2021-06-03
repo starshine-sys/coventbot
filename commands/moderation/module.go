@@ -137,10 +137,25 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"createinvite"},
 		Summary: "Make an invite for the current channel, or the given channel.",
 		Usage:   "[channel]",
-		Args:    bcr.MinArgs(1),
 
 		Permissions: discord.PermissionCreateInstantInvite,
 		Command:     b.makeInvite,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "transcript",
+		Summary: "Make a transcript of the given channel.",
+		Usage:   "<channel>",
+		Args:    bcr.MinArgs(1),
+
+		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.StringP("out", "o", "", "Channel to output the transcript to")
+			fs.UintP("limit", "l", 500, "Number of messages to make a transcript of (maximum 2000)")
+			return fs
+		},
+
+		Permissions: discord.PermissionManageChannels,
+		Command:     b.transcript,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
