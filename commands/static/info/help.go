@@ -35,8 +35,8 @@ Note that this bot is currently **very** undocumented; use at your own risk.`, c
 			Value: "`addemoji`: add a custom emoji\n`embedsource`: get the JSON source from an embed\n`enlarge`: enlarge a custom emote\n`meow`: show a random meowmoji\n`poll` & `quickpoll`: run polls\n`roll`: roll for initiative\n`echo`: send messages as the bot\n`members`: show a filtered list of members",
 		},
 		{
-			Name:  "Reminders",
-			Value: "`remindme`: set a reminder for yourself\n`reminders`: show your current reminders\n`delreminder`: delete one of your reminders",
+			Name:  "Reminders and todos",
+			Value: "`remindme`: set a reminder for yourself\n`reminders`: show your current reminders\n`delreminder`: delete one of your reminders\n`todo`: set a todo and send it to your todo channel\n`complete`: complete a todo",
 		},
 		{
 			Name:  "Levels",

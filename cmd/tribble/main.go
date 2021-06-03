@@ -27,6 +27,7 @@ import (
 	"github.com/starshine-sys/tribble/reactroles"
 	"github.com/starshine-sys/tribble/starboard"
 	"github.com/starshine-sys/tribble/tickets"
+	"github.com/starshine-sys/tribble/todos"
 	"go.uber.org/zap"
 )
 
@@ -69,30 +70,22 @@ func main() {
 	bot.Add(static.Init)
 	// add mod commands
 	bot.Add(moderation.Init)
-	// add role commands
-	bot.Add(reactroles.Init)
-	// add reminder commands
-	bot.Add(reminders.Init)
-	// add tag commands
-	bot.Add(tags.Init)
-	// add ticket commands
-	bot.Add(tickets.Init)
-	// add level commands
-	bot.Add(levels.Init)
+	// add todos
+	bot.Add(todos.Init)
 	// add config commands
 	bot.Add(config.Init)
-	// add starboard
+
 	starboard.Init(bot)
-	// add gatekeeper
-	bot.Add(gatekeeper.Init)
-	// add approval
-	bot.Add(approval.Init)
-	// add logging
-	bot.Add(names.Init)
-	// add PK logging
-	bot.Add(pklog.Init)
-	// add admin commands
-	bot.Add(admin.Init)
+	gatekeeper.Init(bot)
+	approval.Init(bot)
+	names.Init(bot)
+	pklog.Init(bot)
+	admin.Init(bot)
+	levels.Init(bot)
+	reactroles.Init(bot)
+	reminders.Init(bot)
+	tags.Init(bot)
+	tickets.Init(bot)
 
 	// connect to discord
 	if err := bot.Start(); err != nil {
