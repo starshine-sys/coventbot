@@ -37,6 +37,14 @@ If a message link is given as input, and the message has multiple emotes in it, 
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:        "exportemotes",
+		Aliases:     []string{"export-emotes"},
+		Summary:     "Export this server's emotes to a zip file.",
+		Permissions: discord.PermissionManageEmojis,
+		Command:     b.exportEmotes,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "bubble",
 		Summary: "Bubble wrap!",
 		Usage:   "[-prepop] [-size 1-13]",

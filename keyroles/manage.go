@@ -23,7 +23,7 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 	s := []string{}
 
 	for _, r := range keyRoles {
-		s = append(s, fmt.Sprintf("<@&%v>", r))
+		s = append(s, fmt.Sprintf("<@&%v>\n", r))
 	}
 
 	_, err = ctx.PagedEmbed(
