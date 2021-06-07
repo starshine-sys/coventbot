@@ -116,5 +116,16 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Command: b.hello,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:        "sampa",
+		Aliases:     []string{"xsampa", "x-sampa"},
+		Summary:     "Convert X-SAMPA to IPA.",
+		Description: "Convert [X-SAMPA](https://en.wikipedia.org/wiki/X-SAMPA) to IPA.\nThe converted message can be deleted by the user by reacting :x:, until two hours after it was posted.",
+		Usage:       "<X-SAMPA>",
+		Args:        bcr.MinArgs(1),
+
+		Command: b.sampa,
+	}))
+
 	return s, list
 }
