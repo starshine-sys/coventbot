@@ -6,6 +6,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -16,19 +17,33 @@ func (bot *Bot) add(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 	if !isTicket {
-		_, err = ctx.Sendf("This isn't a ticket channel.")
+		_, err = ctx.Replyc(bcr.ColourRed, "This isn't a ticket channel.")
 		return
 	}
 
 	if perms, _ := ctx.State.Permissions(ctx.Channel.ID, ctx.Author.ID); !perms.Has(discord.PermissionManageMessages) {
-		_, err = ctx.Sendf("You're not allowed to use this command.")
+		_, err = ctx.Replyc(bcr.ColourRed, "You're not allowed to use this command.")
 		return
 	}
 
 	u, err := ctx.ParseMember(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("Couldn't find that user.", nil)
+		_, err = ctx.Replyc(bcr.ColourRed, "Couldn't find that user.", nil)
 		return
+	}
+
+	var exists bool
+	err = bot.DB.Pool.QueryRow(context.Background(), "select exists(select * from tickets where $1 = any(users) and channel_id = $2)", u.User.ID, ctx.Channel.ID).Scan(&exists)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+	if exists {
+		_, err = ctx.Replyc(bcr.ColourRed, "%v is already part of this ticket.", u.Mention())
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update tickets set users = array_append(users, $1) where channel_id = $2", u.User.ID, ctx.Channel.ID)
+	if err != nil {
+		return bot.Report(ctx, err)
 	}
 
 	err = bot.State.EditChannelPermission(ctx.Channel.ID, discord.Snowflake(u.User.ID), api.EditChannelPermissionData{
@@ -68,6 +83,11 @@ func (bot *Bot) remove(ctx *bcr.Context) (err error) {
 		return
 	}
 
+	_, err = bot.DB.Pool.Exec(context.Background(), "update tickets set users = array_remove(users, $1) where channel_id = $2", u.User.ID, ctx.Channel.ID)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
 	err = bot.State.EditChannelPermission(ctx.Channel.ID, discord.Snowflake(u.User.ID), api.EditChannelPermissionData{
 		Type: discord.OverwriteMember,
 		Deny: discord.PermissionViewChannel | discord.PermissionSendMessages | discord.PermissionReadMessageHistory | discord.PermissionAddReactions,
@@ -81,4 +101,58 @@ func (bot *Bot) remove(ctx *bcr.Context) (err error) {
 		Color:       ctx.Router.EmbedColor,
 	})
 	return
+}
+
+func (bot *Bot) guildMemberRemove(ev *gateway.GuildMemberRemoveEvent) {
+	channels := []uint64{}
+
+	err := bot.DB.Pool.QueryRow(context.Background(), "select array(select channel_id from tickets where $1 = any(users) and category_id = any(array(select category_id from ticket_categories where server_id = $2)))", ev.User.ID, ev.GuildID).Scan(&channels)
+	if err != nil {
+		bot.Sugar.Errorf("Error getting channels: %v", err)
+	}
+
+	for _, ch := range channels {
+		_, err = bot.State.Channel(discord.ChannelID(ch))
+		if err != nil {
+			continue
+		}
+
+		_, err = bot.State.SendEmbed(discord.ChannelID(ch), discord.Embed{
+			Color:       bcr.ColourBlurple,
+			Description: fmt.Sprintf("%v left.", ev.User.Mention()),
+		})
+		if err != nil {
+			bot.Sugar.Errorf("Error sending message: %v", err)
+		}
+	}
+}
+
+func (bot *Bot) guildMemberAdd(ev *gateway.GuildMemberAddEvent) {
+	channels := []uint64{}
+
+	err := bot.DB.Pool.QueryRow(context.Background(), "select array(select channel_id from tickets where $1 = any(users) and category_id = any(array(select category_id from ticket_categories where server_id = $2)))", ev.User.ID, ev.GuildID).Scan(&channels)
+	if err != nil {
+		bot.Sugar.Errorf("Error getting channels: %v", err)
+	}
+
+	for _, ch := range channels {
+		_, err = bot.State.Channel(discord.ChannelID(ch))
+		if err != nil {
+			continue
+		}
+
+		err = bot.State.EditChannelPermission(discord.ChannelID(ch), discord.Snowflake(ev.User.ID), api.EditChannelPermissionData{
+			Type:  discord.OverwriteMember,
+			Allow: discord.PermissionViewChannel | discord.PermissionSendMessages | discord.PermissionReadMessageHistory | discord.PermissionAddReactions,
+		})
+		if err != nil {
+			bot.Sugar.Errorf("Error updating overwrites for %v: %v", ch, err)
+			continue
+		}
+
+		_, err = bot.State.SendEmbed(discord.ChannelID(ch), discord.Embed{
+			Description: fmt.Sprintf("Added %v after rejoin.", ev.Mention()),
+			Color:       bcr.ColourBlurple,
+		})
+	}
 }

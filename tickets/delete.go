@@ -61,10 +61,23 @@ Created %v, closed %v
 Messages: %v
 `, ctx.Channel.Name, ctx.Channel.ID, owner.Username, owner.Discriminator, owner.ID, ctx.Channel.ID.Time().UTC().Format("2006-01-02 15:05:05"), time.Now().UTC().Format("2006-01-02 15:05:05"), len(msgs)))
 
+	users := []string{}
+
 	for _, m := range msgs {
 		b := fmt.Sprintf(`--------------------------------------------------------------------------------
 [%v] %v#%v (%v)
 %v`, m.Timestamp.Time().UTC().Format("2006-01-02 15:05:05"), m.Author.Username, m.Author.Discriminator, m.Author.ID, m.Content)
+
+		var isInUsers bool
+		for _, u := range users {
+			if m.Author.Mention() == u {
+				isInUsers = true
+				break
+			}
+		}
+		if !isInUsers {
+			users = append(users, m.Author.Mention())
+		}
 
 		if len(m.Embeds) > 0 {
 			bt, err := json.Marshal(&m.Embeds[0])
@@ -97,6 +110,11 @@ Messages: %v
 			{
 				Name:   "Messages",
 				Value:  fmt.Sprint(len(msgs)),
+				Inline: true,
+			},
+			{
+				Name:   "Participants",
+				Value:  strings.Join(users, "\n"),
 				Inline: true,
 			},
 		},

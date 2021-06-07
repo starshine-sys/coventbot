@@ -108,5 +108,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.description,
 	})
 
+	// add leave/join handlers
+	b.State.AddHandler(b.guildMemberRemove)
+	b.State.AddHandler(b.guildMemberAdd)
+
 	return s, append(list, tickets)
 }

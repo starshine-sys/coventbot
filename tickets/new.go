@@ -83,7 +83,7 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 		bot.Sugar.Errorf("Error updating count: %v", err)
 	}
 
-	_, err = bot.DB.Pool.Exec(context.Background(), "insert into tickets (channel_id, category_id, owner_id) values ($1, $2, $3)", ch.ID, cat.CategoryID, user.ID)
+	_, err = bot.DB.Pool.Exec(context.Background(), "insert into tickets (channel_id, category_id, owner_id, users) values ($1, $2, $3, $4)", ch.ID, cat.CategoryID, user.ID, []uint64{uint64(user.ID)})
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -124,7 +124,9 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	ctx.State.React(m.ChannelID, m.ID, "❌")
+	if cat.CanCreatorClose {
+		ctx.State.React(m.ChannelID, m.ID, "❌")
+	}
 
 	_, err = bot.DB.Pool.Exec(context.Background(), `insert into triggers
 (message_id, emoji, command)
