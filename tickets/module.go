@@ -58,6 +58,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	})
 
 	tickets.AddSubcommand(&bcr.Command{
+		Name:    "rename",
+		Summary: "Rename a ticket channel.",
+		Usage:   "<new name>",
+		Args:    bcr.MinArgs(1),
+
+		GuildOnly: true,
+		Command:   b.rename,
+	})
+
+	tickets.AddSubcommand(&bcr.Command{
 		Name:    "remove",
 		Summary: "Remove a member from a ticket.",
 		Usage:   "<member>",
@@ -65,6 +75,14 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 		GuildOnly: true,
 		Command:   b.remove,
+	})
+
+	tickets.AddSubcommand(&bcr.Command{
+		Name:    "list",
+		Summary: "Show a list of ticket categories.",
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.list,
 	})
 
 	cfg := tickets.AddSubcommand(&bcr.Command{

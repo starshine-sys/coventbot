@@ -35,7 +35,6 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 	cat := &Category{}
 	err = pgxscan.Get(context.Background(), bot.DB.Pool, cat, "select * from ticket_categories where server_id = $1 and name ilike $2 order by category_id limit 1", ctx.Message.GuildID, ctx.Args[0])
 	if err != nil {
-		bot.Sugar.Errorf("Error: %v", err)
 		_, err = ctx.Sendf("Category not found.")
 		return
 	}
@@ -61,7 +60,6 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 	ch, err := bot.State.CreateChannel(ctx.Message.GuildID, api.CreateChannelData{
 		Name:       fmt.Sprintf("%v-%04d", cat.Name, cat.Count+1),
 		Type:       discord.GuildText,
-		Topic:      fmt.Sprintf("Ticket for %v", user.Mention()),
 		CategoryID: cat.CategoryID,
 	})
 	if err != nil {
@@ -95,14 +93,25 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 		"{everyone}", "@everyone",
 	).Replace(cat.Mention)
 
+	desc := strings.NewReplacer(
+		"{mention}", user.Mention(),
+		"{channel}", ch.Mention(),
+		"{here}", "@here",
+		"{everyone}", "@everyone",
+	).Replace(cat.Description)
+
 	e := &discord.Embed{
 		Title: cat.Name,
 		Color: ctx.Router.EmbedColor,
 	}
 	if cat.CanCreatorClose {
-		e.Description = cat.Description + "\n\nReact with :x: to close this ticket."
+		e.Description = desc + "\n\nReact with :x: to close this ticket."
 	} else {
-		e.Description = cat.Description
+		e.Description = desc
+	}
+
+	if e.Description != "" {
+		e.Title = ""
 	}
 
 	m, err := bot.State.SendMessage(ch.ID, mention, e)
