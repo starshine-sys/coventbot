@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
+	"github.com/starshine-sys/tribble/commands/moderation/mirror"
 	"github.com/starshine-sys/tribble/commands/moderation/modlog"
 )
 
@@ -23,6 +24,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Bot:    bot,
 		ModLog: modlog.New(bot),
 	}
+
+	// add handler for importing other bots' mod logs
+	b.Add(mirror.Init)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "members",

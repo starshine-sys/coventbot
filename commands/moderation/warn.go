@@ -1,11 +1,13 @@
 package moderation
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
 
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/dustin/go-humanize"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -41,7 +43,13 @@ func (bot *Bot) warn(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	_, err = ctx.NewMessage().Content(fmt.Sprintf("Warned **%v#%v**", u.User.Username, u.User.Discriminator)).Send()
+	var count int
+	err = bot.DB.Pool.QueryRow(context.Background(), "select count(*) from mod_log where user_id = $1 and server_id = $2 and action_type = 'warn'", u.User.ID, ctx.Message.GuildID).Scan(&count)
+	if err != nil {
+		count = 1
+	}
+
+	_, err = ctx.NewMessage().Content(fmt.Sprintf("**%v#%v** has been warned, this is their %v warning.", u.User.Username, u.User.Discriminator, humanize.Ordinal(count))).Send()
 	return
 }
 

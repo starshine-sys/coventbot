@@ -38,12 +38,8 @@ const (
 	ActionWarn ActionType = "warn"
 )
 
-func (bot *ModLog) nextID(guildID discord.GuildID) (id int64) {
-	bot.DB.Pool.QueryRow(context.Background(), "select id from mod_log where server_id = $1 order by id desc limit 1", guildID).Scan(&id)
-	return id + 1
-}
-
-func (bot *ModLog) insertEntry(guildID discord.GuildID, user, mod discord.UserID, actionType ActionType, reason string) (log *Entry, err error) {
+// InsertEntry inserts a mod log entry
+func (bot *ModLog) InsertEntry(guildID discord.GuildID, user, mod discord.UserID, timestamp time.Time, actionType ActionType, reason string) (log *Entry, err error) {
 	if reason == "" {
 		reason = "N/A"
 	}
@@ -51,8 +47,15 @@ func (bot *ModLog) insertEntry(guildID discord.GuildID, user, mod discord.UserID
 	log = &Entry{}
 
 	err = pgxscan.Get(context.Background(), bot.DB.Pool, log, `insert into mod_log
-	(id, server_id, user_id, mod_id, action_type, reason)
-	values ($1, $2, $3, $4, $5, $6) returning *`, bot.nextID(guildID), guildID, user, mod, actionType, reason)
+	(id, server_id, user_id, mod_id, action_type, reason, time)
+	values
+	(
+			coalesce(
+					(select id + 1 from mod_log where server_id = $1 order by id desc limit 1), 1
+			),
+			$1, $2, $3, $4, $5, $6
+	)
+	returning *`, guildID, user, mod, actionType, reason, timestamp)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +68,7 @@ func (bot *ModLog) Channelban(guildID discord.GuildID, channel discord.ChannelID
 		reason = "N/A"
 	}
 
-	entry, err := bot.insertEntry(guildID, userID, modID, "channelban", fmt.Sprintf("%v: %v", channel.Mention(), reason))
+	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "channelban", fmt.Sprintf("%v: %v", channel.Mention(), reason))
 	if err != nil {
 		return err
 	}
@@ -103,7 +106,7 @@ func (bot *ModLog) Unchannelban(guildID discord.GuildID, channel discord.Channel
 		reason = "N/A"
 	}
 
-	entry, err := bot.insertEntry(guildID, userID, modID, "unchannelban", fmt.Sprintf("%v: %v", channel.Mention(), reason))
+	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "unchannelban", fmt.Sprintf("%v: %v", channel.Mention(), reason))
 	if err != nil {
 		return err
 	}
@@ -137,7 +140,7 @@ func (bot *ModLog) Unchannelban(guildID discord.GuildID, channel discord.Channel
 
 // Warn logs a warn
 func (bot *ModLog) Warn(guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
-	entry, err := bot.insertEntry(guildID, userID, modID, "warn", reason)
+	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "warn", reason)
 	if err != nil {
 		return err
 	}
@@ -171,7 +174,7 @@ func (bot *ModLog) Warn(guildID discord.GuildID, userID, modID discord.UserID, r
 
 // Ban logs a ban
 func (bot *ModLog) Ban(guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
-	entry, err := bot.insertEntry(guildID, userID, modID, "ban", reason)
+	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "ban", reason)
 	if err != nil {
 		return err
 	}
@@ -205,7 +208,7 @@ func (bot *ModLog) Ban(guildID discord.GuildID, userID, modID discord.UserID, re
 
 // Unban logs a unban
 func (bot *ModLog) Unban(guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
-	entry, err := bot.insertEntry(guildID, userID, modID, "unban", reason)
+	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "unban", reason)
 	if err != nil {
 		return err
 	}

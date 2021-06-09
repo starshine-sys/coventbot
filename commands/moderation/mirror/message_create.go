@@ -1,0 +1,26 @@
+package mirror
+
+import "github.com/diamondburned/arikawa/v2/gateway"
+
+const (
+	yagID  = 204255221017214977
+	carlID = 235148962103951360
+)
+
+func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
+	if !m.GuildID.IsValid() {
+		return
+	}
+
+	if m.Author.ID == yagID {
+		bot.processYAG(m)
+		return
+	}
+
+	if m.Author.ID == carlID {
+		if len(m.Embeds) > 0 {
+			bot.processCarlLog(m)
+			return
+		}
+	}
+}
