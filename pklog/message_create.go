@@ -33,17 +33,15 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		return
 	}
 
-	pkm, err := pk.GetMessage(m.ID.String())
+	pkm, err := pk.GetMessage(pkgo.Snowflake(m.ID))
 	if err != nil {
 		// Message is either not proxied or we got an error from the PK API. Either way, return
 		return
 	}
 
-	u, _ := discord.ParseSnowflake(pkm.Sender)
-
 	msg := Message{
 		MsgID:     m.ID,
-		UserID:    discord.UserID(u),
+		UserID:    discord.UserID(pkm.Sender),
 		ChannelID: m.ChannelID,
 		ServerID:  m.GuildID,
 

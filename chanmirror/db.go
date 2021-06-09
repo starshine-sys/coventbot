@@ -58,6 +58,6 @@ func (bot *Bot) insertMessage(m Message) (err error) {
 }
 
 func (bot *Bot) message(id discord.MessageID) (m Message, err error) {
-	err = pgxscan.Get(context.Background(), bot.DB.Pool, &m, "select * from channel_mirror_messages where message_id = $1", id)
+	err = pgxscan.Get(context.Background(), bot.DB.Pool, &m, "select * from channel_mirror_messages where message_id = $1 or original = $1", id)
 	return
 }

@@ -81,10 +81,9 @@ func (bot *Bot) quickpoll(ctx *bcr.Context) (err error) {
 	// wait a second for pk
 	time.Sleep(time.Second)
 
-	m, err := pk.GetMessage(ctx.Message.ID.String())
+	m, err := pk.GetMessage(pkgo.Snowflake(ctx.Message.ID))
 	if err == nil {
-		sf, _ := discord.ParseSnowflake(m.ID)
-		id = discord.MessageID(sf)
+		id = discord.MessageID(m.ID)
 	} else {
 		ctx.State.Unreact(ctx.Channel.ID, ctx.Message.ID, "🔄")
 	}
