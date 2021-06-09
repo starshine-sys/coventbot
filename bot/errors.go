@@ -13,7 +13,7 @@ import (
 
 // Report reports a issue to Sentry, if it's enabled
 func (bot *Bot) Report(ctx *bcr.Context, e error) (err error) {
-	bot.Sugar.Errorf("Error in %v (%v), guild %v: %v", ctx.Channel.ID, ctx.Channel.Name, ctx.Message.GuildID, err)
+	bot.Sugar.Errorf("Error in %v (%v), guild %v: %v", ctx.Channel.ID, ctx.Channel.Name, ctx.Message.GuildID, e)
 
 	if bot.Hub == nil {
 		return
