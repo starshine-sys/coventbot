@@ -17,6 +17,7 @@ import (
 	"github.com/starshine-sys/tribble/commands/admin"
 	"github.com/starshine-sys/tribble/commands/config"
 	"github.com/starshine-sys/tribble/commands/moderation"
+	"github.com/starshine-sys/tribble/commands/moderation/notes"
 	"github.com/starshine-sys/tribble/commands/reminders"
 	"github.com/starshine-sys/tribble/commands/static"
 	"github.com/starshine-sys/tribble/commands/tags"
@@ -77,6 +78,7 @@ func main() {
 	// add config commands
 	bot.Add(config.Init)
 
+	notes.Init(bot)
 	starboard.Init(bot)
 	gatekeeper.Init(bot)
 	approval.Init(bot)

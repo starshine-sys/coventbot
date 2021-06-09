@@ -75,7 +75,11 @@ func (bot *Bot) parseCarlEmbed(id discord.GuildID, e discord.Embed) *modlog.Entr
 	if len(groups) < 2 {
 		entry.Reason = "No reason given"
 	} else {
-		entry.Reason = groups[1]
+		if strings.Contains(groups[1], "No reason given,") {
+			entry.Reason = "No reason given"
+		} else {
+			entry.Reason = groups[1]
+		}
 	}
 
 	groups = carlDurationRegexp.FindStringSubmatch(e.Description)

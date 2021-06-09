@@ -1,6 +1,10 @@
 package mirror
 
-import "github.com/diamondburned/arikawa/v2/gateway"
+import (
+	"strings"
+
+	"github.com/diamondburned/arikawa/v2/gateway"
+)
 
 const (
 	yagID  = 204255221017214977
@@ -20,6 +24,11 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	if m.Author.ID == carlID {
 		if len(m.Embeds) > 0 {
 			bot.processCarlLog(m)
+			return
+		}
+
+		if strings.Contains(m.Content, "Note taken.") {
+			bot.processCarlNote(m)
 			return
 		}
 	}

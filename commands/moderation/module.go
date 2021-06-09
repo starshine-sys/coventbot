@@ -26,7 +26,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}
 
 	// add handler for importing other bots' mod logs
-	b.Add(mirror.Init)
+	mirror.Init(bot)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "members",
