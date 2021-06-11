@@ -17,6 +17,11 @@ import (
 	"github.com/starshine-sys/bcr"
 )
 
+// oh gods i hate this
+// basically we iterate over this 4 times to crop the avatar into a circle
+// oh gods this is so hacky
+var blankPixels = []int{96, 96, 96, 96, 85, 85, 85, 85, 74, 74, 74, 74, 68, 68, 68, 62, 62, 62, 62, 55, 55, 55, 55, 50, 50, 50, 50, 45, 45, 45, 45, 39, 39, 39, 39, 39, 39, 33, 33, 33, 33, 33, 33, 28, 28, 28, 28, 28, 24, 24, 24, 24, 24, 24, 20, 20, 20, 20, 20, 20, 16, 16, 16, 16, 16, 16, 16, 12, 12, 12, 12, 12, 12, 12, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 4, 4, 4, 4, 4, 4, 4}
+
 //go:embed templates
 var imageData embed.FS
 
@@ -82,7 +87,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	img := gg.NewContext(1200, 400)
 
 	// background
-	img.SetHexColor("#36393f")
+	img.SetHexColor("#00000088")
 	img.DrawRoundedRectangle(50, 50, 1100, 300, 20)
 	img.Fill()
 
@@ -99,29 +104,39 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 
 	pfp = imaging.Resize(pfp, 256, 256, imaging.NearestNeighbor)
 
-	img.DrawImageAnchored(pfp, 200, 200, 0.5, 0.5)
+	pfpImg := gg.NewContextForImage(pfp)
+	pfpImg.SetColor(color.RGBA{0, 0, 0, 0})
 
-	bt, err := imageData.ReadFile("templates/avatar_mask.png")
-	if err != nil {
-		return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+	for y := 0; y < len(blankPixels); y++ {
+		for x := 0; x < blankPixels[y]; x++ {
+			pfpImg.SetPixel(x, y)
+			pfpImg.SetPixel(256-x, 256-y)
+			pfpImg.SetPixel(x, 256-y)
+			pfpImg.SetPixel(256-x, y)
+		}
 	}
 
-	mask, err := png.Decode(bytes.NewReader(bt))
-	if err != nil {
-		return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
-	}
-
-	img.DrawImageAnchored(mask, 200, 200, 0.5, 0.5)
+	img.DrawImageAnchored(pfpImg.Image(), 200, 200, 0.5, 0.5)
 
 	// set font
-	var f *truetype.Font
+	var f, bf *truetype.Font
 	{
-		fontBytes, err := imageData.ReadFile("templates/Roboto-Regular.ttf")
+		fontBytes, err := imageData.ReadFile("templates/Montserrat-Regular.ttf")
 		if err != nil {
 			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
 		}
 
 		f, err = truetype.Parse(fontBytes)
+		if err != nil {
+			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+		}
+
+		bfb, err := imageData.ReadFile("templates/Montserrat-Medium.ttf")
+		if err != nil {
+			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+		}
+
+		bf, err = truetype.Parse(bfb)
 		if err != nil {
 			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
 		}
@@ -150,7 +165,13 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	img.DrawRectangle(350+end, 275, 750-end, 50)
 	img.Fill()
 
-	img.SetHexColor(fmt.Sprintf("#%06x", clr))
+	img.SetHexColor(fmt.Sprintf("#%06xCC", clr))
+
+	img.SetColor(color.NRGBA{0xB5, 0xB5, 0xB5, 0xCC})
+
+	img.DrawRectangle(350, 180, 750, 3)
+	img.Fill()
+
 	img.SetStrokeStyle(gg.NewSolidPattern(color.NRGBA{0xB5, 0xB5, 0xB5, 0xFF}))
 
 	img.DrawRoundedRectangle(350, 275, 750, 50, 5)
@@ -159,7 +180,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 
 	img.SetHexColor("#ffffff")
 
-	img.SetFontFace(truetype.NewFace(f, &truetype.Options{
+	img.SetFontFace(truetype.NewFace(bf, &truetype.Options{
 		Size: 60,
 	}))
 
@@ -174,22 +195,22 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		name += string(r)
 	}
 
-	img.DrawStringAnchored(name, 350, 100, 0, 0.5)
+	img.DrawStringAnchored(name, 350, 120, 0, 0.5)
 
 	// rank/xp
 	img.SetFontFace(truetype.NewFace(f, &truetype.Options{
 		Size: 40,
 	}))
 
-	img.DrawStringAnchored(fmt.Sprintf("Rank #%v", rank), 1100, 100, 1, 0.5)
+	img.DrawStringAnchored(fmt.Sprintf("Rank #%v", rank), 1100, 120, 1, 0.5)
 
-	img.DrawStringAnchored(fmt.Sprintf("Level %v", lvl), 1100, 220, 1, 1)
+	img.DrawStringAnchored(fmt.Sprintf("Level %v", lvl), 1100, 200, 1, 1)
 
 	img.DrawStringAnchored(fmt.Sprintf("%v%%", int64(p*100)), 725, 295, 0.5, 0.5)
 
 	progressStr := fmt.Sprintf("%v/%v XP", humanize.Comma(progress), humanize.Comma(needed))
 
-	img.DrawStringAnchored(progressStr, 350, 220, 0, 1)
+	img.DrawStringAnchored(progressStr, 350, 200, 0, 1)
 
 	buf := new(bytes.Buffer)
 
