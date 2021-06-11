@@ -113,7 +113,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	// set font
 	var f *truetype.Font
 	{
-		fontBytes, err := imageData.ReadFile("templates/NotoSans-Regular.ttf")
+		fontBytes, err := imageData.ReadFile("templates/Roboto-Regular.ttf")
 		if err != nil {
 			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
 		}
@@ -180,7 +180,9 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 
 	img.DrawStringAnchored(fmt.Sprintf("Rank #%v", rank), 1100, 100, 1, 0.5)
 
-	img.DrawStringAnchored(fmt.Sprintf("%v%%", int64(p*100)), 1100, 220, 1, 1)
+	img.DrawStringAnchored(fmt.Sprintf("Level %v", lvl), 1100, 220, 1, 1)
+
+	img.DrawStringAnchored(fmt.Sprintf("%v%%", int64(p*100)), 725, 295, 0.5, 0.5)
 
 	progressStr := fmt.Sprintf("%v/%v XP", humanize.Comma(progress), humanize.Comma(needed))
 
