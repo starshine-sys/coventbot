@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/disintegration/imaging"
 	"github.com/dustin/go-humanize"
 	"github.com/fogleman/gg"
 	"github.com/golang/freetype/truetype"
@@ -95,6 +96,8 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	if err != nil {
 		return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
 	}
+
+	pfp = imaging.Resize(pfp, 256, 256, imaging.NearestNeighbor)
 
 	img.DrawImageAnchored(pfp, 200, 200, 0.5, 0.5)
 
