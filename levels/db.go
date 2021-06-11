@@ -21,6 +21,7 @@ type Server struct {
 
 	BetweenXP  time.Duration
 	RewardText string
+	Background string
 
 	LevelsEnabled      bool
 	LeaderboardModOnly bool
@@ -34,7 +35,8 @@ type Levels struct {
 
 	XP int64
 
-	Colour discord.Color
+	Colour     discord.Color
+	Background string
 
 	NextTime time.Time
 }

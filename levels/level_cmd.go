@@ -4,10 +4,14 @@ import (
 	"bytes"
 	"embed"
 	"fmt"
+	"image"
 	"image/color"
 	"image/png"
 	"net/http"
 	"strings"
+
+	// to decode JPG backgrounds
+	_ "image/jpeg"
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/disintegration/imaging"
@@ -85,6 +89,25 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	}
 
 	img := gg.NewContext(1200, 400)
+
+	// background image
+	if uc.Background != "" || sc.Background != "" {
+		url := uc.Background
+		if url == "" {
+			url = sc.Background
+		}
+
+		resp, err := http.Get(url)
+		if err == nil {
+			defer resp.Body.Close()
+
+			bg, _, err := image.Decode(resp.Body)
+			if err == nil {
+				bg = imaging.Resize(bg, 1200, 0, imaging.NearestNeighbor)
+				img.DrawImageAnchored(bg, 0, 0, 0, 0)
+			}
+		}
+	}
 
 	// background
 	img.SetHexColor("#00000088")

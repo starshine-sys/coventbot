@@ -57,11 +57,31 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	lvl.AddSubcommand(&bcr.Command{
 		Name:    "colour",
 		Aliases: []string{"color"},
-		Summary: "Set the colour used in your level embed.",
+		Summary: "Set the colour used in your level card.",
 		Usage:   "[new colour|clear]",
 
 		GuildOnly: true,
 		Command:   b.colour,
+	})
+
+	bg := lvl.AddSubcommand(&bcr.Command{
+		Name:        "background",
+		Aliases:     []string{"bg"},
+		Summary:     "Set the background used in your level card to the attached image.",
+		Description: "The image will automatically be resized to be 1200 pixels wide, with the original aspect ratio preserved.\nOnly the top 400 pixels (when resized) will be shown as part of the background.",
+		Usage:       "[clear]",
+
+		GuildOnly: true,
+		Command:   b.background,
+	})
+
+	bg.AddSubcommand(&bcr.Command{
+		Name:    "server",
+		Summary: "Set this server's default level background.",
+		Usage:   "[clear]",
+
+		Permissions: discord.PermissionManageGuild,
+		Command:     b.serverBackground,
 	})
 
 	cfg := lvl.AddSubcommand(&bcr.Command{
