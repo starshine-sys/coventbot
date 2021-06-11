@@ -1,12 +1,23 @@
 package levels
 
 import (
+	"bytes"
+	"embed"
 	"fmt"
+	"image/color"
+	"image/png"
+	"net/http"
+	"strings"
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/dustin/go-humanize"
+	"github.com/fogleman/gg"
+	"github.com/golang/freetype/truetype"
 	"github.com/starshine-sys/bcr"
 )
+
+//go:embed templates
+var imageData embed.FS
 
 func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	sc, err := bot.getGuildConfig(ctx.Message.GuildID)
@@ -18,8 +29,14 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		return
 	}
 
+	var embed bool
+	if len(ctx.Args) > 0 && strings.EqualFold(ctx.Args[0], "embed") {
+		embed = true
+		ctx.RawArgs = strings.TrimSpace(strings.TrimPrefix(ctx.RawArgs, ctx.Args[0]))
+	}
+
 	u := &ctx.Author
-	if len(ctx.Args) > 0 {
+	if ctx.RawArgs != "" {
 		u, err = ctx.ParseUser(ctx.RawArgs)
 		if err != nil {
 			_, err = ctx.Send("User not found.", nil)
@@ -57,6 +74,130 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		}
 	}
 
+	if embed {
+		return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+	}
+
+	img := gg.NewContext(1200, 400)
+
+	// background
+	img.SetHexColor("#36393f")
+	img.DrawRoundedRectangle(50, 50, 1100, 300, 20)
+	img.Fill()
+
+	resp, err := http.Get(u.AvatarURLWithType(discord.PNGImage) + "?size=256")
+	if err != nil {
+		return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+	}
+	defer resp.Body.Close()
+
+	pfp, err := png.Decode(resp.Body)
+	if err != nil {
+		return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+	}
+
+	img.DrawImageAnchored(pfp, 200, 200, 0.5, 0.5)
+
+	bt, err := imageData.ReadFile("templates/avatar_mask.png")
+	if err != nil {
+		return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+	}
+
+	mask, err := png.Decode(bytes.NewReader(bt))
+	if err != nil {
+		return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+	}
+
+	img.DrawImageAnchored(mask, 200, 200, 0.5, 0.5)
+
+	// set font
+	var f *truetype.Font
+	{
+		fontBytes, err := imageData.ReadFile("templates/NotoSans-Regular.ttf")
+		if err != nil {
+			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+		}
+
+		f, err = truetype.Parse(fontBytes)
+		if err != nil {
+			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+		}
+	}
+
+	img.SetHexColor(fmt.Sprintf("#%06x", clr))
+	img.DrawCircle(200, 200, 130)
+
+	r, g, b := clr.RGB()
+
+	img.SetStrokeStyle(gg.NewSolidPattern(color.NRGBA{r, g, b, 0xFF}))
+	img.SetLineWidth(5)
+	img.Stroke()
+
+	progress := uc.XP - xpForPrev
+	needed := xpForNext - xpForPrev
+
+	p := float64(progress) / float64(needed)
+
+	end := 750 * p
+
+	img.DrawRectangle(350, 275, end, 50)
+	img.Fill()
+
+	img.SetHexColor("#686868")
+	img.DrawRectangle(350+end, 275, 750-end, 50)
+	img.Fill()
+
+	img.SetHexColor(fmt.Sprintf("#%06x", clr))
+	img.SetStrokeStyle(gg.NewSolidPattern(color.NRGBA{0xB5, 0xB5, 0xB5, 0xFF}))
+
+	img.DrawRoundedRectangle(350, 275, 750, 50, 5)
+	img.SetLineWidth(2)
+	img.Stroke()
+
+	img.SetHexColor("#ffffff")
+
+	img.SetFontFace(truetype.NewFace(f, &truetype.Options{
+		Size: 60,
+	}))
+
+	name := ""
+
+	for i, r := range u.Username {
+		if i > 16 {
+			name += string(r) + "..."
+			break
+		}
+
+		name += string(r)
+	}
+
+	img.DrawStringAnchored(name, 350, 100, 0, 0.5)
+
+	// rank/xp
+	img.SetFontFace(truetype.NewFace(f, &truetype.Options{
+		Size: 40,
+	}))
+
+	img.DrawStringAnchored(fmt.Sprintf("Rank #%v", rank), 1100, 100, 1, 0.5)
+
+	img.DrawStringAnchored(fmt.Sprintf("%v%%", int64(p*100)), 1100, 220, 1, 1)
+
+	progressStr := fmt.Sprintf("%v/%v XP", humanize.Comma(progress), humanize.Comma(needed))
+
+	img.DrawStringAnchored(progressStr, 350, 220, 0, 1)
+
+	buf := new(bytes.Buffer)
+
+	err = img.EncodePNG(buf)
+	if err != nil {
+		return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+	}
+
+	_, err = ctx.NewMessage().AddFile("level_card.png", buf).Send()
+	return
+}
+
+func (bot *Bot) lvlEmbed(ctx *bcr.Context, u *discord.User, sc Server, uc Levels, lvl, xpForNext, xpForPrev int64, rank int, clr discord.Color) (err error) {
 	e := discord.Embed{
 		Thumbnail: &discord.EmbedThumbnail{
 			URL: u.AvatarURLWithType(discord.PNGImage),
