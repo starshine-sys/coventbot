@@ -1,5 +1,10 @@
 package etc
 
+import (
+	"image"
+	"image/color"
+)
+
 // Common colours, yoinked from discord.py
 const (
 	ColourTeal        = 0x1abc9c
@@ -26,3 +31,39 @@ const (
 	ColourGreyple     = 0x99aab5
 	ColourDarkTheme   = 0x36393F
 )
+
+// AverageColour gets the average colour from an image.
+// Return values are R, G, B, A respectively.
+func AverageColour(img image.Image) (uint8, uint8, uint8, uint8) {
+	if _, ok := img.(*image.NRGBA); !ok {
+		return 0, 0, 0, 0
+	}
+
+	bounds := img.Bounds()
+	minX, minY := bounds.Min.X, bounds.Min.Y
+	maxX, maxY := bounds.Max.X, bounds.Max.Y
+
+	var pixels int
+	var r, g, b, a int
+
+	for x := minX; x < maxX; x++ {
+		for y := minY; y < maxY; y++ {
+			if img.At(x, y).(color.NRGBA).A != 0 {
+				pixels++
+
+				color := img.At(x, y).(color.NRGBA)
+
+				r += int(color.R)
+				g += int(color.G)
+				b += int(color.B)
+				a += int(color.A)
+			}
+		}
+	}
+
+	if pixels == 0 {
+		return 0, 0, 0, 0
+	}
+
+	return uint8(r / pixels), uint8(g / pixels), uint8(b / pixels), uint8(a / pixels)
+}

@@ -19,6 +19,7 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/golang/freetype/truetype"
 	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/tribble/etc"
 )
 
 // oh gods i hate this
@@ -121,6 +122,13 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	pfp, err := png.Decode(resp.Body)
 	if err != nil {
 		return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+	}
+
+	// use average of avatar if the user has no colour
+	if clr == 0 {
+		r, g, b, _ := etc.AverageColour(pfp)
+
+		clr = discord.Color(r)<<16 + discord.Color(g)<<8 + discord.Color(b)
 	}
 
 	pfp = imaging.Resize(pfp, 256, 256, imaging.NearestNeighbor)
@@ -246,7 +254,16 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 
 func (bot *Bot) lvlEmbed(ctx *bcr.Context, u *discord.User, sc Server, uc Levels, lvl, xpForNext, xpForPrev int64, rank int, clr discord.Color) (err error) {
 	if clr == 0 {
-		clr = bcr.ColourBlurple
+		resp, err := http.Get(u.AvatarURLWithType(discord.PNGImage) + "?size=256")
+		if err == nil {
+			defer resp.Body.Close()
+
+			pfp, err := png.Decode(resp.Body)
+			if err == nil {
+				r, g, b, _ := etc.AverageColour(pfp)
+				clr = discord.Color(r)<<16 + discord.Color(g)<<8 + discord.Color(b)
+			}
+		}
 	}
 
 	title := fmt.Sprintf("Level %v", lvl)
