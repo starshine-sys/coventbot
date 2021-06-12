@@ -80,9 +80,6 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	clr := uc.Colour
 	if clr == 0 {
 		clr, err = ctx.State.MemberColor(ctx.Message.GuildID, u.ID)
-		if err != nil || clr == 0 {
-			clr = bcr.ColourBlurple
-		}
 	}
 
 	if embed {
@@ -140,6 +137,10 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		}
 	}
 
+	img.SetHexColor(fmt.Sprintf("#%06x", clr))
+	img.DrawCircle(200, 200, 130)
+	img.FillPreserve()
+
 	img.DrawImageAnchored(pfpImg.Image(), 200, 200, 0.5, 0.5)
 
 	// set font
@@ -166,12 +167,6 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	img.SetHexColor(fmt.Sprintf("#%06x", clr))
-	img.DrawCircle(200, 200, 130)
-
-	r, g, b := clr.RGB()
-
-	img.SetStrokeStyle(gg.NewSolidPattern(color.NRGBA{r, g, b, 0xFF}))
 	img.SetLineWidth(5)
 	img.Stroke()
 
@@ -212,7 +207,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 
 	for i, r := range u.Username {
 		if i > 16 {
-			name += string(r) + "..."
+			name += "..."
 			break
 		}
 
@@ -226,7 +221,9 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		Size: 40,
 	}))
 
-	img.DrawStringAnchored(fmt.Sprintf("Rank #%v", rank), 1100, 120, 1, 0.5)
+	if rank != 0 {
+		img.DrawStringAnchored(fmt.Sprintf("Rank #%v", rank), 1100, 120, 1, 0.5)
+	}
 
 	img.DrawStringAnchored(fmt.Sprintf("Level %v", lvl), 1100, 200, 1, 1)
 
@@ -248,11 +245,20 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 }
 
 func (bot *Bot) lvlEmbed(ctx *bcr.Context, u *discord.User, sc Server, uc Levels, lvl, xpForNext, xpForPrev int64, rank int, clr discord.Color) (err error) {
+	if clr == 0 {
+		clr = bcr.ColourBlurple
+	}
+
+	title := fmt.Sprintf("Level %v", lvl)
+	if rank != 0 {
+		title += fmt.Sprintf(" - Rank #%v", rank)
+	}
+
 	e := discord.Embed{
 		Thumbnail: &discord.EmbedThumbnail{
 			URL: u.AvatarURLWithType(discord.PNGImage),
 		},
-		Title: fmt.Sprintf("Level %v - Rank #%v", lvl, rank),
+		Title: title,
 		Description: fmt.Sprintf(
 			"%v/%v XP", humanize.Comma(uc.XP), humanize.Comma(xpForNext),
 		),
