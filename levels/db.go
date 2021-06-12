@@ -111,9 +111,26 @@ func (bot *Bot) getAllRewards(guildID discord.GuildID) (rwds []Reward, err error
 	return
 }
 
-func (bot *Bot) getLeaderboard(guildID discord.GuildID) (lb []Levels, err error) {
-	err = pgxscan.Select(context.Background(), bot.DB.Pool, &lb, "select * from levels where server_id = $1 order by xp desc", guildID)
-	return
+func (bot *Bot) getLeaderboard(guildID discord.GuildID, full bool) (lb []Levels, err error) {
+	err = pgxscan.Select(context.Background(), bot.DB.Pool, &lb, "select * from levels where server_id = $1 order by xp desc, user_id asc", guildID)
+	if err != nil || full {
+		return
+	}
+
+	gm := bot.Members(guildID)
+
+	filtered := []Levels{}
+
+	for _, l := range lb {
+		for _, m := range gm {
+			if m.User.ID == l.UserID {
+				filtered = append(filtered, l)
+				break
+			}
+		}
+	}
+
+	return filtered, nil
 }
 
 func (bot *Bot) setNolevels(guildID discord.GuildID, userID discord.UserID, expires bool, expiry time.Time) (err error) {

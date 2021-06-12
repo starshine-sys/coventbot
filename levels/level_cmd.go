@@ -64,8 +64,9 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	xpForPrev := expForNextLevel(lvl - 1)
 
 	// get leaderboard (for rank)
+	// filter the leaderboard to match the `leaderboard` command
 	var rank int
-	lb, err := bot.getLeaderboard(ctx.Message.GuildID)
+	lb, err := bot.getLeaderboard(ctx.Message.GuildID, false)
 	if err == nil {
 		for i, uc := range lb {
 			if uc.UserID == u.ID {
