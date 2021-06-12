@@ -77,8 +77,9 @@ func (bot *Bot) about(ctx *bcr.Context) (err error) {
 Messages: %v
 
 Memory used: %v / %v (%v garbage collected)
-Goroutines: %v`, bot.Counters.Mentions, bot.Counters.Messages,
-					humanize.Bytes(stats.Alloc), humanize.Bytes(stats.Sys), humanize.Bytes(stats.TotalAlloc), humanize.Comma(int64(runtime.NumGoroutine()))),
+Goroutines: %v
+Member cache size: %v members`, bot.Counters.Mentions, bot.Counters.Messages,
+					humanize.Bytes(stats.Alloc), humanize.Bytes(stats.Sys), humanize.Bytes(stats.TotalAlloc), humanize.Comma(int64(runtime.NumGoroutine())), humanize.Comma(bot.CacheLen())),
 				Inline: false,
 			},
 		},

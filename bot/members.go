@@ -101,3 +101,10 @@ func (bot *Bot) Members(guildID discord.GuildID) (members []discord.Member) {
 
 	return
 }
+
+// CacheLen gets the size of the member cache
+func (bot *Bot) CacheLen() int64 {
+	bot.membersMu.RLock()
+	defer bot.membersMu.RUnlock()
+	return int64(len(bot.members))
+}

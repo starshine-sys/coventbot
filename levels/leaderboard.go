@@ -15,7 +15,7 @@ func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 	}
 
 	if sc.LeaderboardModOnly || !sc.LevelsEnabled {
-		if perms, _ := bot.State.Permissions(ctx.Channel.ID, ctx.Author.ID); !perms.Has(discord.PermissionManageMessages) {
+		if !bot.GlobalPerms(ctx).Has(discord.PermissionManageMessages) {
 			_, err = ctx.Sendf("You don't have permission to use this command, you need the **Manage Messages** permission to use it.")
 			return
 		}

@@ -1,34 +1,24 @@
 package bot
 
-import "github.com/diamondburned/arikawa/v2/discord"
+import (
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/starshine-sys/bcr"
+)
 
-// GlobalPermissions ...
-func (bot *Bot) GlobalPermissions(guildID discord.GuildID, userID discord.UserID) (perms discord.Permissions, err error) {
-	g, err := bot.State.Guild(guildID)
-	if err != nil {
-		return 0, err
-	}
-	u, err := bot.State.Member(guildID, userID)
-	if err != nil {
-		return 0, err
+// GlobalPerms ...
+func (bot *Bot) GlobalPerms(ctx *bcr.Context) (perms discord.Permissions) {
+	if ctx.Guild == nil || ctx.Member == nil {
+		return discord.PermissionViewChannel | discord.PermissionSendMessages | discord.PermissionAddReactions | discord.PermissionReadMessageHistory
 	}
 
-	if g.OwnerID == userID {
-		return discord.PermissionAll, nil
-	}
-
-	// get role permissions
-	for _, role := range g.Roles {
-		for _, id := range u.RoleIDs {
-			if role.ID == id {
-				perms |= role.Permissions
+	for _, id := range ctx.Member.RoleIDs {
+		for _, r := range ctx.Guild.Roles {
+			if id == r.ID {
+				perms |= r.Permissions
+				break
 			}
 		}
 	}
 
-	if perms.Has(discord.PermissionAdministrator) {
-		return discord.PermissionAll, nil
-	}
-
-	return perms, nil
+	return perms
 }
