@@ -24,7 +24,7 @@ func (bot *Bot) blacklistRoles(ctx *bcr.Context) (err error) {
 	}
 
 	_, err = ctx.PagedEmbed(
-		StringPaginator("Blacklisted roles", bcr.ColourBlurple, rls, 20), false,
+		bcr.StringPaginator("Blacklisted roles", bcr.ColourBlurple, rls, 20), false,
 	)
 	return
 }
@@ -78,7 +78,7 @@ func (bot *Bot) blacklistChannels(ctx *bcr.Context) (err error) {
 	}
 
 	_, err = ctx.PagedEmbed(
-		StringPaginator("Blacklisted channels", bcr.ColourBlurple, chs, 20), false,
+		bcr.StringPaginator("Blacklisted channels", bcr.ColourBlurple, chs, 20), false,
 	)
 	return
 }
@@ -140,7 +140,7 @@ func (bot *Bot) blacklistCategories(ctx *bcr.Context) (err error) {
 	}
 
 	_, err = ctx.PagedEmbed(
-		StringPaginator("Blacklisted categories", bcr.ColourBlurple, chs, 20), false,
+		bcr.StringPaginator("Blacklisted categories", bcr.ColourBlurple, chs, 20), false,
 	)
 	return
 }

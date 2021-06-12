@@ -1,8 +1,6 @@
 package keyroles
 
 import (
-	"sync"
-
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
 
@@ -12,14 +10,6 @@ import (
 // Bot ...
 type Bot struct {
 	*bot.Bot
-
-	members   map[key][]discord.RoleID
-	membersMu sync.Mutex
-}
-
-type key struct {
-	GuildID discord.GuildID
-	UserID  discord.UserID
 }
 
 // Init ...
@@ -27,8 +17,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	s = "Key roles"
 
 	b := &Bot{
-		Bot:     bot,
-		members: map[key][]discord.RoleID{},
+		Bot: bot,
 	}
 
 	kr := bot.Router.AddCommand(&bcr.Command{
@@ -73,8 +62,6 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	})
 
 	b.State.AddHandler(b.guildMemberUpdate)
-	b.State.AddHandler(b.requestGuildMembers)
-	b.State.AddHandler(b.guildMemberChunk)
 
 	return
 }

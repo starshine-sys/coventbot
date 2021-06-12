@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/api/webhook"
+	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/state"
 	"github.com/getsentry/sentry-go"
 	"github.com/starshine-sys/bcr"
@@ -35,6 +36,19 @@ type Bot struct {
 	}
 
 	Hub *sentry.Hub
+
+	members   map[memberKey]member
+	membersMu sync.RWMutex
+}
+
+type member struct {
+	discord.Member
+	GuildID discord.GuildID
+}
+
+type memberKey struct {
+	GuildID discord.GuildID
+	UserID  discord.UserID
 }
 
 // Module is a single module/category of commands
@@ -55,6 +69,8 @@ func New(
 		Sugar:  sugar,
 		DB:     db,
 		Config: config,
+
+		members: map[memberKey]member{},
 	}
 
 	// create a Sentry config
@@ -87,6 +103,13 @@ func New(
 	b.State.AddHandler(b.MessageCreate)
 	// add member update handler (this isn't handled by default apparently?)
 	b.State.AddHandler(b.guildMemberUpdate)
+
+	// add cache handlers
+	b.State.AddHandler(b.requestGuildMembers)
+	b.State.AddHandler(b.guildMemberChunk)
+	b.State.AddHandler(b.memberUpdateEvent)
+	b.State.AddHandler(b.memberAddEvent)
+	b.State.AddHandler(b.memberRemoveEvent)
 
 	return b
 }

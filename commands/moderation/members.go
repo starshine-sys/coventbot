@@ -92,10 +92,7 @@ Supported options:
 		format = "%in. %u#%d (%id)\n​  - %n"
 	}
 
-	gm, err := bot.State.Session.MembersAfter(ctx.Message.GuildID, 0, 0)
-	if err != nil {
-		return bot.Report(ctx, err)
-	}
+	gm := bot.Members(ctx.Message.GuildID)
 
 	// filter stuff
 	if humans {

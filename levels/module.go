@@ -5,6 +5,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -225,6 +226,12 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	list = append(list, bot.Router.AddCommand(&bcr.Command{
 		Name:    "leaderboard",
 		Summary: "Show this server's leaderboard.",
+
+		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.BoolP("full", "f", false, "Show the full leaderboard, including people who left the server.")
+
+			return fs
+		},
 
 		GuildOnly: true,
 		Command:   b.leaderboard,

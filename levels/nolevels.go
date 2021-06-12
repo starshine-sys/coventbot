@@ -33,7 +33,7 @@ func (bot *Bot) nolevelsList(ctx *bcr.Context) (err error) {
 		s = append(s, buf)
 	}
 
-	_, err = ctx.PagedEmbed(StringPaginator("User blacklist", bcr.ColourBlurple, s, 10), false)
+	_, err = ctx.PagedEmbed(bcr.StringPaginator("User blacklist", bcr.ColourBlurple, s, 10), false)
 	return
 }
 

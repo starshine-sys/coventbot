@@ -11,36 +11,14 @@ import (
 	"github.com/starshine-sys/bcr"
 )
 
-func (bot *Bot) requestGuildMembers(g *gateway.GuildCreateEvent) {
-	bot.State.Gateway.RequestGuildMembers(gateway.RequestGuildMembersData{
-		GuildID: []discord.GuildID{g.ID},
-		Limit:   0,
-	})
-}
-
-func (bot *Bot) guildMemberChunk(g *gateway.GuildMembersChunkEvent) {
-	bot.membersMu.Lock()
-	defer bot.membersMu.Unlock()
-	for _, m := range g.Members {
-		bot.members[key{
-			GuildID: g.GuildID,
-			UserID:  m.User.ID,
-		}] = m.RoleIDs
-	}
-}
-
 func (bot *Bot) guildMemberUpdate(ev *gateway.GuildMemberUpdateEvent) {
-	bot.membersMu.Lock()
-	old, ok := bot.members[key{ev.GuildID, ev.User.ID}]
-	bot.members[key{ev.GuildID, ev.User.ID}] = ev.RoleIDs
-	if !ok {
-		bot.membersMu.Unlock()
+	old, err := bot.Member(ev.GuildID, ev.User.ID)
+	if err != nil {
 		return
 	}
-	bot.membersMu.Unlock()
 
 	var logChannel discord.ChannelID
-	err := bot.DB.Pool.QueryRow(context.Background(), "select keyrole_channel from servers where id = $1", ev.GuildID).Scan(&logChannel)
+	err = bot.DB.Pool.QueryRow(context.Background(), "select keyrole_channel from servers where id = $1", ev.GuildID).Scan(&logChannel)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting log channel: %v", err)
 		return
@@ -51,13 +29,13 @@ func (bot *Bot) guildMemberUpdate(ev *gateway.GuildMemberUpdateEvent) {
 	}
 
 	var addedRoles, removedRoles []discord.RoleID
-	for _, oldRole := range old {
+	for _, oldRole := range old.RoleIDs {
 		if !roleIn(ev.RoleIDs, oldRole) {
 			removedRoles = append(removedRoles, oldRole)
 		}
 	}
 	for _, newRole := range ev.RoleIDs {
-		if !roleIn(old, newRole) {
+		if !roleIn(old.RoleIDs, newRole) {
 			addedRoles = append(addedRoles, newRole)
 		}
 	}

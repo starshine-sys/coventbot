@@ -2,7 +2,6 @@ package levels
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/dustin/go-humanize"
@@ -27,13 +26,29 @@ func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	if len(lb) == 0 {
+	var display []Levels
+	full, _ := ctx.Flags.GetBool("full")
+	if full {
+		display = lb
+	} else {
+		gm := bot.Members(ctx.Message.GuildID)
+		for _, l := range lb {
+			for _, m := range gm {
+				if m.User.ID == l.UserID {
+					display = append(display, l)
+					break
+				}
+			}
+		}
+	}
+
+	if len(display) == 0 {
 		_, err = ctx.Sendf("There doesn't seem to be anyone on the leaderboard...")
 		return
 	}
 
 	var strings []string
-	for i, l := range lb {
+	for i, l := range display {
 		strings = append(strings, fmt.Sprintf(
 			"%v. %v: `%v` XP, level `%v`\n",
 			i+1,
@@ -46,46 +61,8 @@ func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 	name := "Leaderboard for " + ctx.Guild.Name
 
 	_, err = ctx.PagedEmbed(
-		StringPaginator(name, bcr.ColourBlurple, strings, 15),
+		bcr.StringPaginator(name, bcr.ColourBlurple, strings, 15),
 		true,
 	)
 	return err
-}
-
-// StringPaginator paginates strings, for use in ctx.PagedEmbed
-func StringPaginator(title string, colour discord.Color, slice []string, perPage int) []discord.Embed {
-	var (
-		embeds []discord.Embed
-		count  int
-
-		pages = 1
-		buf   = discord.Embed{
-			Title: title,
-			Color: colour,
-			Footer: &discord.EmbedFooter{
-				Text: fmt.Sprintf("Page 1/%v", math.Ceil(float64(len(slice))/float64(perPage))),
-			},
-		}
-	)
-
-	for _, s := range slice {
-		if count >= perPage {
-			embeds = append(embeds, buf)
-			buf = discord.Embed{
-				Title: title,
-				Color: colour,
-				Footer: &discord.EmbedFooter{
-					Text: fmt.Sprintf("Page %v/%v", pages+1, math.Ceil(float64(len(slice))/float64(perPage))),
-				},
-			}
-			count = 0
-			pages++
-		}
-		buf.Description += s
-		count++
-	}
-
-	embeds = append(embeds, buf)
-
-	return embeds
 }
