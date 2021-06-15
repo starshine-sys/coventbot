@@ -17,7 +17,7 @@ func (bot *Bot) setXP(ctx *bcr.Context) (err error) {
 	}
 
 	xp, err := strconv.ParseInt(ctx.Args[1], 0, 0)
-	if err != nil {
+	if err != nil || xp < 0 {
 		_, err = ctx.Send("Couldn't parse your input as a number.", nil)
 		return
 	}

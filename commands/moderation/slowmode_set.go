@@ -9,12 +9,12 @@ import (
 func (bot *Bot) cmdSetSlowmode(ctx *bcr.Context) (err error) {
 	ch, err := ctx.ParseChannel(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Sendf("Invalid channel given: ``%v``", bcr.EscapeBackticks(ctx.Args[0]))
+		_, err = ctx.Replyc(bcr.ColourRed, "Invalid channel given: ``%v``", bcr.EscapeBackticks(ctx.Args[0]))
 		return
 	}
 
 	if ch.GuildID != ctx.Channel.GuildID {
-		_, err = ctx.Sendf("The channel must be in this server.")
+		_, err = ctx.Replyc(bcr.ColourRed, "The channel must be in this server.")
 		return
 	}
 
@@ -25,18 +25,18 @@ func (bot *Bot) cmdSetSlowmode(ctx *bcr.Context) (err error) {
 			return bot.Report(ctx, err)
 		}
 
-		_, err = ctx.Sendf("Cleared the slowmode for %v.", ch.Mention())
+		_, err = ctx.Reply("Cleared the slowmode for %v.", ch.Mention())
 		return
 	}
 
 	if len(ctx.Args) < 2 {
-		_, err = ctx.Sendf("You must give a duration.")
+		_, err = ctx.Replyc(bcr.ColourRed, "You must give a duration.")
 		return
 	}
 
 	duration, err := time.ParseDuration(ctx.Args[1])
-	if err != nil {
-		_, err = ctx.Sendf("Invalid duration given: ``%v``", bcr.EscapeBackticks(ctx.Args[1]))
+	if err != nil || duration < 0 {
+		_, err = ctx.Replyc(bcr.ColourRed, "Invalid duration given: ``%v``", bcr.EscapeBackticks(ctx.Args[1]))
 		return
 	}
 
@@ -45,6 +45,6 @@ func (bot *Bot) cmdSetSlowmode(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Sendf("Set the slowmode for %v to %s.", ch.Mention(), duration)
+	_, err = ctx.Reply("Set the slowmode for %v to %s!", ch.Mention(), duration)
 	return
 }

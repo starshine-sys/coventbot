@@ -87,7 +87,7 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 		return err
 	case "between_xp":
 		t, err := time.ParseDuration(ctx.Args[1])
-		if err != nil {
+		if err != nil || t <= 0 || t > 24*time.Hour {
 			_, err = ctx.Send("Couldn't parse your input as a valid duration.", nil)
 			return err
 		}
