@@ -45,7 +45,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"remind", "reminder"},
 
 		Summary: "Set a reminder for yourself.",
-		Usage:   "<time> [reason]",
+		Usage:   "<time or duration> [reason]",
 		Args:    bcr.MinArgs(1),
 
 		Command: b.remindme,
@@ -95,14 +95,24 @@ func (bot *Bot) doReminders() {
 		}
 
 		for _, r := range rms {
+			reminder := " something"
+			if r.Reminder != "N/A" {
+				reminder = fmt.Sprintf("\n%v", r.Reminder)
+			}
+
 			linkServer := r.ServerID.String()
 			if !r.ServerID.IsValid() {
 				linkServer = "@me"
 			}
 
+			desc := fmt.Sprintf("%v you asked to be reminded about%v", bcr.HumanizeTime(bcr.DurationPrecisionSeconds, r.SetTime), reminder)
+			if len(desc) > 2048 {
+				desc = desc[:2040] + "..."
+			}
+
 			e := discord.Embed{
 				Title:       fmt.Sprintf("Reminder #%v", r.ID),
-				Description: fmt.Sprintf("%v you asked to be reminded about\n%v", bcr.HumanizeTime(bcr.DurationPrecisionSeconds, r.SetTime), r.Reminder),
+				Description: desc,
 
 				Color:     bcr.ColourBlurple,
 				Timestamp: discord.NewTimestamp(r.SetTime),
