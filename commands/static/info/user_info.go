@@ -102,8 +102,8 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 				Inline: true,
 			},
 			{
-				Name:   "Highest role",
-				Value:  highestRole,
+				Name:   "Username",
+				Value:  m.User.Username + "#" + m.User.Discriminator,
 				Inline: true,
 			},
 			{
@@ -114,13 +114,13 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 				),
 			},
 			{
-				Name:   "Username",
-				Value:  m.User.Username + "#" + m.User.Discriminator,
+				Name:   "Nickname",
+				Value:  fmt.Sprintf("%v", If(m.Nick != "", m.Nick, m.User.Username)),
 				Inline: true,
 			},
 			{
-				Name:   "Nickname",
-				Value:  fmt.Sprintf("%v", If(m.Nick != "", m.Nick, m.User.Username)),
+				Name:   "Highest role",
+				Value:  highestRole,
 				Inline: true,
 			},
 			{

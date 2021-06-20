@@ -13,7 +13,7 @@ func (db *DB) CreateServerIfNotExists(guildID discord.GuildID) (exists bool, err
 		return exists, err
 	}
 	if !exists {
-		_, err = db.Pool.Exec(context.Background(), "insert into servers (id) values ($1)", guildID)
+		_, err = db.Pool.Exec(context.Background(), "insert into servers (id, prefixes) values ($1, $2)", guildID, db.Config.Prefixes)
 		return exists, err
 	}
 	return exists, nil

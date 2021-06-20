@@ -24,7 +24,7 @@ Note that this bot is currently **very** undocumented; use at your own risk.`, c
 	fields := []discord.EmbedField{
 		{
 			Name:  "Information",
-			Value: "`info`: show member/user info\n`avatar`: show a user's avatar\n`roleinfo`: show info about a role\n`getinvite`: get detailed info from an invite link\n`serverinfo`: show info about the current server\n`idtime`: get the time from an Discord snowflake",
+			Value: "`userinfo`: show member/user info\n`avatar`: show a user's avatar\n`roleinfo`: show info about a role\n`getinvite`: get detailed info from an invite link\n`serverinfo`: show info about the current server\n`idtime`: get the time from an Discord snowflake",
 		},
 		{
 			Name:  "Bot info",

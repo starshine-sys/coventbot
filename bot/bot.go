@@ -8,6 +8,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/api/webhook"
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/state"
+	"github.com/diamondburned/arikawa/v2/utils/handler"
 	"github.com/getsentry/sentry-go"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
@@ -99,8 +100,15 @@ func New(
 
 	// add guild create handler
 	b.State.AddHandler(b.GuildCreate)
+
+	// add guild remove handler
+	b.State.PreHandler = handler.New()
+	b.State.PreHandler.Synchronous = true
+	b.State.PreHandler.AddHandler(b.guildDelete)
+
 	// add message create handler
 	b.State.AddHandler(b.MessageCreate)
+
 	// add member update handler (this isn't handled by default apparently?)
 	b.State.AddHandler(b.guildMemberUpdate)
 

@@ -2,6 +2,7 @@ package bot
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/diamondburned/arikawa/v2/api/webhook"
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -13,18 +14,21 @@ import (
 func (bot *Bot) GuildCreate(g *gateway.GuildCreateEvent) {
 	// create the server if it doesn't exist
 	exists, err := bot.DB.CreateServerIfNotExists(g.ID)
-	// if the server exists, don't log the join
-	if exists {
-		return
-	}
 	if err != nil {
 		bot.Sugar.Errorf("Error creating database entry for server: %v", err)
+	}
+
+	// if we already joined the server, don't log the join
+	if exists && g.Joined.Time().Before(time.Now().Add(-1*time.Minute)) {
 		return
 	}
 
 	bot.Sugar.Infof("Joined server %v (%v).", g.Name, g.ID)
 
-	botUser, _ := bot.State.Me()
+	botUser, err := bot.State.Me()
+	if err != nil {
+		bot.Sugar.Errorf("Error getting bot user: %v", err)
+	}
 
 	owner := g.OwnerID.Mention()
 	if o, err := bot.State.User(g.OwnerID); err == nil {
@@ -45,10 +49,18 @@ func (bot *Bot) GuildCreate(g *gateway.GuildCreateEvent) {
 
 				Description: fmt.Sprintf("Joined new server **%v**", g.Name),
 
-				Fields: []discord.EmbedField{{
-					Name:  "Owner",
-					Value: owner,
-				}},
+				Fields: []discord.EmbedField{
+					{
+						Name:   "Owner",
+						Value:  owner,
+						Inline: true,
+					},
+					{
+						Name:   "Members",
+						Value:  fmt.Sprintf("%v", g.MemberCount),
+						Inline: true,
+					},
+				},
 
 				Footer: &discord.EmbedFooter{
 					Text: fmt.Sprintf("ID: %v", g.ID),
