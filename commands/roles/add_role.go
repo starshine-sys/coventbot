@@ -54,7 +54,7 @@ func (bot *Bot) addRole(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	_, err = ctx.Sendf("Added %v to you!", r.Name)
+	_, err = ctx.Reply("Added %v to %v.", r.Mention(), ctx.Author.Mention())
 	return
 }
 
@@ -111,6 +111,6 @@ func (bot *Bot) removeRole(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	_, err = ctx.Sendf("Removed %v from you!", r.Name)
+	_, err = ctx.Reply("Removed %v from %v.", r.Mention(), ctx.Author.Mention())
 	return
 }
