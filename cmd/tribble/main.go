@@ -20,6 +20,7 @@ import (
 	"github.com/starshine-sys/tribble/commands/moderation"
 	"github.com/starshine-sys/tribble/commands/moderation/notes"
 	"github.com/starshine-sys/tribble/commands/reminders"
+	"github.com/starshine-sys/tribble/commands/roles"
 	"github.com/starshine-sys/tribble/commands/static"
 	"github.com/starshine-sys/tribble/commands/tags"
 	"github.com/starshine-sys/tribble/db"
@@ -76,6 +77,8 @@ func main() {
 	bot.Add(moderation.Init)
 	// add todos
 	bot.Add(todos.Init)
+	// add role commands
+	bot.Add(roles.Init)
 	// add config commands
 	bot.Add(config.Init)
 

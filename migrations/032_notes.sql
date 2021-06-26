@@ -9,8 +9,8 @@ create table notes (
     created     timestamp   not null default (current_timestamp at time zone 'utc')
 );
 
-create index notes_server_idx on todos (server_id);
-create index notes_server_user_idx on todos (server_id, user_id);
+create index notes_server_idx on notes (server_id);
+create index notes_server_user_idx on notes (server_id, user_id);
 
 ---- create above / drop below ----
 
