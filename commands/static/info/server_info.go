@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/dustin/go-humanize"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/etc"
 )
@@ -59,6 +60,16 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 		}
 	}
 
+	var humans, bots int64
+
+	for _, m := range bot.Members(ctx.Guild.ID) {
+		if m.User.Bot {
+			bots++
+		} else {
+			humans++
+		}
+	}
+
 	e := discord.Embed{
 		Title: fmt.Sprintf("Info for %v", g.Name),
 		Thumbnail: &discord.EmbedThumbnail{
@@ -73,7 +84,7 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Members",
-				Value:  fmt.Sprint(g.ApproximateMembers),
+				Value:  fmt.Sprintf("%v\nHumans: %v\nBots: %v", humanize.Comma(int64(g.ApproximateMembers)), humanize.Comma(humans), humanize.Comma(bots)),
 				Inline: true,
 			},
 			{

@@ -40,7 +40,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	b := &Bot{Bot: bot}
 
-	list = append(list, bot.Router.AddCommand(&bcr.Command{
+	rm := bot.Router.AddCommand(&bcr.Command{
 		Name:    "remindme",
 		Aliases: []string{"remind", "reminder"},
 
@@ -49,7 +49,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Args:    bcr.MinArgs(1),
 
 		Command: b.remindme,
-	}))
+	})
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{
 		Name: "reminders",
@@ -70,6 +70,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.delreminder,
 	}))
 
+	rm.AddSubcommand(b.Router.AliasMust("list", nil, []string{"reminders"}, nil))
+	rm.AddSubcommand(b.Router.AliasMust("delete", []string{"remove", "rm", "del"}, []string{"delreminder"}, nil))
+
 	var o sync.Once
 	bot.State.AddHandler(func(_ *gateway.ReadyEvent) {
 		o.Do(func() {
@@ -77,7 +80,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		})
 	})
 
-	return
+	return s, append(list, rm)
 }
 
 // doReminders gets 5 reminders at a time and executes them, then sleeps for 1 second.

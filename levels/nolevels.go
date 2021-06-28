@@ -26,7 +26,7 @@ func (bot *Bot) nolevelsList(ctx *bcr.Context) (err error) {
 	for i, l := range list {
 		buf := fmt.Sprintf("%v. %v: ", i+1, l.UserID.Mention())
 		if l.Expires {
-			buf += fmt.Sprintf("expires %v UTC\n", l.Expiry.Format("2006-02-01 15:04:05"))
+			buf += fmt.Sprintf("expires %v UTC\n", l.Expiry.Format("2006-01-02 15:04:05"))
 		} else {
 			buf += "does not expire\n"
 		}
@@ -64,7 +64,7 @@ func (bot *Bot) nolevelsAdd(ctx *bcr.Context) (err error) {
 
 	text := fmt.Sprintf("Noleveled %v ", u.Mention())
 	if expires {
-		text += fmt.Sprintf("until %v.", expiry.Format("2006-02-01 15:04:05"))
+		text += fmt.Sprintf("until %v.", expiry.Format("2006-01-02 15:04:05"))
 	} else {
 		text += "indefinitely."
 	}
