@@ -11,6 +11,7 @@ import (
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 
 	"github.com/starshine-sys/tribble/approval"
 	"github.com/starshine-sys/tribble/bot"
@@ -39,15 +40,32 @@ import (
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
+	// get the config
+	c := getConfig()
+
 	// set up a logger
-	zap, err := zap.NewDevelopment()
+	zcfg := zap.NewProductionConfig()
+	zcfg.Encoding = "console"
+	zcfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	zcfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	zcfg.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+	zcfg.EncoderConfig.EncodeDuration = zapcore.StringDurationEncoder
+
+	if c.DebugLogging {
+		zcfg.Level.SetLevel(zapcore.DebugLevel)
+	} else {
+		zcfg.Level.SetLevel(zapcore.InfoLevel)
+	}
+
+	zap, err := zcfg.Build(zap.AddStacktrace(zapcore.ErrorLevel))
 	if err != nil {
 		panic(err)
 	}
 	sugar := zap.Sugar()
 
-	// get the config
-	c := getConfig(sugar)
+	if c.DebugLogging {
+		sugar.Warn("Debug logging enabled. Set \"debug_logging\" in config.yaml to \"false\" to disable.")
+	}
 
 	// open the database
 	db, err := db.New(c.DatabaseURL, sugar, c)

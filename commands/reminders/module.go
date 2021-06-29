@@ -3,7 +3,10 @@ package reminders
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -87,7 +90,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 // this should be fine unless we get >5 reminders a second,
 // at which point we have bigger problems tbh
 func (bot *Bot) doReminders() {
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
+
 	for {
+		select {
+		case <-sc:
+			break
+		}
+
 		rms := []Reminder{}
 
 		err := pgxscan.Select(context.Background(), bot.DB.Pool, &rms, "select * from reminders where expires < $1 limit 5", time.Now().UTC())

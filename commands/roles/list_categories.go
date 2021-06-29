@@ -36,7 +36,15 @@ func (bot *Bot) categories(ctx *bcr.Context) (err error) {
 			entries = append(entries, s)
 		}
 
-		_, err = ctx.PagedEmbed(bcr.StringPaginator("Categories", bcr.ColourBlurple, entries, 10), false)
+		embeds := bcr.StringPaginator("Categories", bcr.ColourBlurple, entries, 10)
+		for i := range embeds {
+			embeds[i].Fields = []discord.EmbedField{{
+				Name:  "_ _",
+				Value: fmt.Sprintf("Use `%vroles <category>` to show all roles in a category.\nUse `%vrole` to give yourself a role, and `%vderole` to remove it.", ctx.Prefix, ctx.Prefix, ctx.Prefix),
+			}}
+		}
+
+		_, err = ctx.PagedEmbed(embeds, false)
 		return err
 	}
 
@@ -98,6 +106,10 @@ func (bot *Bot) categories(ctx *bcr.Context) (err error) {
 		Title:       cat.Name,
 		Description: desc,
 		Color:       cat.Colour,
+		Fields: []discord.EmbedField{{
+			Name:  "_ _",
+			Value: fmt.Sprintf("Use `%vrole` to give yourself a role, and `%vderole` to remove it.", ctx.Prefix, ctx.Prefix),
+		}},
 		Footer: &discord.EmbedFooter{
 			Text: fmt.Sprintf("Category ID: %v", cat.ID),
 		},

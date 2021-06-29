@@ -1,11 +1,19 @@
 package roles
 
-import "github.com/diamondburned/arikawa/v2/discord"
+import (
+	"errors"
+
+	"github.com/diamondburned/arikawa/v2/discord"
+)
 
 func (bot *Bot) roles(guildID discord.GuildID, roleIDs []uint64) (roles []discord.Role, err error) {
 	rls, err := bot.State.Roles(guildID)
 	if err != nil {
-		return
+		return nil, err
+	}
+
+	if len(rls) == 0 {
+		return nil, errors.New("couldn't get roles")
 	}
 
 	for _, r := range rls {

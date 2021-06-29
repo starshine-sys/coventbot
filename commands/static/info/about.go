@@ -37,6 +37,7 @@ func (bot *Bot) about(ctx *bcr.Context) (err error) {
 	}
 
 	bot.Counters.Mu.Lock()
+	defer bot.Counters.Mu.Unlock()
 	embed := discord.Embed{
 		Title: "About",
 		Color: ctx.Router.EmbedColor,
@@ -87,7 +88,6 @@ Member cache size: %v members`, bot.Counters.Mentions, bot.Counters.Messages,
 		Timestamp: discord.NowTimestamp(),
 		Footer:    &discord.EmbedFooter{Text: "Made with Arikawa"},
 	}
-	bot.Counters.Mu.Unlock()
 
 	_, err = ctx.Send("", &embed)
 	return

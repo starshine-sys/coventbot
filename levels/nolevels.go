@@ -3,6 +3,9 @@ package levels
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"codeberg.org/eviedelta/detctime/durationparser"
@@ -120,7 +123,16 @@ func (bot *Bot) nolevelsRemove(ctx *bcr.Context) (err error) {
 }
 
 func (bot *Bot) nolevelLoop() {
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
+
 	for {
+		select {
+		case <-sc:
+			break
+		}
+
 		list := []Nolevels{}
 
 		err := pgxscan.Select(context.Background(), bot.DB.Pool, &list, "select n.*, l.nolevels_log as log_channel from nolevels as n, server_levels as l where n.server_id = l.id and n.expires = true and n.expiry < $1 limit 5", time.Now().UTC())

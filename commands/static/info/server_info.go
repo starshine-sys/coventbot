@@ -11,6 +11,11 @@ import (
 )
 
 func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
+	err = ctx.State.Typing(ctx.Channel.ID)
+	if err != nil {
+		bot.Sugar.Errorf("Error triggering typing: %v", err)
+	}
+
 	g, err := ctx.State.GuildWithCount(ctx.Message.GuildID)
 	if err != nil {
 		return
