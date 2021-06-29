@@ -85,6 +85,11 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		return
 	}
 
+	perms, err := bot.State.Permissions(ev.ChannelID, ev.UserID)
+	if err == nil && !perms.Has(discord.PermissionSendMessages) {
+		return
+	}
+
 	_, err = bot.State.SendMessageComplex(ev.ChannelID, api.SendMessageData{
 		Content: fmt.Sprintf("New quote added with ID `%v` by %v.", q.HID, u.Username),
 		AllowedMentions: &api.AllowedMentions{
