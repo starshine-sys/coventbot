@@ -135,7 +135,7 @@ func (bot *Bot) serverQuote(guildID discord.GuildID) (q *Quote, err error) {
 		return nil, pgx.ErrNoRows
 	}
 
-	n := rand.Intn(len(ids) - 1)
+	n := rand.Intn(len(ids))
 
 	quote, err := bot.getQuote(ids[n], guildID)
 	return &quote, err
@@ -157,7 +157,7 @@ func (bot *Bot) userQuote(guildID discord.GuildID, userID discord.UserID) (q *Qu
 		return nil, pgx.ErrNoRows
 	}
 
-	n := rand.Intn(len(ids) - 1)
+	n := rand.Intn(len(ids))
 
 	quote, err := bot.getQuote(ids[n], guildID)
 	return &quote, err
