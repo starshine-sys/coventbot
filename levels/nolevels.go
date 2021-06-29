@@ -125,12 +125,12 @@ func (bot *Bot) nolevelsRemove(ctx *bcr.Context) (err error) {
 func (bot *Bot) nolevelLoop() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
-	<-sc
 
 	for {
 		select {
 		case <-sc:
 			break
+		default:
 		}
 
 		list := []Nolevels{}

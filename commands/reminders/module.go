@@ -92,12 +92,12 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 func (bot *Bot) doReminders() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
-	<-sc
 
 	for {
 		select {
 		case <-sc:
 			break
+		default:
 		}
 
 		rms := []Reminder{}
