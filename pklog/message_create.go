@@ -9,7 +9,7 @@ import (
 	"github.com/starshine-sys/pkgo"
 )
 
-var pk = pkgo.NewSession(nil)
+var pk = pkgo.New("")
 
 // messageCreate is used as a backup for pkMessageCreate in case proxy logging isn't enabled.
 func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
@@ -33,7 +33,7 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		return
 	}
 
-	pkm, err := pk.GetMessage(pkgo.Snowflake(m.ID))
+	pkm, err := pk.Message(pkgo.Snowflake(m.ID))
 	if err != nil {
 		// Message is either not proxied or we got an error from the PK API. Either way, return
 		return

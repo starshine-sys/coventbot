@@ -20,7 +20,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/pflag v1.0.5
 	github.com/starshine-sys/bcr v0.17.1
-	github.com/starshine-sys/pkgo v0.4.0
+	github.com/starshine-sys/pkgo v1.0.0
 	github.com/starshine-sys/snowflake/v2 v2.1.0
 	go.uber.org/zap v1.17.0
 	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9 // indirect

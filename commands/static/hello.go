@@ -19,7 +19,7 @@ func (bot *Bot) hello(ctx *bcr.Context) (err error) {
 	time.Sleep(1 * time.Second)
 
 	var name string
-	m, err := pk.GetMessage(pkgo.Snowflake(ctx.Message.ID))
+	m, err := pk.Message(pkgo.Snowflake(ctx.Message.ID))
 	// if there's a non-nil error, chances are PK hasn't registered the message yet
 	// so just fall back to a normal user
 	if err != nil {

@@ -1,0 +1,107 @@
+package quotes
+
+import (
+	"fmt"
+	"sort"
+
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/starshine-sys/bcr"
+)
+
+func (bot *Bot) list(ctx *bcr.Context) (err error) {
+	if !bot.quotesEnabled(ctx.Guild.ID) {
+		_, err = ctx.Send("Quotes aren't enabled on this server, sorry :(\nAsk a server admin to enable it!", nil)
+		return
+	}
+
+	quotes, err := bot.quotes(ctx.Guild.ID)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	title := "Quotes"
+
+	userString, _ := ctx.Flags.GetString("user")
+	channelString, _ := ctx.Flags.GetString("channel")
+
+	if userString != "" {
+		var u *discord.User
+		m, err := ctx.ParseMember(userString)
+		if err == nil {
+			u = &m.User
+		} else {
+			u, err = ctx.ParseUser(userString)
+			if err != nil {
+				_, err = ctx.Sendf("No user named ``%v`` found.", bcr.EscapeBackticks(userString))
+				return err
+			}
+		}
+
+		orig := quotes
+		quotes = nil
+
+		for _, q := range orig {
+			if q.UserID == u.ID {
+				quotes = append(quotes, q)
+			}
+		}
+
+		title += " by " + u.Username
+	}
+
+	if channelString != "" {
+		ch, err := ctx.ParseChannel(channelString)
+		if err != nil {
+			_, err = ctx.Sendf("No channel named ``%v`` found.", bcr.EscapeBackticks(channelString))
+			return err
+		}
+
+		if ch.GuildID != ctx.Channel.GuildID || ch.Type != discord.GuildText {
+			_, err = ctx.Sendf("No channel named ``%v`` found.", bcr.EscapeBackticks(channelString))
+			return err
+		}
+
+		orig := quotes
+		quotes = nil
+
+		for _, q := range orig {
+			if q.ChannelID == ch.ID {
+				quotes = append(quotes, q)
+			}
+		}
+
+		title += " in #" + ch.Name
+	}
+
+	if len(quotes) == 0 {
+		_, err = ctx.Sendf("Couldn't find any quotes matching your criteria :(")
+		return
+	}
+
+	// sorting
+	sortByID, _ := ctx.Flags.GetBool("sort-by-message")
+	rev, _ := ctx.Flags.GetBool("reversed")
+
+	if sortByID {
+		sort.Slice(quotes, func(i, j int) bool {
+			return quotes[i].MessageID < quotes[j].MessageID
+		})
+	}
+
+	if rev {
+		for i, j := 0, len(quotes)-1; i < j; i, j = i+1, j-1 {
+			quotes[i], quotes[j] = quotes[j], quotes[i]
+		}
+	}
+
+	s := []string{}
+
+	for _, q := range quotes {
+		s = append(s, fmt.Sprintf("`%v` (%v) by <@!%v>\n", q.HID, q.MessageID, q.UserID))
+	}
+
+	_, err = ctx.PagedEmbed(
+		bcr.StringPaginator(title, bcr.ColourBlurple, s, 25), false,
+	)
+	return err
+}
