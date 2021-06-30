@@ -8,6 +8,7 @@ create table quotes (
     user_id     bigint  not null,
     added_by    bigint  not null,
     content     text    not null,
+    proxied     boolean not null default false,
 
     added   timestamp   not null default (current_timestamp at time zone 'utc'),
 

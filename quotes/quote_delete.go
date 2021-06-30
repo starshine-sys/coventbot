@@ -17,7 +17,7 @@ func (bot *Bot) cmdQuoteDelete(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	e := q.Embed()
+	e := q.Embed(bot.PK)
 	msg, err := ctx.Send("Are you sure you want to delete this quote?", &e)
 	if err != nil {
 		return

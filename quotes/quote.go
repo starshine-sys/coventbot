@@ -28,7 +28,7 @@ func (bot *Bot) quote(ctx *bcr.Context) (err error) {
 			return bot.Report(ctx, err)
 		}
 
-		e := q.Embed()
+		e := q.Embed(bot.PK)
 		_, err = ctx.Send("", &e)
 		return err
 	}
@@ -40,7 +40,7 @@ func (bot *Bot) quote(ctx *bcr.Context) (err error) {
 			return err
 		}
 
-		e := q.Embed()
+		e := q.Embed(bot.PK)
 		_, err = ctx.Send("", &e)
 		return err
 	}
@@ -63,7 +63,7 @@ func (bot *Bot) quote(ctx *bcr.Context) (err error) {
 		return err
 	}
 
-	e := q.Embed()
+	e := q.Embed(bot.PK)
 	_, err = ctx.Send("", &e)
 	return
 }

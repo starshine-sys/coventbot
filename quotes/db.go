@@ -12,6 +12,7 @@ import (
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4"
 	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/pkgo"
 )
 
 // Quote is a single quote
@@ -25,12 +26,13 @@ type Quote struct {
 	UserID    discord.UserID
 	AddedBy   discord.UserID
 	Content   string
+	Proxied   bool
 
 	Added time.Time
 }
 
 // Embed creates an embed for the quote
-func (q Quote) Embed() discord.Embed {
+func (q Quote) Embed(s *pkgo.Session) discord.Embed {
 	e := discord.Embed{
 		Footer: &discord.EmbedFooter{
 			Text: "ID: " + q.HID,
@@ -39,7 +41,18 @@ func (q Quote) Embed() discord.Embed {
 		Color:     bcr.ColourBlurple,
 	}
 
-	author := fmt.Sprintf("- <@!%v> [(Jump)](https://discord.com/channels/%v/%v/%v)", q.UserID, q.ServerID, q.ChannelID, q.MessageID)
+	mention := "<@!" + q.UserID.String() + ">"
+	if q.Proxied {
+		msg, err := s.Message(pkgo.Snowflake(q.MessageID))
+		if err == nil {
+			mention = msg.Member.Name
+			if msg.System.Tag != "" {
+				mention += " " + msg.System.Tag
+			}
+		}
+	}
+
+	author := fmt.Sprintf("- %v [(Jump)](https://discord.com/channels/%v/%v/%v)", mention, q.ServerID, q.ChannelID, q.MessageID)
 
 	content := q.Content
 	if len(content) > 2020-len(author) {
@@ -71,8 +84,8 @@ func (bot *Bot) insertQuote(q Quote) (Quote, error) {
 	q.Content = hex.EncodeToString(out)
 
 	err = pgxscan.Get(context.Background(), bot.DB.Pool, &q, `insert into quotes
-(hid, server_id, channel_id, message_id, user_id, added_by, content)
-values (find_free_quote_hid($1), $1, $2, $3, $4, $5, $6) returning *`, q.ServerID, q.ChannelID, q.MessageID, q.UserID, q.AddedBy, q.Content)
+(hid, server_id, channel_id, message_id, user_id, added_by, content, proxied)
+values (find_free_quote_hid($1), $1, $2, $3, $4, $5, $6, $7) returning *`, q.ServerID, q.ChannelID, q.MessageID, q.UserID, q.AddedBy, q.Content, q.Proxied)
 	return q, err
 }
 
@@ -169,6 +182,6 @@ func (bot *Bot) delQuote(guildID discord.GuildID, hid string) (err error) {
 }
 
 func (bot *Bot) quotes(guildID discord.GuildID) (quotes []Quote, err error) {
-	err = pgxscan.Select(context.Background(), bot.DB.Pool, &quotes, "select id, hid, server_id, channel_id, message_id, user_id, added_by, added from quotes where server_id = $1 order by added", guildID)
+	err = pgxscan.Select(context.Background(), bot.DB.Pool, &quotes, "select id, hid, server_id, channel_id, message_id, user_id, added_by, added, proxied from quotes where server_id = $1 order by added", guildID)
 	return
 }
