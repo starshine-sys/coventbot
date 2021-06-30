@@ -13,8 +13,6 @@ import (
 
 var keycaps = []string{"1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"}
 
-var pk = pkgo.New("")
-
 func (bot *Bot) poll(ctx *bcr.Context) (err error) {
 	question := ctx.Args[0]
 	options := ctx.Args[1:]
@@ -81,7 +79,7 @@ func (bot *Bot) quickpoll(ctx *bcr.Context) (err error) {
 	// wait a second for pk
 	time.Sleep(time.Second)
 
-	m, err := pk.Message(pkgo.Snowflake(ctx.Message.ID))
+	m, err := bot.PK.Message(pkgo.Snowflake(ctx.Message.ID))
 	if err == nil {
 		id = discord.MessageID(m.ID)
 	} else {

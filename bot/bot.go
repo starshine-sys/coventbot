@@ -12,6 +12,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
+	"github.com/starshine-sys/pkgo"
 	"github.com/starshine-sys/tribble/db"
 	"github.com/starshine-sys/tribble/types"
 	"go.uber.org/zap"
@@ -37,6 +38,8 @@ type Bot struct {
 	}
 
 	Hub *sentry.Hub
+
+	PK *pkgo.Session
 
 	members   map[memberKey]member
 	membersMu sync.RWMutex
@@ -70,6 +73,7 @@ func New(
 		Sugar:  sugar,
 		DB:     db,
 		Config: config,
+		PK:     pkgo.New(""),
 
 		members: map[memberKey]member{},
 	}

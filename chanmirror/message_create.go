@@ -11,8 +11,6 @@ import (
 	"github.com/starshine-sys/pkgo"
 )
 
-var pk = pkgo.New("")
-
 func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	if !m.GuildID.IsValid() || m.Author.Bot {
 		if m.WebhookID.IsValid() {
@@ -85,7 +83,7 @@ func (bot *Bot) pkMessage(m *gateway.MessageCreateEvent) {
 		return
 	}
 
-	pkMsg, err := pk.Message(pkgo.Snowflake(m.ID))
+	pkMsg, err := bot.PK.Message(pkgo.Snowflake(m.ID))
 	if err != nil {
 		return
 	}

@@ -10,8 +10,6 @@ import (
 	"github.com/starshine-sys/pkgo"
 )
 
-var pk = pkgo.New("")
-
 func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 	if !ev.GuildID.IsValid() {
 		return
@@ -63,12 +61,13 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		Content: msg.Content,
 	}
 	if msg.WebhookID.IsValid() {
-		pkMsg, err := pk.Message(pkgo.Snowflake(ev.MessageID))
+		pkMsg, err := bot.PK.Message(pkgo.Snowflake(ev.MessageID))
 		if err != nil {
 			return
 		}
 
 		q.UserID = discord.UserID(pkMsg.Sender)
+		q.Proxied = true
 	}
 
 	q, err = bot.insertQuote(q)
