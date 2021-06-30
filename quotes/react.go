@@ -46,8 +46,17 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		return
 	}
 
-	if msg.Content == "" {
-		return
+	content := msg.Content
+	if content == "" {
+		if len(msg.Embeds) > 0 {
+			if msg.Embeds[0].Description != "" {
+				content = msg.Embeds[0].Description
+			}
+		} else if len(msg.Attachments) > 0 {
+			content = fmt.Sprintf("*[(click to see attachment)](https://discord.com/channels/%v/%v/%v)*", ev.GuildID, ev.ChannelID, ev.MessageID)
+		} else {
+			return
+		}
 	}
 
 	q := Quote{
@@ -58,7 +67,7 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		UserID:  msg.Author.ID,
 		AddedBy: ev.UserID,
 
-		Content: msg.Content,
+		Content: content,
 	}
 	if msg.WebhookID.IsValid() {
 		pkMsg, err := bot.PK.Message(pkgo.Snowflake(ev.MessageID))
