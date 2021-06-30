@@ -10,7 +10,7 @@ import (
 )
 
 func (bot *Bot) addNote(ctx *bcr.Context) (err error) {
-	perms := bot.globalPerms(ctx)
+	perms := ctx.GuildPerms()
 	if !perms.Has(discord.PermissionMoveMembers) && !perms.Has(discord.PermissionManageMessages) {
 		_, err = ctx.Replyc(bcr.ColourRed, "You're not allowed to use this command.")
 		return

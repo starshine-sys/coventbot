@@ -212,20 +212,3 @@ func If(b bool, t, f interface{}) interface{} {
 	}
 	return f
 }
-
-// admin isn't in here as we do that one manually, to make sure it shows up at the very beginning
-var majorPerms = map[discord.Permissions]string{
-	discord.PermissionManageNicknames: "Manage Nicknames",
-	discord.PermissionManageRoles:     "Manage Roles",
-	discord.PermissionManageWebhooks:  "Manage Webhooks",
-	discord.PermissionManageEmojis:    "Manage Emojis",
-	discord.PermissionMentionEveryone: "Mention Everyone",
-	discord.PermissionMuteMembers:     "Mute Members",
-	discord.PermissionDeafenMembers:   "Deafen Members",
-	discord.PermissionMoveMembers:     "Move Members",
-	discord.PermissionManageMessages:  "Manage Messages",
-	discord.PermissionKickMembers:     "Kick Members",
-	discord.PermissionBanMembers:      "Ban Members",
-	discord.PermissionManageChannels:  "Manage Channels",
-	discord.PermissionManageGuild:     "Manage Server",
-}

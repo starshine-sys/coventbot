@@ -79,8 +79,11 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 
 	// get user colour
 	clr := uc.Colour
-	if clr == 0 {
-		clr, err = ctx.State.MemberColor(ctx.Message.GuildID, u.ID)
+	if clr == 0 && ctx.Guild != nil {
+		m, err := bot.Member(ctx.Guild.ID, u.ID)
+		if err == nil {
+			clr = discord.MemberColor(*ctx.Guild, m)
+		}
 	}
 
 	if embed {

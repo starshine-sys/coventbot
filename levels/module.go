@@ -225,6 +225,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{
 		Name:    "leaderboard",
+		Aliases: []string{"lb"},
 		Summary: "Show this server's leaderboard.",
 
 		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {

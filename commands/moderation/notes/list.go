@@ -8,7 +8,7 @@ import (
 )
 
 func (bot *Bot) list(ctx *bcr.Context) (err error) {
-	perms := bot.globalPerms(ctx)
+	perms := ctx.GuildPerms()
 	if !perms.Has(discord.PermissionMoveMembers) && !perms.Has(discord.PermissionManageMessages) {
 		_, err = ctx.Replyc(bcr.ColourRed, "You're not allowed to use this command.")
 		return
@@ -49,21 +49,4 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 
 	_, err = ctx.PagedEmbed(embeds, false)
 	return
-}
-
-func (bot *Bot) globalPerms(ctx *bcr.Context) (perms discord.Permissions) {
-	if ctx.Guild == nil || ctx.Member == nil {
-		return discord.PermissionViewChannel | discord.PermissionSendMessages | discord.PermissionAddReactions | discord.PermissionReadMessageHistory
-	}
-
-	for _, id := range ctx.Member.RoleIDs {
-		for _, r := range ctx.Guild.Roles {
-			if id == r.ID {
-				perms |= r.Permissions
-				break
-			}
-		}
-	}
-
-	return perms
 }

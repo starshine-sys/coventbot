@@ -1,16 +1,10 @@
 package quotes
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) cmdQuoteDelete(ctx *bcr.Context) (err error) {
-	if !bot.GlobalPerms(ctx).Has(discord.PermissionManageMessages) {
-		_, err = ctx.Send("Only users with the Manage Messages permission can delete quotes.", nil)
-		return
-	}
-
 	q, err := bot.getQuote(ctx.RawArgs, ctx.Guild.ID)
 	if err != nil {
 		_, err = ctx.Send("No quote with that ID found.", nil)

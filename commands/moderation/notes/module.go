@@ -45,8 +45,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<note ID>",
 		Args:    bcr.MinArgs(1),
 
-		GuildOnly: true,
-		Command:   b.delNote,
+		GuildPermissions: discord.PermissionManageRoles,
+		Command:          b.delNote,
 	})
 
 	b.Router.AddCommand(&bcr.Command{
@@ -57,7 +57,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 		GuildOnly: true,
 		Command: func(ctx *bcr.Context) (err error) {
-			perms := b.globalPerms(ctx)
+			perms := ctx.GuildPerms()
 			if !perms.Has(discord.PermissionMoveMembers) && !perms.Has(discord.PermissionManageMessages) {
 				_, err = ctx.Replyc(bcr.ColourRed, "You're not allowed to use this command.")
 				return

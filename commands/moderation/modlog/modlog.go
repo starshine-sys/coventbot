@@ -24,8 +24,8 @@ func InitCommands(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageMessages,
-		Command:     b.modlog,
+		GuildPermissions: discord.PermissionManageMessages,
+		Command:          b.modlog,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{

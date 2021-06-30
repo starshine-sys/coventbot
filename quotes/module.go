@@ -47,8 +47,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<quote ID>",
 		Args:    bcr.MinArgs(1),
 
-		GuildOnly: true,
-		Command:   b.cmdQuoteDelete,
+		GuildPermissions: discord.PermissionManageMessages,
+		Command:          b.cmdQuoteDelete,
 	})
 
 	quotes := b.Router.AddCommand(&bcr.Command{
@@ -77,8 +77,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<on|off>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.toggle,
+		GuildPermissions: discord.PermissionManageGuild,
+		Command:          b.toggle,
 	})
 
 	quotes.AddSubcommand(&bcr.Command{
@@ -87,8 +87,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<on|off>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.toggleSuppressMessages,
+		GuildPermissions: discord.PermissionManageGuild,
+		Command:          b.toggleSuppressMessages,
 	})
 
 	return s, append(list, cmd, quotes)
