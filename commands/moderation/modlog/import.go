@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/jackc/pgx/v4"
 	"github.com/starshine-sys/bcr"
 )
@@ -23,12 +24,11 @@ func (bot *ModLog) cmdImport(ctx *bcr.Context) (err error) {
 	}
 
 	if currentCount > 0 {
-		m, err := ctx.Send("⚠️ There are existing mod logs for this server, which will be deleted if you proceed with this import. Are you sure you want to proceed?")
-		if err != nil {
-			return err
-		}
-
-		yes, timeout := ctx.YesNoHandler(*m, ctx.Author.ID)
+		yes, timeout := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
+			Message:   "⚠️ There are existing mod logs for this server, which will be deleted if you proceed with this import. Are you sure you want to proceed?",
+			YesPrompt: "Yes, clear data and proceed",
+			YesStyle:  discord.DangerButton,
+		})
 		if !yes || timeout {
 			_, err = ctx.Send("Import cancelled.")
 			return err
@@ -64,12 +64,10 @@ func (bot *ModLog) cmdImport(ctx *bcr.Context) (err error) {
 	}
 
 	if ctx.Message.GuildID != ex.ServerID {
-		m, err := ctx.Send("The server ID in the export doesn't match this server's ID. Do you want to continue anyway?")
-		if err != nil {
-			return err
-		}
-
-		yes, timeout := ctx.YesNoHandler(*m, ctx.Author.ID)
+		yes, timeout := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
+			Message:   "The server ID in the export doesn't match this server's ID. Do you want to continue anyway?",
+			YesPrompt: "Continue",
+		})
 		if !yes || !timeout {
 			_, err = ctx.Send("Import cancelled.")
 			return err

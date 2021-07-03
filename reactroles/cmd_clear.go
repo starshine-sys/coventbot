@@ -10,17 +10,13 @@ import (
 
 func (bot *Bot) clear(ctx *bcr.Context) (err error) {
 	if len(ctx.Args) == 0 {
-		m, err := ctx.Replyc(bcr.ColourRed, "Warning: this will delete **all** reaction roles for this server. Are you sure you want to continue?")
-		if err != nil {
-			return err
-		}
-
-		yes, timeout := ctx.YesNoHandler(*m, ctx.Author.ID)
+		yes, timeout := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
+			Message:   "Warning: this will delete **all** reaction roles for this server. Are you sure you want to continue?",
+			YesPrompt: "Clear",
+			YesStyle:  discord.DangerButton,
+		})
 		if !yes || timeout {
-			_, err = ctx.Edit(m, "", true, discord.Embed{
-				Description: "Cancelled.",
-				Color:       bcr.ColourBlurple,
-			})
+			_, err = ctx.Send("Cancelled.")
 			return err
 		}
 
@@ -29,7 +25,7 @@ func (bot *Bot) clear(ctx *bcr.Context) (err error) {
 			return bot.Report(ctx, err)
 		}
 
-		_, err = ctx.Edit(m, "", true, discord.Embed{
+		_, err = ctx.Send("", discord.Embed{
 			Description: fmt.Sprintf("Success! Deleted reaction roles from %v message(s)", ct.RowsAffected()),
 			Color:       bcr.ColourBlurple,
 		})

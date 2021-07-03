@@ -1,6 +1,9 @@
 package quotes
 
 import (
+	"fmt"
+
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -11,13 +14,14 @@ func (bot *Bot) cmdQuoteDelete(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	e := q.Embed(bot.PK)
-	msg, err := ctx.Send("Are you sure you want to delete this quote?", e)
-	if err != nil {
-		return
-	}
-
-	yes, timeout := ctx.YesNoHandler(*msg, ctx.Author.ID)
+	yes, timeout := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
+		Embeds: []discord.Embed{{
+			Color:       bcr.ColourBlurple,
+			Description: fmt.Sprintf("Are you sure you want to delete the quote `%v` by %v?", q.HID, q.UserID.Mention()),
+		}},
+		YesPrompt: "Delete",
+		YesStyle:  discord.DangerButton,
+	})
 	if !yes || timeout {
 		_, err = ctx.Send(":x: Cancelled.")
 		return
@@ -26,11 +30,6 @@ func (bot *Bot) cmdQuoteDelete(ctx *bcr.Context) (err error) {
 	err = bot.delQuote(ctx.Guild.ID, q.HID)
 	if err != nil {
 		return bot.Report(ctx, err)
-	}
-
-	err = ctx.State.DeleteMessage(ctx.Message.ChannelID, msg.ID)
-	if err != nil {
-		bot.Sugar.Errorf("Error deleting quote message: %v", err)
 	}
 
 	_, err = ctx.Sendf("Quote `%v` deleted!", q.HID)

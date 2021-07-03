@@ -3,6 +3,7 @@ package tags
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
@@ -31,18 +32,23 @@ func (bot *Bot) deleteTag(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	m, err := ctx.Send("**Are you sure you want to delete this tag?** React with ✅ to confirm, ❌ to cancel.", discord.Embed{
-		Author:      author,
-		Title:       fmt.Sprintf("``%v``", bcr.EscapeBackticks(t.Name)),
-		Description: t.Response,
-		Footer: &discord.EmbedFooter{
-			Text: fmt.Sprintf("ID: %s | Created", t.ID),
-		},
-		Timestamp: discord.NewTimestamp(t.CreatedAt),
-		Color:     ctx.Router.EmbedColor,
-	})
+	yes, timeout := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
+		Message: "**Are you sure you want to delete this tag?**",
+		Embeds: []discord.Embed{{
+			Author:      author,
+			Title:       fmt.Sprintf("``%v``", bcr.EscapeBackticks(t.Name)),
+			Description: t.Response,
+			Footer: &discord.EmbedFooter{
+				Text: fmt.Sprintf("ID: %s | Created", t.ID),
+			},
+			Timestamp: discord.NewTimestamp(t.CreatedAt),
+			Color:     ctx.Router.EmbedColor,
+		}},
+		YesPrompt: "Delete",
+		YesStyle:  discord.DangerButton,
 
-	yes, timeout := ctx.YesNoHandler(*m, ctx.Author.ID)
+		Timeout: 5 * time.Minute,
+	})
 	if timeout {
 		_, err = ctx.Sendf("Operation timed out.")
 		return

@@ -3,6 +3,7 @@ package moderation
 import (
 	"fmt"
 
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -14,12 +15,14 @@ func (bot *Bot) resetSlowmode(ctx *bcr.Context) (err error) {
 	}
 
 	if len(ctx.Args) < 2 {
-		m, err := ctx.NewMessage().Content(fmt.Sprintf("Are you sure that you want to reset %v's slowmode for **the entire server**?", u.Mention())).BlockMentions().Send()
-		if err != nil {
-			return err
-		}
-
-		yes, timeout := ctx.YesNoHandler(*m, ctx.Author.ID)
+		yes, timeout := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
+			Embeds: []discord.Embed{{
+				Description: fmt.Sprintf("Are you sure that you want to reset %v's slowmode for **the entire server**?", u.Mention()),
+				Color:       bcr.ColourBlurple,
+			}},
+			YesPrompt: "Yes",
+			YesStyle:  discord.DangerButton,
+		})
 		if !yes || timeout {
 			_, err = ctx.Send(":x: Cancelled.")
 			return err

@@ -33,24 +33,28 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 		toBan += fmt.Sprintf("%v#%v (%v)\n", u.Username, u.Discriminator, u.ID)
 	}
 
-	msg, err := ctx.Send("", discord.Embed{
-		Title:       "Confirmation",
-		Description: "Are you sure you want to ban the following users?",
-		Color:       ctx.Router.EmbedColor,
-		Fields: []discord.EmbedField{
-			{
-				Name:  "Users",
-				Value: toBan,
+	yes, timeout := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
+		Embeds: []discord.Embed{{
+			Title:       "Confirmation",
+			Description: "Are you sure you want to ban the following users?",
+			Color:       ctx.Router.EmbedColor,
+			Fields: []discord.EmbedField{
+				{
+					Name:  "Users",
+					Value: toBan,
+				},
+				{
+					Name:  "Reason",
+					Value: reason,
+				},
 			},
-			{
-				Name:  "Reason",
-				Value: reason,
-			},
-		},
-		Timestamp: discord.NewTimestamp(time.Now().Add(time.Minute)),
-	})
+			Timestamp: discord.NewTimestamp(time.Now().Add(5 * time.Minute)),
+		}},
+		YesPrompt: "Ban",
+		YesStyle:  discord.DangerButton,
 
-	yes, timeout := ctx.YesNoHandler(*msg, ctx.Author.ID)
+		Timeout: 5 * time.Minute,
+	})
 	if timeout {
 		_, err = ctx.Send("Timed out.")
 		return
@@ -58,8 +62,6 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 	if !yes {
 		_, err = ctx.Send("Massban cancelled.")
 	}
-
-	ctx.State.DeleteMessage(msg.ChannelID, msg.ID)
 
 	for _, u := range users {
 		err = ctx.State.Ban(ctx.Message.GuildID, u.ID, api.BanData{
