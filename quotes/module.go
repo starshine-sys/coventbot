@@ -51,6 +51,17 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:          b.cmdQuoteDelete,
 	})
 
+	cmd.AddSubcommand(&bcr.Command{
+		Name:    "leaderboard",
+		Aliases: []string{"lb"},
+		Summary: "Show this server's quote leaderboard, for users or channels.",
+		Usage:   "<\"channel\" or \"user\">",
+		Args:    bcr.MinArgs(1),
+
+		GuildOnly: true,
+		Command:   b.leaderboard,
+	})
+
 	quotes := b.Router.AddCommand(&bcr.Command{
 		Name:    "quotes",
 		Summary: "Show a list of quotes.",
@@ -70,6 +81,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	})
 
 	cmd.AddSubcommand(b.Router.AliasMust("list", nil, []string{"quotes"}, nil))
+	quotes.AddSubcommand(b.Router.AliasMust("leaderboard", []string{"lb"}, []string{"quote", "leaderboard"}, nil))
 
 	quotes.AddSubcommand(&bcr.Command{
 		Name:    "toggle",
