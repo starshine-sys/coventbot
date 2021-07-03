@@ -125,7 +125,16 @@ func (bot *Bot) doReminders() {
 				desc = desc[:2040] + "..."
 			}
 
-			e := discord.Embed{
+			var shouldDM, embedless bool
+
+			bot.DB.Pool.QueryRow(context.Background(), "select reminders_in_dm, embedless_reminders from user_config where user_id = $1", r.UserID).Scan(&shouldDM, &embedless)
+
+			shouldDM = shouldDM || !r.ServerID.IsValid()
+
+			bot.Sugar.Debugf("Executing reminder #%v, should DM: %v, embedless: %v", r.ID, shouldDM, embedless)
+
+			content := r.UserID.Mention()
+			e := &discord.Embed{
 				Title:       fmt.Sprintf("Reminder #%v", r.ID),
 				Description: desc,
 
@@ -138,32 +147,47 @@ func (bot *Bot) doReminders() {
 				}},
 			}
 
-			if r.ServerID.IsValid() {
-				var shouldDM bool
-				bot.DB.Pool.QueryRow(context.Background(), "select reminders_in_dm from user_config where user_id = $1", r.UserID).Scan(&shouldDM)
-				if !shouldDM {
-					_, err = bot.State.SendMessage(r.ChannelID, r.UserID.Mention(), &e)
-					if err == nil {
-						bot.DB.Pool.Exec(context.Background(), "delete from reminders where id = $1", r.ID)
-						continue
+			if embedless {
+				s := fmt.Sprintf("%v: %v (%v)", r.UserID.Mention(), r.Reminder, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, r.SetTime))
+
+				if len(s) <= 2000 {
+					content = s
+					e = &discord.Embed{
+						Color:       bcr.ColourBlurple,
+						Description: fmt.Sprintf("[Jump to message](https://discord.com/channels/%v/%v/%v)", linkServer, r.ChannelID, r.MessageID),
 					}
 				}
 			}
 
-			ch, err := bot.State.CreatePrivateChannel(r.UserID)
-			if err != nil {
-				bot.Sugar.Errorf("Error sending reminder %v: %v", r.ID, err)
-				bot.DB.Pool.Exec(context.Background(), "delete from reminders where id = $1", r.ID)
-				continue
-			}
+			switch shouldDM {
+			case false:
+				_, err = bot.State.SendMessage(r.ChannelID, content, e)
+				if err == nil {
+					bot.DB.Pool.Exec(context.Background(), "delete from reminders where id = $1", r.ID)
+					continue
+				}
 
-			_, err = bot.State.SendEmbed(ch.ID, e)
-			if err != nil {
-				bot.Sugar.Errorf("Error sending reminder %v: %v", r.ID, err)
+				fallthrough
+			case true:
+				if content == r.UserID.Mention() {
+					content = ""
+				}
+
+				ch, err := bot.State.CreatePrivateChannel(r.UserID)
+				if err != nil {
+					bot.Sugar.Errorf("Error sending reminder %v: %v", r.ID, err)
+					bot.DB.Pool.Exec(context.Background(), "delete from reminders where id = $1", r.ID)
+					continue
+				}
+
+				_, err = bot.State.SendMessage(ch.ID, content, e)
+				if err != nil {
+					bot.Sugar.Errorf("Error sending reminder %v: %v", r.ID, err)
+				}
+
 				bot.DB.Pool.Exec(context.Background(), "delete from reminders where id = $1", r.ID)
 				continue
 			}
-			bot.DB.Pool.Exec(context.Background(), "delete from reminders where id = $1", r.ID)
 		}
 
 		time.Sleep(time.Second)
