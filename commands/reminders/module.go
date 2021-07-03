@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/georgysavva/scany/pgxscan"
@@ -137,7 +138,6 @@ func (bot *Bot) doReminders() {
 
 			bot.Sugar.Debugf("Executing reminder #%v, should DM: %v, embedless: %v", r.ID, shouldDM, embedless)
 
-			content := r.UserID.Mention()
 			e := []discord.Embed{{
 				Title:       fmt.Sprintf("Reminder #%v", r.ID),
 				Description: desc,
@@ -151,21 +151,34 @@ func (bot *Bot) doReminders() {
 				}},
 			}}
 
+			data := api.SendMessageData{
+				Content: r.UserID.Mention(),
+				Embeds:  e,
+			}
+
 			if embedless {
 				s := fmt.Sprintf("%v: %v (%v)", r.UserID.Mention(), r.Reminder, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, r.SetTime))
 
 				if len(s) <= 2000 {
-					content = s
-					e = []discord.Embed{{
-						Color:       bcr.ColourBlurple,
-						Description: fmt.Sprintf("[Jump to message](https://discord.com/channels/%v/%v/%v)", linkServer, r.ChannelID, r.MessageID),
-					}}
+					data.Content = s
+					data.Embeds = nil
+					data.Components = []discord.Component{
+						discord.ActionRowComponent{
+							Components: []discord.Component{
+								discord.ButtonComponent{
+									Label: "Jump to message",
+									Style: discord.LinkButton,
+									URL:   fmt.Sprintf("https://discord.com/channels/%v/%v/%v", linkServer, r.ChannelID, r.MessageID),
+								},
+							},
+						},
+					}
 				}
 			}
 
 			switch shouldDM {
 			case false:
-				_, err = state.SendMessage(r.ChannelID, content, e...)
+				_, err = state.SendMessageComplex(r.ChannelID, data)
 				if err == nil {
 					bot.DB.Pool.Exec(context.Background(), "delete from reminders where id = $1", r.ID)
 					continue
@@ -173,8 +186,8 @@ func (bot *Bot) doReminders() {
 
 				fallthrough
 			case true:
-				if content == r.UserID.Mention() {
-					content = ""
+				if data.Content == r.UserID.Mention() {
+					data.Content = ""
 				}
 
 				ch, err := state.CreatePrivateChannel(r.UserID)
@@ -184,7 +197,7 @@ func (bot *Bot) doReminders() {
 					continue
 				}
 
-				_, err = state.SendMessage(ch.ID, content, e...)
+				_, err = state.SendMessageComplex(ch.ID, data)
 				if err != nil {
 					bot.Sugar.Errorf("Error sending reminder %v: %v", r.ID, err)
 				}
