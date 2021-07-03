@@ -3,6 +3,7 @@ package names
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
@@ -56,7 +57,7 @@ func (bot *Bot) usernames(ctx *bcr.Context) (err error) {
 		},
 	})
 
-	_, err = ctx.PagedEmbed(e, false)
+	_, err = bot.PagedEmbed(ctx, e, 10*time.Minute)
 	return
 }
 
@@ -110,6 +111,6 @@ func (bot *Bot) nicknames(ctx *bcr.Context) (err error) {
 		},
 	})
 
-	_, err = ctx.PagedEmbed(e, false)
+	_, err = bot.PagedEmbed(ctx, e, 10*time.Minute)
 	return
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/dustin/go-humanize"
@@ -55,6 +56,6 @@ func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.PagedEmbed(bcr.StringPaginator(title+" quote leaderboard", bcr.ColourBlurple, s, 15), false)
+	_, err = bot.PagedEmbed(ctx, bcr.StringPaginator(title+" quote leaderboard", bcr.ColourBlurple, s, 15), 10*time.Minute)
 	return
 }

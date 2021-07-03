@@ -2,6 +2,7 @@ package info
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
@@ -52,8 +53,8 @@ Note that this bot is currently **very** undocumented; use at your own risk.`, c
 		},
 	}
 
-	_, err = ctx.PagedEmbed(
-		bcr.FieldPaginator("Help", desc, bcr.ColourBlurple, fields, 2), false,
-	)
+	_, err = bot.PagedEmbed(ctx,
+		bcr.FieldPaginator("Help", desc, bcr.ColourBlurple, fields, 2),
+		10*time.Minute)
 	return
 }

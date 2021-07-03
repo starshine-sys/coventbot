@@ -2,6 +2,7 @@ package notes
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
@@ -47,6 +48,6 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.PagedEmbed(embeds, false)
+	_, err = bot.PagedEmbed(ctx, embeds, 10*time.Minute)
 	return
 }

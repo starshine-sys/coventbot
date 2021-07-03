@@ -2,6 +2,7 @@ package levels
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/dustin/go-humanize"
@@ -45,9 +46,9 @@ func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 
 	name := "Leaderboard for " + ctx.Guild.Name
 
-	_, err = ctx.PagedEmbed(
+	_, err = bot.PagedEmbed(ctx,
 		bcr.StringPaginator(name, bcr.ColourBlurple, strings, 15),
-		true,
+		10*time.Minute,
 	)
 	return err
 }

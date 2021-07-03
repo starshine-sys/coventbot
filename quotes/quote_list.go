@@ -3,6 +3,7 @@ package quotes
 import (
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
@@ -100,8 +101,8 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 		s = append(s, fmt.Sprintf("`%v` [(jump)](https://discord.com/channels/%v/%v/%v) by <@!%v>\n", q.HID, q.ServerID, q.ChannelID, q.MessageID, q.UserID))
 	}
 
-	_, err = ctx.PagedEmbed(
-		bcr.StringPaginator(fmt.Sprintf("%v (%v)", title, len(quotes)), bcr.ColourBlurple, s, 15), false,
+	_, err = bot.PagedEmbed(ctx,
+		bcr.StringPaginator(fmt.Sprintf("%v (%v)", title, len(quotes)), bcr.ColourBlurple, s, 15), 10*time.Minute,
 	)
 	return err
 }

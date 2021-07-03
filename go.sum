@@ -435,6 +435,8 @@ github.com/spf13/pflag v1.0.5/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An
 github.com/spf13/viper v1.3.2/go.mod h1:ZiWeW+zYFKm7srdB9IoDzzZXaJaI5eL9QjNiN/DMA2s=
 github.com/starshine-sys/bcr v0.19.0 h1:yIDzkIzuqgGJj7q6qVrt2iQ8XeyTH7iAKZkXyYH50zo=
 github.com/starshine-sys/bcr v0.19.0/go.mod h1:UuFCKV8iLp9eFz1wEZCC4+xav+vsf2u3u8kK7fZmlFE=
+github.com/starshine-sys/bcr v0.19.1-0.20210703213732-c3b66a24c2ca h1:R+8J1/PhlQ+8Bv3nFI2fjYI9u5+XoQKTC64aTfIzgOo=
+github.com/starshine-sys/bcr v0.19.1-0.20210703213732-c3b66a24c2ca/go.mod h1:UuFCKV8iLp9eFz1wEZCC4+xav+vsf2u3u8kK7fZmlFE=
 github.com/starshine-sys/pkgo v1.0.0 h1:NQ+g6LgY+tkQdxXGZ2oTH5Hp2n5/57Vo+RFcHbwkeHs=
 github.com/starshine-sys/pkgo v1.0.0/go.mod h1:w1ObBZa7/lOvCqOx9690uPM5uuaovH8nCZXpt84cAu4=
 github.com/starshine-sys/snowflake/v2 v2.0.0/go.mod h1:6E5AYqTPb9DL7bp24tcbTLx0/thTcAmyLgscZIP7tzw=

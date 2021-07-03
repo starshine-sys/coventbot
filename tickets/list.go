@@ -3,6 +3,7 @@ package tickets
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
@@ -68,6 +69,6 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 		}...)
 	}
 
-	_, err = ctx.PagedEmbed(bcr.FieldPaginator("Ticket categories", "", bcr.ColourBlurple, fields, 3), false)
+	_, err = bot.PagedEmbed(ctx, bcr.FieldPaginator("Ticket categories", "", bcr.ColourBlurple, fields, 3), 10*time.Minute)
 	return
 }

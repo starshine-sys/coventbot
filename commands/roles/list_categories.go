@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
 	"emperror.dev/errors"
 	"github.com/diamondburned/arikawa/v3/discord"
@@ -44,7 +45,7 @@ func (bot *Bot) categories(ctx *bcr.Context) (err error) {
 			}}
 		}
 
-		_, err = ctx.PagedEmbed(embeds, false)
+		_, err = bot.PagedEmbed(ctx, embeds, 10*time.Minute)
 		return err
 	}
 

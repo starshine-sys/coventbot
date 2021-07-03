@@ -3,7 +3,7 @@ package modlog
 import (
 	"context"
 	"fmt"
-	"math"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
@@ -46,48 +46,8 @@ Reason: %v`, mod.Username, mod.Discriminator, entry.Reason),
 		})
 	}
 
-	embeds := FieldPaginator("Mod logs", fmt.Sprintf("%v#%v - %v", u.Username, u.Discriminator, u.Mention()), bcr.ColourBlurple, fields, 5)
+	embeds := bcr.FieldPaginator("Mod logs", fmt.Sprintf("%v#%v - %v", u.Username, u.Discriminator, u.Mention()), bcr.ColourBlurple, fields, 5)
 
-	_, err = ctx.PagedEmbed(embeds, false)
+	_, err = bot.PagedEmbed(ctx, embeds, 10*time.Minute)
 	return err
-}
-
-// FieldPaginator paginates embed fields, for use in ctx.PagedEmbed
-func FieldPaginator(title, description string, colour discord.Color, fields []discord.EmbedField, perPage int) []discord.Embed {
-	var (
-		embeds []discord.Embed
-		count  int
-
-		pages = 1
-		buf   = discord.Embed{
-			Title:       title,
-			Description: description,
-			Color:       colour,
-			Footer: &discord.EmbedFooter{
-				Text: fmt.Sprintf("Page 1/%v", math.Ceil(float64(len(fields))/float64(perPage))),
-			},
-		}
-	)
-
-	for _, field := range fields {
-		if count >= perPage {
-			embeds = append(embeds, buf)
-			buf = discord.Embed{
-				Title:       title,
-				Description: description,
-				Color:       colour,
-				Footer: &discord.EmbedFooter{
-					Text: fmt.Sprintf("Page %v/%v", pages+1, math.Ceil(float64(len(fields))/float64(perPage))),
-				},
-			}
-			count = 0
-			pages++
-		}
-		buf.Fields = append(buf.Fields, field)
-		count++
-	}
-
-	embeds = append(embeds, buf)
-
-	return embeds
 }

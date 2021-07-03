@@ -2,6 +2,7 @@ package levels
 
 import (
 	"context"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
@@ -23,8 +24,8 @@ func (bot *Bot) blacklistRoles(ctx *bcr.Context) (err error) {
 		rls = append(rls, discord.RoleID(r).Mention()+"\n")
 	}
 
-	_, err = ctx.PagedEmbed(
-		bcr.StringPaginator("Blacklisted roles", bcr.ColourBlurple, rls, 20), false,
+	_, err = bot.PagedEmbed(ctx,
+		bcr.StringPaginator("Blacklisted roles", bcr.ColourBlurple, rls, 20), 10*time.Minute,
 	)
 	return
 }
@@ -77,8 +78,8 @@ func (bot *Bot) blacklistChannels(ctx *bcr.Context) (err error) {
 		chs = append(chs, discord.ChannelID(ch).Mention()+"\n")
 	}
 
-	_, err = ctx.PagedEmbed(
-		bcr.StringPaginator("Blacklisted channels", bcr.ColourBlurple, chs, 20), false,
+	_, err = bot.PagedEmbed(ctx,
+		bcr.StringPaginator("Blacklisted channels", bcr.ColourBlurple, chs, 20), 10*time.Minute,
 	)
 	return
 }
@@ -139,8 +140,8 @@ func (bot *Bot) blacklistCategories(ctx *bcr.Context) (err error) {
 		chs = append(chs, discord.ChannelID(ch).Mention()+"\n")
 	}
 
-	_, err = ctx.PagedEmbed(
-		bcr.StringPaginator("Blacklisted categories", bcr.ColourBlurple, chs, 20), false,
+	_, err = bot.PagedEmbed(ctx,
+		bcr.StringPaginator("Blacklisted categories", bcr.ColourBlurple, chs, 20), 10*time.Minute,
 	)
 	return
 }

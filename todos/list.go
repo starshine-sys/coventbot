@@ -3,6 +3,7 @@ package todos
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
@@ -35,6 +36,6 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 `, todo.ID, text, todo.Created.Format("2006-01-02 | 15:04"), todo.ServerID, todo.ChannelID, todo.MID, todo.OrigServerID, todo.OrigChannelID, todo.OrigMID))
 	}
 
-	_, err = ctx.PagedEmbed(bcr.StringPaginator(fmt.Sprintf("Todos (%v)", len(todos)), bcr.ColourBlurple, slice, 5), false)
+	_, err = bot.PagedEmbed(ctx, bcr.StringPaginator(fmt.Sprintf("Todos (%v)", len(todos)), bcr.ColourBlurple, slice, 5), 10*time.Minute)
 	return
 }

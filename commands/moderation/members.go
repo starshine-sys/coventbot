@@ -285,7 +285,7 @@ Supported options:
 		Color: ctx.Router.EmbedColor,
 	})
 
-	_, err = ctx.PagedEmbed(embeds, false)
+	_, err = bot.PagedEmbed(ctx, embeds, 10*time.Minute)
 	return
 }
 

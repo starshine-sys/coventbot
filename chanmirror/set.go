@@ -3,6 +3,7 @@ package chanmirror
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"emperror.dev/errors"
 	"github.com/diamondburned/arikawa/v3/api"
@@ -28,8 +29,8 @@ func (bot *Bot) set(ctx *bcr.Context) (err error) {
 			s = append(s, fmt.Sprintf("%v → %v\n", ch.FromChannel.Mention(), ch.ToChannel.Mention()))
 		}
 
-		_, err = ctx.PagedEmbed(
-			bcr.StringPaginator("Channel mirrors", bcr.ColourBlurple, s, 10), false,
+		_, err = bot.PagedEmbed(ctx,
+			bcr.StringPaginator("Channel mirrors", bcr.ColourBlurple, s, 10), 10*time.Minute,
 		)
 		return err
 	}

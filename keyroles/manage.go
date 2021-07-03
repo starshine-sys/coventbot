@@ -3,6 +3,7 @@ package keyroles
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
@@ -26,8 +27,8 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 		s = append(s, fmt.Sprintf("<@&%v>\n", r))
 	}
 
-	_, err = ctx.PagedEmbed(
-		bcr.StringPaginator("Key roles", bcr.ColourBlurple, s, 20), false,
+	_, err = bot.PagedEmbed(ctx,
+		bcr.StringPaginator("Key roles", bcr.ColourBlurple, s, 20), 10*time.Minute,
 	)
 	return err
 }
