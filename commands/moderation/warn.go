@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/dustin/go-humanize"
 	"github.com/starshine-sys/bcr"
 )
@@ -16,30 +16,30 @@ func (bot *Bot) warn(ctx *bcr.Context) (err error) {
 
 	u, err := ctx.ParseMember(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("User not found.", nil)
+		_, err = ctx.Send("User not found.")
 		return
 	}
 
 	reason := strings.TrimSpace(strings.TrimPrefix(ctx.RawArgs, ctx.Args[0]))
 
 	if u.User.ID == ctx.Bot.ID {
-		_, err = ctx.Send("😭 Why would you do that?", nil)
+		_, err = ctx.Send("😭 Why would you do that?")
 		return
 	}
 
 	if !bot.aboveUser(ctx, u) {
-		_, err = ctx.Send("You're not high enough in the hierarchy to do that.", nil)
+		_, err = ctx.Send("You're not high enough in the hierarchy to do that.")
 		return
 	}
 
-	err = bot.ModLog.Warn(ctx.Message.GuildID, u.User.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Warn(ctx, ctx.Message.GuildID, u.User.ID, ctx.Author.ID, reason)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
 
 	_, err = ctx.NewDM(u.User.ID).Content(fmt.Sprintf("You were warned in %v.\nReason: %v", ctx.Guild.Name, reason)).Send()
 	if err != nil {
-		_, err = ctx.Send("The warning was logged, but I was unable to notify the user of their warning.", nil)
+		_, err = ctx.Send("The warning was logged, but I was unable to notify the user of their warning.")
 		return
 	}
 

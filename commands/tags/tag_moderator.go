@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -21,7 +21,7 @@ func (bot *Bot) tagModerator(ctx *bcr.Context) (err error) {
 			s = fmt.Sprintf("The current tag mod role is %v. To reset this role, call this command with `-clear`.", r.Mention())
 		}
 
-		_, err = ctx.Send("", &discord.Embed{
+		_, err = ctx.Send("", discord.Embed{
 			Description: s,
 			Color:       ctx.Router.EmbedColor,
 		})
@@ -34,7 +34,7 @@ func (bot *Bot) tagModerator(ctx *bcr.Context) (err error) {
 	} else {
 		r, err := ctx.ParseRole(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("I could not find that role.", nil)
+			_, err = ctx.Send("I could not find that role.")
 			return err
 		}
 		id = r.ID
@@ -50,7 +50,7 @@ func (bot *Bot) tagModerator(ctx *bcr.Context) (err error) {
 		desc = fmt.Sprintf("Tag mod role reset. Note that anyone will be able to create, edit, or delete tags.")
 	}
 
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Description: desc,
 		Color:       ctx.Router.EmbedColor,
 	})

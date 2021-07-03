@@ -3,8 +3,8 @@ package mirror
 import (
 	"regexp"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/tribble/commands/moderation/modlog"
 )
 

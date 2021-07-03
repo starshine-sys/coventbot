@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"codeberg.org/eviedelta/detctime/durationparser"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 )
@@ -21,7 +21,7 @@ func (bot *Bot) nolevelsList(ctx *bcr.Context) (err error) {
 	}
 
 	if len(list) == 0 {
-		_, err = ctx.Send("There are no noleveled users.", nil)
+		_, err = ctx.Send("There are no noleveled users.")
 		return
 	}
 
@@ -43,7 +43,7 @@ func (bot *Bot) nolevelsList(ctx *bcr.Context) (err error) {
 func (bot *Bot) nolevelsAdd(ctx *bcr.Context) (err error) {
 	u, err := ctx.ParseUser(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("User not found.", nil)
+		_, err = ctx.Send("User not found.")
 		return
 	}
 
@@ -53,7 +53,7 @@ func (bot *Bot) nolevelsAdd(ctx *bcr.Context) (err error) {
 	if len(ctx.Args) > 1 {
 		dur, err := durationparser.Parse(ctx.Args[1])
 		if err != nil {
-			_, err = ctx.Send("Couldn't parse your input as a valid duration.", nil)
+			_, err = ctx.Send("Couldn't parse your input as a valid duration.")
 			return err
 		}
 		expiry = expiry.Add(dur)
@@ -73,7 +73,7 @@ func (bot *Bot) nolevelsAdd(ctx *bcr.Context) (err error) {
 	}
 
 	if sc, _ := bot.getGuildConfig(ctx.Message.GuildID); sc.NolevelsLog.IsValid() {
-		_, err = bot.State.SendEmbed(sc.NolevelsLog, discord.Embed{
+		_, err = ctx.State.SendEmbeds(sc.NolevelsLog, discord.Embed{
 			Title:       "User noleveled",
 			Description: text,
 			Fields: []discord.EmbedField{{
@@ -87,14 +87,14 @@ func (bot *Bot) nolevelsAdd(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{Message: text})
+	_, err = ctx.Reply(text)
 	return
 }
 
 func (bot *Bot) nolevelsRemove(ctx *bcr.Context) (err error) {
 	u, err := ctx.ParseUser(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("User not found.", nil)
+		_, err = ctx.Send("User not found.")
 		return
 	}
 
@@ -104,7 +104,7 @@ func (bot *Bot) nolevelsRemove(ctx *bcr.Context) (err error) {
 	}
 
 	if sc, _ := bot.getGuildConfig(ctx.Message.GuildID); sc.NolevelsLog.IsValid() {
-		_, err = bot.State.SendEmbed(sc.NolevelsLog, discord.Embed{
+		_, err = ctx.State.SendEmbeds(sc.NolevelsLog, discord.Embed{
 			Title:       "User unblacklisted",
 			Description: "Removed nolevels from " + u.Mention(),
 			Fields: []discord.EmbedField{{
@@ -118,7 +118,7 @@ func (bot *Bot) nolevelsRemove(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{Message: "Unblacklisted " + u.Mention()})
+	_, err = ctx.Reply("Unblacklisted " + u.Mention())
 	return
 }
 
@@ -149,8 +149,10 @@ func (bot *Bot) nolevelLoop() {
 				continue
 			}
 
+			s, _ := bot.Router.StateFromGuildID(n.ServerID)
+
 			if n.LogChannel.IsValid() {
-				bot.State.SendEmbed(n.LogChannel, discord.Embed{
+				s.SendEmbeds(n.LogChannel, discord.Embed{
 					Title:       "User nolevel expired",
 					Description: fmt.Sprintf("The blacklist of %v expired.", n.UserID.Mention()),
 					Color:       bcr.ColourBlurple,

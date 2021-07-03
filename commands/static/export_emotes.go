@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -28,7 +28,7 @@ func (bot *Bot) exportEmotes(ctx *bcr.Context) (err error) {
 
 	for i, e := range emojis {
 		if i%10 == 0 {
-			ctx.Edit(msg, "", &discord.Embed{
+			ctx.Edit(msg, "", true, discord.Embed{
 				Color:       ctx.Router.EmbedColor,
 				Description: fmt.Sprintf("**Downloading emotes, please wait...**\nDownloaded %v/%v", i, len(emojis)),
 			})

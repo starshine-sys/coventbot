@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -15,12 +15,12 @@ func (bot *Bot) roleDump(ctx *bcr.Context) (err error) {
 		b    strings.Builder
 	)
 
-	g, err := bot.State.Guild(ctx.Message.GuildID)
+	g, err := ctx.State.Guild(ctx.Message.GuildID)
 	if err != nil {
 		_, err = ctx.Sendf("An error occurred while getting the server info: %v", err)
 		return
 	}
-	gm, err := bot.State.MembersAfter(ctx.Message.GuildID, 0, 0)
+	gm, err := ctx.State.MembersAfter(ctx.Message.GuildID, 0, 0)
 	if err != nil {
 		_, err = ctx.Sendf("Couldn't get all the server's members: %v", err)
 		return

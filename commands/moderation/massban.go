@@ -5,23 +5,23 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 	// check bot perms
 	if p, _ := ctx.State.Permissions(ctx.Channel.ID, ctx.Bot.ID); !p.Has(discord.PermissionBanMembers) {
-		_, err = ctx.Send("I do not have the **Ban Members** permission.", nil)
+		_, err = ctx.Send("I do not have the **Ban Members** permission.")
 		return
 	}
 
 	reason := "N/A"
 	users, n := ctx.GreedyUserParser(ctx.Args)
 	if n == 0 {
-		_, err = ctx.Sendf("Couldn't parse any users.", nil)
+		_, err = ctx.Sendf("Couldn't parse any users.")
 		return
 	}
 	if n != -1 {
@@ -33,7 +33,7 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 		toBan += fmt.Sprintf("%v#%v (%v)\n", u.Username, u.Discriminator, u.ID)
 	}
 
-	msg, err := ctx.Send("", &discord.Embed{
+	msg, err := ctx.Send("", discord.Embed{
 		Title:       "Confirmation",
 		Description: "Are you sure you want to ban the following users?",
 		Color:       ctx.Router.EmbedColor,
@@ -52,11 +52,11 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 
 	yes, timeout := ctx.YesNoHandler(*msg, ctx.Author.ID)
 	if timeout {
-		_, err = ctx.Send("Timed out.", nil)
+		_, err = ctx.Send("Timed out.")
 		return
 	}
 	if !yes {
-		_, err = ctx.Send("Massban cancelled.", nil)
+		_, err = ctx.Send("Massban cancelled.")
 	}
 
 	ctx.State.DeleteMessage(msg.ChannelID, msg.ID)
@@ -72,7 +72,7 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 			return
 		}
 
-		bot.ModLog.Ban(ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
+		bot.ModLog.Ban(ctx, ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
 	}
 
 	_, err = ctx.Sendf("Banned %v members.", len(users))

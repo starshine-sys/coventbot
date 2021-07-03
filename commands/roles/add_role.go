@@ -48,7 +48,7 @@ func (bot *Bot) addRole(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	err = bot.State.AddRole(ctx.Guild.ID, ctx.Author.ID, r.ID)
+	err = ctx.State.AddRole(ctx.Guild.ID, ctx.Author.ID, r.ID)
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourRed, "I couldn't assign that role to you.")
 		return
@@ -105,7 +105,7 @@ func (bot *Bot) removeRole(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	err = bot.State.RemoveRole(ctx.Guild.ID, ctx.Author.ID, r.ID)
+	err = ctx.State.RemoveRole(ctx.Guild.ID, ctx.Author.ID, r.ID)
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourRed, "I couldn't remove that role from you.")
 		return

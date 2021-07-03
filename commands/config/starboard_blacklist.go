@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/db"
 )
@@ -22,7 +22,7 @@ func (bot *Bot) blacklist(ctx *bcr.Context) (err error) {
 	if len(b) == 0 {
 		x = "No channels are blacklisted."
 	}
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Title:       "Starboard blacklist",
 		Description: x,
 		Color:       ctx.Router.EmbedColor,
@@ -32,13 +32,13 @@ func (bot *Bot) blacklist(ctx *bcr.Context) (err error) {
 
 func (bot *Bot) blacklistRemove(ctx *bcr.Context) (err error) {
 	if ctx.CheckMinArgs(1); err != nil {
-		_, err = ctx.Send("You need to provide a channel.", nil)
+		_, err = ctx.Send("You need to provide a channel.")
 		return err
 	}
 
 	ch, err := ctx.ParseChannel(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("The channel you gave was not found.", nil)
+		_, err = ctx.Send("The channel you gave was not found.")
 		return err
 	}
 	if ch.GuildID != ctx.Message.GuildID {
@@ -49,7 +49,7 @@ func (bot *Bot) blacklistRemove(ctx *bcr.Context) (err error) {
 	err = bot.DB.RemoveFromBlacklist(ctx.Message.GuildID, ch.ID)
 	if err != nil {
 		if err == db.ErrorNotBlacklisted {
-			_, err = ctx.Send("That channel isn't blacklisted.", nil)
+			_, err = ctx.Send("That channel isn't blacklisted.")
 			return err
 		}
 
@@ -62,13 +62,13 @@ func (bot *Bot) blacklistRemove(ctx *bcr.Context) (err error) {
 
 func (bot *Bot) blacklistAdd(ctx *bcr.Context) (err error) {
 	if ctx.CheckMinArgs(1); err != nil {
-		_, err = ctx.Send("You need to provide a channel.", nil)
+		_, err = ctx.Send("You need to provide a channel.")
 		return err
 	}
 
 	ch, err := ctx.ParseChannel(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("The channel you gave was not found.", nil)
+		_, err = ctx.Send("The channel you gave was not found.")
 		return err
 	}
 	if ch.GuildID != ctx.Message.GuildID {
@@ -79,7 +79,7 @@ func (bot *Bot) blacklistAdd(ctx *bcr.Context) (err error) {
 	err = bot.DB.AddToBlacklist(ctx.Message.GuildID, ch.ID)
 	if err != nil {
 		if err == db.ErrorAlreadyBlacklisted {
-			_, err = ctx.Send("That channel is already blacklisted.", nil)
+			_, err = ctx.Send("That channel is already blacklisted.")
 			return err
 		}
 

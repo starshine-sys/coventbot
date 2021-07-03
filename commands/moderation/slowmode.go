@@ -3,8 +3,8 @@ package moderation
 import (
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -33,7 +33,7 @@ func (bot *Bot) discordSlowmode(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = bot.State.ModifyChannel(ch.ID, api.ModifyChannelData{
+	err = ctx.State.ModifyChannel(ch.ID, api.ModifyChannelData{
 		UserRateLimit: option.NewNullableUint(uint(duration.Seconds())),
 	})
 	if err != nil {

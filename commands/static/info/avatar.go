@@ -5,7 +5,7 @@ import (
 	"image/png"
 	"net/http"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/etc"
 )
@@ -40,7 +40,7 @@ func (bot *Bot) avatar(ctx *bcr.Context) (err error) {
 		clr = discord.Color(r)<<16 + discord.Color(g)<<8 + discord.Color(b)
 	}
 
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Author: &discord.EmbedAuthor{
 			Name: u.Username + "#" + u.Discriminator,
 			Icon: u.AvatarURL(),

@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"emperror.dev/errors"
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/jackc/pgx/v4"
 	"github.com/starshine-sys/bcr"
 )
@@ -84,7 +84,7 @@ func (bot *Bot) set(ctx *bcr.Context) (err error) {
 		name = src.Name[:40] + "..."
 	}
 
-	wh, err := bot.State.CreateWebhook(dest, api.CreateWebhookData{
+	wh, err := ctx.State.CreateWebhook(dest, api.CreateWebhookData{
 		Name: fmt.Sprintf("Channel mirror for #%v", name),
 	})
 	if err != nil {

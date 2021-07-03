@@ -1,6 +1,9 @@
 package admin
 
 import (
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/gateway/shard"
+	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -58,7 +61,13 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:   b.dm,
 	}))
 
-	b.State.AddHandler(b.ready)
+	b.Router.ShardManager.ForEach(func(s shard.Shard) {
+		state := s.(*state.State)
+
+		state.AddHandler(func(_ *gateway.ReadyEvent) {
+			b.updateStatus(state)
+		})
+	})
 
 	return
 }

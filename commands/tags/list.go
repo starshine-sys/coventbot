@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -13,12 +13,12 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 
 	if !ctx.Message.GuildID.IsValid() {
 		if len(ctx.Args) < 1 {
-			_, err = ctx.Send("No server ID provided!", nil)
+			_, err = ctx.Send("No server ID provided!")
 			return
 		}
 		guildID, err = discord.ParseSnowflake(ctx.Args[0])
 		if err != nil {
-			_, err = ctx.Send("No valid server ID provided!", nil)
+			_, err = ctx.Send("No valid server ID provided!")
 			return
 		}
 	}
@@ -39,7 +39,7 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 	// we need to grab the server name
 	g, err := ctx.State.Guild(discord.GuildID(guildID))
 	if err != nil {
-		_, err = ctx.Send("I'm not in the given server, so it has no tags.", nil)
+		_, err = ctx.Send("I'm not in the given server, so it has no tags.")
 		return
 	}
 

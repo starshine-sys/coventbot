@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) guildMemberUpdate(ev *gateway.GuildMemberUpdateEvent) {
+	s, _ := bot.Router.StateFromGuildID(ev.GuildID)
+
 	old, err := bot.Member(ev.GuildID, ev.User.ID)
 	if err != nil {
 		return
@@ -113,14 +115,14 @@ func (bot *Bot) guildMemberUpdate(ev *gateway.GuildMemberUpdateEvent) {
 	// sleep for a bit for the audit log
 	time.Sleep(time.Second)
 
-	logs, err := bot.State.AuditLog(ev.GuildID, api.AuditLogData{
+	logs, err := s.AuditLog(ev.GuildID, api.AuditLogData{
 		ActionType: discord.MemberRoleUpdate,
 		Limit:      100,
 	})
 	if err == nil {
 		for _, l := range logs.Entries {
 			if discord.UserID(l.TargetID) == ev.User.ID && l.ID.Time().After(time.Now().Add(-10*time.Second)) {
-				mod, err := bot.State.User(l.UserID)
+				mod, err := s.User(l.UserID)
 				if err == nil {
 					e.Fields = append(e.Fields, discord.EmbedField{
 						Name:  "Actor",
@@ -143,7 +145,7 @@ func (bot *Bot) guildMemberUpdate(ev *gateway.GuildMemberUpdateEvent) {
 		})
 	}
 
-	_, err = bot.State.SendEmbed(logChannel, e)
+	_, err = s.SendEmbeds(logChannel, e)
 	if err != nil {
 		bot.Sugar.Errorf("Error sending key role log message: %v", err)
 	}

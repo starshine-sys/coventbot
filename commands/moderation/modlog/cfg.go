@@ -3,7 +3,7 @@ package modlog
 import (
 	"context"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -13,12 +13,12 @@ func (bot *ModLog) setchannel(ctx *bcr.Context) (err error) {
 	if ctx.RawArgs != "-clear" {
 		ch, err := ctx.ParseChannel(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("Channel not found.", nil)
+			_, err = ctx.Send("Channel not found.")
 			return err
 		}
 
 		if ctx.Message.GuildID != ch.GuildID {
-			_, err = ctx.Send("The given channel isn't in this server.", nil)
+			_, err = ctx.Send("The given channel isn't in this server.")
 			return err
 		}
 
@@ -31,7 +31,7 @@ func (bot *ModLog) setchannel(ctx *bcr.Context) (err error) {
 	}
 
 	if id == 0 {
-		_, err = ctx.Send("Mod log channel cleared.", nil)
+		_, err = ctx.Send("Mod log channel cleared.")
 	} else {
 		_, err = ctx.Sendf("Mod log channel set to %v.", id.Mention())
 	}

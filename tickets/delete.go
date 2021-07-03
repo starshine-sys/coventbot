@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -33,14 +33,14 @@ func (bot *Bot) delete(ctx *bcr.Context) (err error) {
 		goto canClose
 	}
 
-	_, err = ctx.Send("You don't have permission to close this ticket.", nil)
+	_, err = ctx.Send("You don't have permission to close this ticket.")
 	return
 
 canClose:
 
 	msgs, err := ctx.State.MessagesAfter(ctx.Channel.ID, 0, 0)
 	if err != nil {
-		_, err = ctx.Send("I couldn't fetch all messages in this channel, aborting.", nil)
+		_, err = ctx.Send("I couldn't fetch all messages in this channel, aborting.")
 		return
 	}
 
@@ -98,7 +98,7 @@ Messages: %v
 
 	text := strings.Join(buf, "\n")
 
-	e := &discord.Embed{
+	e := discord.Embed{
 		Title: fmt.Sprintf("%v closed", ctx.Channel.Name),
 
 		Fields: []discord.EmbedField{
@@ -122,14 +122,14 @@ Messages: %v
 		Color: ctx.Router.EmbedColor,
 	}
 
-	_, err = ctx.NewMessage(ch.LogChannel).Embed(e).AddFile(
+	_, err = ctx.NewMessage(ch.LogChannel).Embeds(e).AddFile(
 		fmt.Sprintf("transcript-%v.txt", ctx.Channel.Name), strings.NewReader(text),
 	).Send()
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Description: "Ticket will be deleted in 5 seconds.",
 		Color:       bcr.ColourRed,
 	})
@@ -139,7 +139,7 @@ Messages: %v
 
 	time.Sleep(5 * time.Second)
 
-	bot.State.DeleteChannel(ctx.Channel.ID)
+	ctx.State.DeleteChannel(ctx.Channel.ID)
 
 	_, err = bot.DB.Pool.Exec(context.Background(), "delete from tickets where channel_id = $1", ctx.Channel.ID)
 	return err

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"regexp"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -15,22 +15,22 @@ var idRe = regexp.MustCompile(`^\d{15,}$`)
 func (bot *Bot) update(ctx *bcr.Context) (err error) {
 	msg, err := ctx.ParseMessage(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("Couldn't parse a message from your input.", nil)
+		_, err = ctx.Send("Couldn't parse a message from your input.")
 		return
 	}
 
 	if msg.GuildID != ctx.Message.GuildID {
-		_, err = ctx.Send("The message you gave isn't in this server.", nil)
+		_, err = ctx.Send("The message you gave isn't in this server.")
 		return
 	}
 
 	roles, err := bot.parseRoles(ctx, ctx.Args[1:])
 	if err != nil {
 		if err == errNoPairs {
-			_, err = ctx.Send("You must give emoji-role *pairs*.", nil)
+			_, err = ctx.Send("You must give emoji-role *pairs*.")
 			return
 		}
-		_, err = ctx.Send("Couldn't parse one or more roles.", nil)
+		_, err = ctx.Send("Couldn't parse one or more roles.")
 		return
 	}
 
@@ -53,9 +53,9 @@ func (bot *Bot) update(ctx *bcr.Context) (err error) {
 			emoji = discord.APIEmoji("emoji:" + r.Emote)
 		}
 
-		err = bot.State.React(msg.ChannelID, msg.ID, emoji)
+		err = ctx.State.React(msg.ChannelID, msg.ID, emoji)
 		if err != nil {
-			ctx.Send("I couldn't react to the message.", nil)
+			ctx.Send("I couldn't react to the message.")
 			return
 		}
 	}

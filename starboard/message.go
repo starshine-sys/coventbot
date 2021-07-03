@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/starshine-sys/tribble/db"
 	"github.com/starshine-sys/tribble/etc"
 )
 
 func (bot *Bot) deleteMessage(
-	channelID discord.ChannelID, messageID discord.MessageID, settings db.StarboardSettings, s *db.StarboardMessage) {
-	err := bot.State.DeleteMessage(settings.StarboardChannel, s.StarboardMessageID)
+	state *state.State, channelID discord.ChannelID, messageID discord.MessageID, settings db.StarboardSettings, s *db.StarboardMessage) {
+	err := state.DeleteMessage(settings.StarboardChannel, s.StarboardMessageID)
 	if err != nil {
 		bot.Sugar.Errorf("Error deleting starboard message: %v", err)
 	}
@@ -23,13 +24,13 @@ func (bot *Bot) deleteMessage(
 	}
 }
 
-func (bot *Bot) starboardMessage(m discord.Message, settings db.StarboardSettings, s *db.StarboardMessage, count int) {
+func (bot *Bot) starboardMessage(state *state.State, m discord.Message, settings db.StarboardSettings, s *db.StarboardMessage, count int) {
 	embed := bot.embed(m)
 	msgContent := fmt.Sprintf("**%v** %v <#%v>", count, settings.StarboardEmoji, m.ChannelID)
 
 	// if s is nil, this is a new message
 	if s == nil || s.MessageID == 0 {
-		msg, err := bot.State.SendMessage(settings.StarboardChannel, msgContent, &embed)
+		msg, err := state.SendMessage(settings.StarboardChannel, msgContent, embed)
 		if err != nil {
 			bot.Sugar.Errorf("Error sending starboard message: %v", err)
 			return
@@ -46,7 +47,7 @@ func (bot *Bot) starboardMessage(m discord.Message, settings db.StarboardSetting
 		}
 	} else {
 		// otherwise, edit the existing message
-		_, err := bot.State.EditMessage(settings.StarboardChannel, s.StarboardMessageID, msgContent, &embed, false)
+		_, err := state.EditMessage(settings.StarboardChannel, s.StarboardMessageID, msgContent, &embed, false)
 		if err != nil {
 			bot.Sugar.Errorf("Error editing starboard message: %v", err)
 			return
@@ -58,7 +59,7 @@ func (bot *Bot) starboardMessage(m discord.Message, settings db.StarboardSetting
 func (bot *Bot) embed(m discord.Message) (e discord.Embed) {
 	name := m.Author.Username
 	if !m.WebhookID.IsValid() {
-		member, err := bot.State.Member(m.GuildID, m.Author.ID)
+		member, err := bot.Member(m.GuildID, m.Author.ID)
 		if err == nil && member.Nick != "" {
 			name = member.Nick
 		}

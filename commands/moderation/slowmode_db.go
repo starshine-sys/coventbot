@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 )
 
 func (bot *Bot) setSlowmode(guildID discord.GuildID, channelID discord.ChannelID, slowmode time.Duration) (err error) {

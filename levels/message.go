@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -15,6 +15,8 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	if !m.GuildID.IsValid() || m.Author.Bot || m.Author.DiscordSystem || m.Member == nil {
 		return
 	}
+
+	s, _ := bot.Router.StateFromGuildID(m.GuildID)
 
 	sc, err := bot.getGuildConfig(m.GuildID)
 	if err != nil {
@@ -46,7 +48,7 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 			return
 		}
 	}
-	if ch, err := bot.State.Channel(m.ChannelID); err == nil {
+	if ch, err := s.Channel(m.ChannelID); err == nil {
 		for _, blocked := range sc.BlockedCategories {
 			if ch.CategoryID == discord.ChannelID(blocked) {
 				return
@@ -94,7 +96,7 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		}
 	}
 
-	err = bot.State.AddRole(m.GuildID, m.Author.ID, reward.RoleReward)
+	err = s.AddRole(m.GuildID, m.Author.ID, reward.RoleReward)
 	if err != nil {
 		bot.Sugar.Errorf("Error adding role to user: %v", err)
 		return
@@ -107,9 +109,9 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		if !msgsDisabled {
 			txt := strings.NewReplacer("{lvl}", fmt.Sprint(newLvl)).Replace(sc.RewardText)
 
-			ch, err := bot.State.CreatePrivateChannel(m.Author.ID)
+			ch, err := s.CreatePrivateChannel(m.Author.ID)
 			if err == nil {
-				bot.State.SendText(ch.ID, txt)
+				s.SendMessage(ch.ID, txt)
 			}
 		}
 	}
@@ -131,6 +133,6 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 			Color: bcr.ColourBlurple,
 		}
 
-		bot.State.SendEmbed(sc.RewardLog, e)
+		s.SendEmbeds(sc.RewardLog, e)
 	}
 }

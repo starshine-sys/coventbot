@@ -3,7 +3,7 @@ package levels
 import (
 	"context"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -14,7 +14,7 @@ func (bot *Bot) blacklistRoles(ctx *bcr.Context) (err error) {
 	}
 
 	if len(sc.BlockedRoles) == 0 {
-		_, err = ctx.Send("There are no blacklisted roles.", nil)
+		_, err = ctx.Send("There are no blacklisted roles.")
 		return
 	}
 
@@ -32,7 +32,7 @@ func (bot *Bot) blacklistRoles(ctx *bcr.Context) (err error) {
 func (bot *Bot) blacklistRoleAdd(ctx *bcr.Context) (err error) {
 	r, err := ctx.ParseRole(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("Role not found.", nil)
+		_, err = ctx.Send("Role not found.")
 		return
 	}
 
@@ -41,14 +41,14 @@ func (bot *Bot) blacklistRoleAdd(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{Message: "Added " + r.Mention() + " to the blacklist."})
+	_, err = ctx.Reply("Added " + r.Mention() + " to the blacklist.")
 	return
 }
 
 func (bot *Bot) blacklistRoleRemove(ctx *bcr.Context) (err error) {
 	r, err := ctx.ParseRole(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("Role not found.", nil)
+		_, err = ctx.Send("Role not found.")
 		return
 	}
 
@@ -57,7 +57,7 @@ func (bot *Bot) blacklistRoleRemove(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{Message: "Removed " + r.Mention() + " from the blacklist."})
+	_, err = ctx.Reply("Removed " + r.Mention() + " from the blacklist.")
 	return
 }
 
@@ -68,7 +68,7 @@ func (bot *Bot) blacklistChannels(ctx *bcr.Context) (err error) {
 	}
 
 	if len(sc.BlockedChannels) == 0 {
-		_, err = ctx.Send("There are no blacklisted channels.", nil)
+		_, err = ctx.Send("There are no blacklisted channels.")
 		return
 	}
 
@@ -86,11 +86,11 @@ func (bot *Bot) blacklistChannels(ctx *bcr.Context) (err error) {
 func (bot *Bot) blacklistChannelAdd(ctx *bcr.Context) (err error) {
 	r, err := ctx.ParseChannel(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("Channel not found.", nil)
+		_, err = ctx.Send("Channel not found.")
 		return
 	}
 	if (r.Type != discord.GuildText && r.Type != discord.GuildNews) || r.GuildID != ctx.Channel.GuildID {
-		_, err = ctx.Send("Channel not found.", nil)
+		_, err = ctx.Send("Channel not found.")
 		return
 	}
 
@@ -99,18 +99,18 @@ func (bot *Bot) blacklistChannelAdd(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{Message: "Added " + r.Mention() + " to the blacklist."})
+	_, err = ctx.Reply("Added " + r.Mention() + " to the blacklist.")
 	return
 }
 
 func (bot *Bot) blacklistChannelRemove(ctx *bcr.Context) (err error) {
 	r, err := ctx.ParseChannel(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("Channel not found.", nil)
+		_, err = ctx.Send("Channel not found.")
 		return
 	}
 	if (r.Type != discord.GuildText && r.Type != discord.GuildNews) || r.GuildID != ctx.Channel.GuildID {
-		_, err = ctx.Send("Channel not found.", nil)
+		_, err = ctx.Send("Channel not found.")
 		return
 	}
 
@@ -119,7 +119,7 @@ func (bot *Bot) blacklistChannelRemove(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{Message: "Removed " + r.Mention() + " from the blacklist."})
+	_, err = ctx.Reply("Removed " + r.Mention() + " from the blacklist.")
 	return
 }
 
@@ -130,7 +130,7 @@ func (bot *Bot) blacklistCategories(ctx *bcr.Context) (err error) {
 	}
 
 	if len(sc.BlockedCategories) == 0 {
-		_, err = ctx.Send("There are no blacklisted categories.", nil)
+		_, err = ctx.Send("There are no blacklisted categories.")
 		return
 	}
 
@@ -148,11 +148,11 @@ func (bot *Bot) blacklistCategories(ctx *bcr.Context) (err error) {
 func (bot *Bot) blacklistCategoryAdd(ctx *bcr.Context) (err error) {
 	r, err := ctx.ParseChannel(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("Category not found.", nil)
+		_, err = ctx.Send("Category not found.")
 		return
 	}
 	if r.Type != discord.GuildCategory || r.GuildID != ctx.Channel.GuildID {
-		_, err = ctx.Send("Category not found.", nil)
+		_, err = ctx.Send("Category not found.")
 		return
 	}
 
@@ -161,18 +161,18 @@ func (bot *Bot) blacklistCategoryAdd(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{Message: "Added " + r.Name + " to the blacklist."})
+	_, err = ctx.Reply("Added " + r.Name + " to the blacklist.")
 	return
 }
 
 func (bot *Bot) blacklistCategoryRemove(ctx *bcr.Context) (err error) {
 	r, err := ctx.ParseChannel(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("Category not found.", nil)
+		_, err = ctx.Send("Category not found.")
 		return
 	}
 	if r.Type != discord.GuildCategory || r.GuildID != ctx.Channel.GuildID {
-		_, err = ctx.Send("Category not found.", nil)
+		_, err = ctx.Send("Category not found.")
 		return
 	}
 
@@ -181,6 +181,6 @@ func (bot *Bot) blacklistCategoryRemove(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{Message: "Removed " + r.Name + " from the blacklist."})
+	_, err = ctx.Reply("Removed " + r.Name + " from the blacklist.")
 	return
 }

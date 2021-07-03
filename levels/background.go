@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -15,7 +15,7 @@ func (bot *Bot) background(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 	if !sc.LevelsEnabled {
-		_, err = ctx.Send("Levels are disabled on this server.", nil)
+		_, err = ctx.Send("Levels are disabled on this server.")
 		return
 	}
 
@@ -48,7 +48,7 @@ func (bot *Bot) background(ctx *bcr.Context) (err error) {
 			Color: bcr.ColourBlurple,
 		}
 
-		_, err = ctx.Send("", &e)
+		_, err = ctx.Send("", e)
 		return err
 	}
 
@@ -78,7 +78,7 @@ func (bot *Bot) serverBackground(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 	if !sc.LevelsEnabled {
-		_, err = ctx.Send("Levels are disabled on this server.", nil)
+		_, err = ctx.Send("Levels are disabled on this server.")
 		return
 	}
 
@@ -111,7 +111,7 @@ func (bot *Bot) serverBackground(ctx *bcr.Context) (err error) {
 			Color: bcr.ColourBlurple,
 		}
 
-		_, err = ctx.Send("", &e)
+		_, err = ctx.Send("", e)
 		return err
 	}
 

@@ -7,19 +7,19 @@ import (
 func (bot *Bot) cmdQuoteDelete(ctx *bcr.Context) (err error) {
 	q, err := bot.getQuote(ctx.RawArgs, ctx.Guild.ID)
 	if err != nil {
-		_, err = ctx.Send("No quote with that ID found.", nil)
+		_, err = ctx.Send("No quote with that ID found.")
 		return
 	}
 
 	e := q.Embed(bot.PK)
-	msg, err := ctx.Send("Are you sure you want to delete this quote?", &e)
+	msg, err := ctx.Send("Are you sure you want to delete this quote?", e)
 	if err != nil {
 		return
 	}
 
 	yes, timeout := ctx.YesNoHandler(*msg, ctx.Author.ID)
 	if !yes || timeout {
-		_, err = ctx.Send(":x: Cancelled.", nil)
+		_, err = ctx.Send(":x: Cancelled.")
 		return
 	}
 
@@ -28,7 +28,7 @@ func (bot *Bot) cmdQuoteDelete(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	err = bot.State.DeleteMessage(ctx.Message.ChannelID, msg.ID)
+	err = ctx.State.DeleteMessage(ctx.Message.ChannelID, msg.ID)
 	if err != nil {
 		bot.Sugar.Errorf("Error deleting quote message: %v", err)
 	}

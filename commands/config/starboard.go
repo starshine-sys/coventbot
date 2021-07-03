@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -25,7 +25,7 @@ func (bot *Bot) starboardSettings(ctx *bcr.Context) (err error) {
 
 	b.WriteString(fmt.Sprintf("The current starboard limit is %v stars\nThe current starboard emoji is %v", settings.StarboardLimit, settings.StarboardEmoji))
 
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Title:       "Starboard settings",
 		Description: b.String(),
 		Color:       ctx.Router.EmbedColor,
@@ -41,12 +41,12 @@ func (bot *Bot) starboardSetChannel(ctx *bcr.Context) (err error) {
 	} else {
 		ch, err := ctx.ParseChannel(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("Channel not found.", nil)
+			_, err = ctx.Send("Channel not found.")
 			return err
 		}
 
 		if ch.GuildID != ctx.Message.GuildID {
-			_, err = ctx.Send("The given channel isn't in this server.", nil)
+			_, err = ctx.Send("The given channel isn't in this server.")
 			return err
 		}
 
@@ -59,7 +59,7 @@ func (bot *Bot) starboardSetChannel(ctx *bcr.Context) (err error) {
 	}
 
 	if settings.StarboardChannel == id {
-		_, err = ctx.Send("The given channel is already the starboard channel.", nil)
+		_, err = ctx.Send("The given channel is already the starboard channel.")
 		return err
 	}
 
@@ -70,7 +70,7 @@ func (bot *Bot) starboardSetChannel(ctx *bcr.Context) (err error) {
 	}
 
 	if id == 0 {
-		_, err = ctx.Send("Starboard channel reset.", nil)
+		_, err = ctx.Send("Starboard channel reset.")
 		return
 	}
 	_, err = ctx.Sendf("Starboard channel changed to %v.", id.Mention())
@@ -84,7 +84,7 @@ func (bot *Bot) starboardSetEmoji(ctx *bcr.Context) (err error) {
 	}
 
 	if settings.StarboardEmoji == ctx.RawArgs {
-		_, err = ctx.Send("The given emoji is already the starboard emoji.", nil)
+		_, err = ctx.Send("The given emoji is already the starboard emoji.")
 		return err
 	}
 
@@ -101,7 +101,7 @@ func (bot *Bot) starboardSetEmoji(ctx *bcr.Context) (err error) {
 func (bot *Bot) starboardSetLimit(ctx *bcr.Context) (err error) {
 	i, err := strconv.Atoi(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("Could not parse your input as a number.", nil)
+		_, err = ctx.Send("Could not parse your input as a number.")
 		return
 	}
 
@@ -111,7 +111,7 @@ func (bot *Bot) starboardSetLimit(ctx *bcr.Context) (err error) {
 	}
 
 	if settings.StarboardLimit == i {
-		_, err = ctx.Send("The given limit is already the starboard limit.", nil)
+		_, err = ctx.Send("The given limit is already the starboard limit.")
 		return err
 	}
 

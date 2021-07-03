@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/db"
 )
@@ -24,7 +24,7 @@ func (bot *Bot) watchlist(ctx *bcr.Context) (err error) {
 	if len(b) == 0 {
 		x = "No users are on the watchlist."
 	}
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Title:       "Watchlist",
 		Description: x,
 		Color:       ctx.Router.EmbedColor,
@@ -34,20 +34,20 @@ func (bot *Bot) watchlist(ctx *bcr.Context) (err error) {
 
 func (bot *Bot) watchlistRemove(ctx *bcr.Context) (err error) {
 	if ctx.CheckMinArgs(1); err != nil {
-		_, err = ctx.Send("You need to provide a channel.", nil)
+		_, err = ctx.Send("You need to provide a channel.")
 		return err
 	}
 
 	u, err := ctx.ParseUser(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("The user you gave was not found.", nil)
+		_, err = ctx.Send("The user you gave was not found.")
 		return err
 	}
 
 	err = bot.DB.RemoveFromWatchlist(ctx.Message.GuildID, u.ID)
 	if err != nil {
 		if err == db.ErrorNotBlacklisted {
-			_, err = ctx.Send("That user isn't on the watchlist.", nil)
+			_, err = ctx.Send("That user isn't on the watchlist.")
 			return err
 		}
 
@@ -65,20 +65,20 @@ func (bot *Bot) watchlistRemove(ctx *bcr.Context) (err error) {
 
 func (bot *Bot) watchlistAdd(ctx *bcr.Context) (err error) {
 	if ctx.CheckMinArgs(1); err != nil {
-		_, err = ctx.Send("You need to provide a user.", nil)
+		_, err = ctx.Send("You need to provide a user.")
 		return err
 	}
 
 	u, err := ctx.ParseUser(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("The user you gave was not found.", nil)
+		_, err = ctx.Send("The user you gave was not found.")
 		return err
 	}
 
 	err = bot.DB.AddToWatchlist(ctx.Message.GuildID, u.ID)
 	if err != nil {
 		if err == db.ErrorAlreadyBlacklisted {
-			_, err = ctx.Send("That user is already on the watchlist.", nil)
+			_, err = ctx.Send("That user is already on the watchlist.")
 			return err
 		}
 
@@ -92,7 +92,7 @@ func (bot *Bot) watchlistAdd(ctx *bcr.Context) (err error) {
 func (bot *Bot) watchlistReason(ctx *bcr.Context) (err error) {
 	u, err := ctx.ParseUser(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("I could not find that user.", nil)
+		_, err = ctx.Send("I could not find that user.")
 		return
 	}
 
@@ -100,7 +100,7 @@ func (bot *Bot) watchlistReason(ctx *bcr.Context) (err error) {
 		var reason string
 		bot.DB.Pool.QueryRow(context.Background(), "select reason from watch_list_reasons where user_id = $1 and server_id = $2", u.ID, ctx.Message.GuildID).Scan(&reason)
 		if reason == "" {
-			_, err = ctx.Send("There is no reason set for that user.", nil)
+			_, err = ctx.Send("There is no reason set for that user.")
 			return
 		}
 
@@ -110,7 +110,7 @@ func (bot *Bot) watchlistReason(ctx *bcr.Context) (err error) {
 
 	// if the user isn't on the watch list, return
 	if !bot.DB.IsWatchlisted(ctx.Message.GuildID, u.ID) {
-		_, err = ctx.Sendf("That user isn't on the watchlist.", nil)
+		_, err = ctx.Sendf("That user isn't on the watchlist.")
 		return
 	}
 

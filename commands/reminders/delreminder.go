@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) delreminder(ctx *bcr.Context) (err error) {
 	id, err := strconv.ParseUint(ctx.Args[0], 10, 0)
 	if err != nil {
-		_, err = ctx.Send("Couldn't parse your input as a number.", nil)
+		_, err = ctx.Send("Couldn't parse your input as a number.")
 		return
 	}
 
@@ -22,7 +22,7 @@ func (bot *Bot) delreminder(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 	if !exists {
-		_, err = ctx.Send("", &discord.Embed{
+		_, err = ctx.Send("", discord.Embed{
 			Color:       bcr.ColourRed,
 			Description: fmt.Sprintf("No reminder with ID #%v found, or it's not your reminder.", id),
 		})
@@ -34,7 +34,7 @@ func (bot *Bot) delreminder(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Color:       bcr.ColourGreen,
 		Description: fmt.Sprintf("Successfully deleted reminder #%v.", id),
 	})

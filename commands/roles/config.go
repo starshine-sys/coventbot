@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -81,7 +81,7 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 		e.Title = "Category " + c.Name + " updated"
 	}
 
-	_, err = ctx.Send("", &e)
+	_, err = ctx.Send("", e)
 	return
 }
 

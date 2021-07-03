@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -16,7 +16,7 @@ func (bot *Bot) colour(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 	if !sc.LevelsEnabled {
-		_, err = ctx.Send("Levels are disabled on this server.", nil)
+		_, err = ctx.Send("Levels are disabled on this server.")
 		return
 	}
 
@@ -31,7 +31,7 @@ func (bot *Bot) colour(ctx *bcr.Context) (err error) {
 			return err
 		}
 		url := fmt.Sprintf("https://fakeimg.pl/256x256/%06X/?text=%%20", uc.Colour)
-		_, err = ctx.Send("", &discord.Embed{
+		_, err = ctx.Send("", discord.Embed{
 			Thumbnail: &discord.EmbedThumbnail{
 				URL: url,
 			},
@@ -49,7 +49,7 @@ func (bot *Bot) colour(ctx *bcr.Context) (err error) {
 			return bot.Report(ctx, err)
 		}
 
-		_, err = ctx.SendEmbed(bcr.SED{Message: "Level colour cleared!"})
+		_, err = ctx.Reply("Level colour cleared!")
 		return
 	}
 
@@ -57,7 +57,7 @@ func (bot *Bot) colour(ctx *bcr.Context) (err error) {
 
 	clr, err := strconv.ParseUint(ctx.RawArgs, 16, 0)
 	if err != nil {
-		_, err = ctx.Send("You didn't give a valid hex code colour.", nil)
+		_, err = ctx.Send("You didn't give a valid hex code colour.")
 		return
 	}
 
@@ -67,7 +67,7 @@ func (bot *Bot) colour(ctx *bcr.Context) (err error) {
 	}
 
 	url := fmt.Sprintf("https://fakeimg.pl/256x256/%06X/?text=%%20", clr)
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Thumbnail: &discord.EmbedThumbnail{
 			URL: url,
 		},

@@ -1,7 +1,7 @@
 package chanmirror
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -26,8 +26,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.set,
 	})
 
-	b.State.AddHandler(b.messageCreate)
-	b.State.AddHandler(b.reactionAdd)
+	b.Router.AddHandler(b.messageCreate)
+	b.Router.AddHandler(b.reactionAdd)
 
 	return
 }

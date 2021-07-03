@@ -6,7 +6,7 @@ require (
 	codeberg.org/eviedelta/detctime v0.0.0-20201201223733-52d0e0a1ba3d
 	emperror.dev/errors v0.8.0
 	github.com/ReneKroon/ttlcache/v2 v2.7.0
-	github.com/diamondburned/arikawa/v2 v2.0.7-0.20210411235605-20166f33cc8d
+	github.com/diamondburned/arikawa/v3 v3.0.0-20210630071930-af35c03b8e77
 	github.com/disintegration/imaging v1.6.2
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fogleman/gg v1.3.0
@@ -19,7 +19,7 @@ require (
 	github.com/kataras/hcaptcha v0.0.0-20200711031247-2927d4faf32f
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/pflag v1.0.5
-	github.com/starshine-sys/bcr v0.17.2-0.20210630214302-72c7d5df875d
+	github.com/starshine-sys/bcr v0.19.0
 	github.com/starshine-sys/pkgo v1.0.0
 	github.com/starshine-sys/snowflake/v2 v2.1.0
 	go.uber.org/zap v1.17.0

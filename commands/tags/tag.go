@@ -1,16 +1,16 @@
 package tags
 
 import (
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) tag(ctx *bcr.Context) (err error) {
 	t, err := bot.DB.GetTag(ctx.Message.GuildID, ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("No tag with that name found.", nil)
+		_, err = ctx.Send("No tag with that name found.")
 		return
 	}
 

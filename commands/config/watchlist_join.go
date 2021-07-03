@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/tribble/etc"
 )
 
@@ -54,7 +54,9 @@ func (bot *Bot) watchlistMemberAdd(m *gateway.GuildMemberAddEvent) {
 		})
 	}
 
-	_, err = bot.State.SendEmbed(ch, e)
+	s, _ := bot.Router.StateFromGuildID(m.GuildID)
+
+	_, err = s.SendEmbeds(ch, e)
 	if err != nil {
 		bot.Sugar.Errorf("Error sending watch list warning: %v", err)
 	}

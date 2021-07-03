@@ -3,9 +3,9 @@ package bot
 import (
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/api/webhook"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/api/webhook"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -16,7 +16,9 @@ func (bot *Bot) guildDelete(ev *gateway.GuildDeleteEvent) {
 
 	var e discord.Embed
 
-	if g, err := bot.State.Guild(ev.ID); err != nil {
+	s, _ := bot.Router.StateFromGuildID(ev.ID)
+
+	if g, err := s.Guild(ev.ID); err != nil {
 		e = discord.Embed{
 			Color:       bcr.ColourBlurple,
 			Title:       "Left unknown server",
@@ -24,7 +26,7 @@ func (bot *Bot) guildDelete(ev *gateway.GuildDeleteEvent) {
 		}
 	} else {
 		owner := g.OwnerID.Mention()
-		if o, err := bot.State.User(g.OwnerID); err == nil {
+		if o, err := s.User(g.OwnerID); err == nil {
 			owner = fmt.Sprintf("%v#%v (%v)", o.Username, o.Discriminator, o.Mention())
 		}
 
@@ -50,7 +52,7 @@ func (bot *Bot) guildDelete(ev *gateway.GuildDeleteEvent) {
 	}
 
 	if bot.GuildLogWebhook != nil {
-		botUser, err := bot.State.Me()
+		botUser, err := s.Me()
 		if err != nil {
 			bot.Sugar.Errorf("Error getting bot user: %v", err)
 		}

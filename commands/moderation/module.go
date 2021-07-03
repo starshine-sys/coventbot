@@ -1,7 +1,7 @@
 package moderation
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -230,7 +230,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	list = append(list, slowmode)
 
-	bot.State.AddHandler(b.slowmodeMessage)
+	bot.Router.AddHandler(b.slowmodeMessage)
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{
 		Name:    "channelban",
@@ -286,7 +286,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.unban,
 	}))
 
-	bot.State.AddHandler(b.channelbanOnJoin)
+	bot.Router.AddHandler(b.channelbanOnJoin)
 
 	_, modLogList := modlog.InitCommands(bot)
 

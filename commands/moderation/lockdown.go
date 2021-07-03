@@ -1,8 +1,8 @@
 package moderation
 
 import (
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -11,16 +11,16 @@ func (bot *Bot) lockdown(ctx *bcr.Context) (err error) {
 	if len(ctx.RawArgs) > 0 {
 		ch, err = ctx.ParseChannel(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("Could not find that channel!", nil)
+			_, err = ctx.Send("Could not find that channel!")
 			return
 		}
 	}
 	if ch.GuildID != ctx.Message.GuildID {
-		_, err = ctx.Send("That channel is not in this server.", nil)
+		_, err = ctx.Send("That channel is not in this server.")
 		return
 	}
 
-	perms, err := bot.State.Permissions(ch.ID, ctx.Bot.ID)
+	perms, err := ctx.State.Permissions(ch.ID, ctx.Bot.ID)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -31,12 +31,12 @@ func (bot *Bot) lockdown(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = bot.State.EditChannelPermission(ch.ID, discord.Snowflake(ctx.Bot.ID), api.EditChannelPermissionData{
+	err = ctx.State.EditChannelPermission(ch.ID, discord.Snowflake(ctx.Bot.ID), api.EditChannelPermissionData{
 		Type:  discord.OverwriteMember,
 		Allow: discord.PermissionViewChannel,
 	})
 	if err != nil {
-		_, err = ctx.Send("Could not change permissions for the given channel.", nil)
+		_, err = ctx.Send("Could not change permissions for the given channel.")
 		return
 	}
 
@@ -48,13 +48,13 @@ func (bot *Bot) lockdown(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	err = bot.State.EditChannelPermission(ch.ID, discord.Snowflake(ch.GuildID), api.EditChannelPermissionData{
+	err = ctx.State.EditChannelPermission(ch.ID, discord.Snowflake(ch.GuildID), api.EditChannelPermissionData{
 		Type:  discord.OverwriteRole,
 		Allow: allow,
 		Deny:  deny ^ discord.PermissionViewChannel,
 	})
 	if err != nil {
-		_, err = ctx.Send("Could not change permissions for the given channel.", nil)
+		_, err = ctx.Send("Could not change permissions for the given channel.")
 		return
 	}
 

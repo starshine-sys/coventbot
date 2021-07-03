@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -17,7 +17,7 @@ func (bot *Bot) settings(ctx *bcr.Context) (err error) {
 	}
 
 	if !settings.MemberRole.IsValid() {
-		_, err = ctx.Send("The gateway is currently disabled.", nil)
+		_, err = ctx.Send("The gateway is currently disabled.")
 		return err
 	}
 	b.WriteString(fmt.Sprintf("Users will be given the <@&%v> role upon verification.\n", settings.MemberRole))
@@ -28,7 +28,7 @@ func (bot *Bot) settings(ctx *bcr.Context) (err error) {
 		b.WriteString(fmt.Sprintf("This message will be sent in <#%v> upon verification:\n```%v```", settings.WelcomeChannel, settings.WelcomeMessage))
 	}
 
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Title:       "Gateway settings",
 		Description: b.String(),
 		Color:       ctx.Router.EmbedColor,
@@ -44,12 +44,12 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 	} else {
 		ch, err := ctx.ParseChannel(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("Channel not found.", nil)
+			_, err = ctx.Send("Channel not found.")
 			return err
 		}
 
 		if ch.GuildID != ctx.Message.GuildID {
-			_, err = ctx.Send("The given channel isn't in this server.", nil)
+			_, err = ctx.Send("The given channel isn't in this server.")
 			return err
 		}
 
@@ -62,7 +62,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 	}
 
 	if settings.WelcomeChannel == id {
-		_, err = ctx.Send("The given channel is already the welcome channel.", nil)
+		_, err = ctx.Send("The given channel is already the welcome channel.")
 		return err
 	}
 
@@ -73,7 +73,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 	}
 
 	if id == 0 {
-		_, err = ctx.Send("Welcome channel reset.", nil)
+		_, err = ctx.Send("Welcome channel reset.")
 		return
 	}
 	_, err = ctx.Sendf("Welcome channel changed to %v.", id.Mention())
@@ -87,7 +87,7 @@ func (bot *Bot) setMessage(ctx *bcr.Context) (err error) {
 	}
 
 	if settings.WelcomeMessage == ctx.RawArgs {
-		_, err = ctx.Send("The given welcome message is already set.", nil)
+		_, err = ctx.Send("The given welcome message is already set.")
 		return err
 	}
 
@@ -97,7 +97,7 @@ func (bot *Bot) setMessage(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Send("Welcome message changed!", nil)
+	_, err = ctx.Send("Welcome message changed!")
 	return
 }
 
@@ -109,7 +109,7 @@ func (bot *Bot) setRole(ctx *bcr.Context) (err error) {
 	} else {
 		role, err := ctx.ParseRole(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("Role not found.", nil)
+			_, err = ctx.Send("Role not found.")
 			return err
 		}
 
@@ -122,7 +122,7 @@ func (bot *Bot) setRole(ctx *bcr.Context) (err error) {
 	}
 
 	if settings.MemberRole == id {
-		_, err = ctx.Send("The given role is already the member role.", nil)
+		_, err = ctx.Send("The given role is already the member role.")
 		return err
 	}
 
@@ -133,7 +133,7 @@ func (bot *Bot) setRole(ctx *bcr.Context) (err error) {
 	}
 
 	if id == 0 {
-		_, err = ctx.Send("Member role reset.", nil)
+		_, err = ctx.Send("Member role reset.")
 		return
 	}
 	_, err = ctx.Sendf("Member role changed to %v.", id.Mention())

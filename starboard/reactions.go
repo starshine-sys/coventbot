@@ -3,8 +3,8 @@ package starboard
 import (
 	"sync"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/jackc/pgx/v4"
 	"github.com/pkg/errors"
 )
@@ -94,7 +94,9 @@ func (bot *Bot) MessageReactionRemoveEmoji(ev *gateway.MessageReactionRemoveEmoj
 	}
 
 	if star != nil {
-		bot.deleteMessage(ev.ChannelID, ev.MessageID, settings, star)
+		s, _ := bot.Router.StateFromGuildID(ev.GuildID)
+
+		bot.deleteMessage(s, ev.ChannelID, ev.MessageID, settings, star)
 	}
 }
 
@@ -128,7 +130,9 @@ func (bot *Bot) MessageReactionRemoveAll(ev *gateway.MessageReactionRemoveAllEve
 	}
 
 	if star != nil {
-		bot.deleteMessage(ev.ChannelID, ev.MessageID, settings, star)
+		s, _ := bot.Router.StateFromGuildID(ev.GuildID)
+
+		bot.deleteMessage(s, ev.ChannelID, ev.MessageID, settings, star)
 	}
 }
 
@@ -149,6 +153,8 @@ func (bot *Bot) reactionInner(userID discord.UserID, channelID discord.ChannelID
 		return
 	}
 
+	s, _ := bot.Router.StateFromGuildID(guildID)
+
 	// make sure we're not starring our own starboard messages
 	if channelID == settings.StarboardChannel {
 		if bot.Router.Bot == nil {
@@ -156,7 +162,7 @@ func (bot *Bot) reactionInner(userID discord.UserID, channelID discord.ChannelID
 			return
 		}
 
-		m, err := bot.State.Message(channelID, messageID)
+		m, err := s.Message(channelID, messageID)
 		if err != nil {
 			bot.Sugar.Errorf("Error getting message: %v", err)
 			return
@@ -167,7 +173,7 @@ func (bot *Bot) reactionInner(userID discord.UserID, channelID discord.ChannelID
 		}
 	}
 
-	m, err := bot.State.Message(channelID, messageID)
+	m, err := s.Message(channelID, messageID)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting message: %v", err)
 		return
@@ -189,10 +195,10 @@ func (bot *Bot) reactionInner(userID discord.UserID, channelID discord.ChannelID
 	}
 
 	if count < settings.StarboardLimit && (star != nil && star.MessageID != 0) {
-		bot.deleteMessage(channelID, messageID, settings, star)
+		bot.deleteMessage(s, channelID, messageID, settings, star)
 	}
 	if count >= settings.StarboardLimit {
-		bot.starboardMessage(*m, settings, star, count)
+		bot.starboardMessage(s, *m, settings, star, count)
 	}
 
 	return

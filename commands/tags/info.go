@@ -3,14 +3,14 @@ package tags
 import (
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) info(ctx *bcr.Context) (err error) {
 	t, err := bot.DB.GetTag(ctx.Message.GuildID, ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("No tag with that name found.", nil)
+		_, err = ctx.Send("No tag with that name found.")
 		return
 	}
 
@@ -25,7 +25,7 @@ func (bot *Bot) info(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Author:      author,
 		Title:       fmt.Sprintf("``%v``", bcr.EscapeBackticks(t.Name)),
 		Description: t.Response,

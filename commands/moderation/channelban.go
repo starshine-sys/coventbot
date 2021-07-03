@@ -6,9 +6,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 )
@@ -28,7 +28,7 @@ func (bot *Bot) channelban(ctx *bcr.Context) (err error) {
 	if channelRe.MatchString(ctx.Args[0]) {
 		channel, err = ctx.ParseChannel(ctx.Args[0])
 		if err != nil || channel.GuildID != ctx.Message.GuildID {
-			_, err = ctx.Send("Channel not found.", nil)
+			_, err = ctx.Send("Channel not found.")
 			return
 		}
 
@@ -40,25 +40,25 @@ func (bot *Bot) channelban(ctx *bcr.Context) (err error) {
 	}
 
 	if len(ctx.Args) < 1 {
-		_, err = ctx.Send("You must give a member to channel ban.", nil)
+		_, err = ctx.Send("You must give a member to channel ban.")
 		return
 	}
 
 	member, err := ctx.ParseMember(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("Member not found.", nil)
+		_, err = ctx.Send("Member not found.")
 		return err
 	}
 
 	// get permissions for the invoking user
 	if perms, _ := ctx.State.Permissions(channel.ID, ctx.Author.ID); !perms.Has(discord.PermissionManageMessages) {
-		_, err = ctx.Send("You're not a mod, you can't do that!", nil)
+		_, err = ctx.Send("You're not a mod, you can't do that!")
 		return
 	}
 
 	// don't channelban ourselves
 	if member.User.ID == ctx.Bot.ID {
-		_, err = ctx.Send("No.", nil)
+		_, err = ctx.Send("No.")
 		return
 	}
 
@@ -67,7 +67,7 @@ func (bot *Bot) channelban(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 	if banned {
-		_, err = ctx.Send("User is already channel banned.", nil)
+		_, err = ctx.Send("User is already channel banned.")
 		return
 	}
 
@@ -92,7 +92,7 @@ func (bot *Bot) channelban(ctx *bcr.Context) (err error) {
 		deny = deny | discord.PermissionViewChannel
 	}
 
-	err = bot.State.EditChannelPermission(channel.ID, discord.Snowflake(member.User.ID), api.EditChannelPermissionData{
+	err = ctx.State.EditChannelPermission(channel.ID, discord.Snowflake(member.User.ID), api.EditChannelPermissionData{
 		Type:  discord.OverwriteMember,
 		Allow: allow,
 		Deny:  deny,
@@ -108,12 +108,12 @@ func (bot *Bot) channelban(ctx *bcr.Context) (err error) {
 		reason = strings.Join(ctx.Args[1:], " ")
 	}
 
-	err = bot.ModLog.Channelban(ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Channelban(ctx, ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
 	if err != nil {
 		bot.Sugar.Errorf("Error logging channelban: %v", err)
 	}
 
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Color:       bcr.ColourBlurple,
 		Description: fmt.Sprintf("Banned %v from %v", member.Mention(), channel.Mention()),
 	})
@@ -128,7 +128,7 @@ func (bot *Bot) unchannelban(ctx *bcr.Context) (err error) {
 	if channelRe.MatchString(ctx.Args[0]) {
 		channel, err = ctx.ParseChannel(ctx.Args[0])
 		if err != nil || channel.GuildID != ctx.Message.GuildID {
-			_, err = ctx.Send("Channel not found.", nil)
+			_, err = ctx.Send("Channel not found.")
 			return
 		}
 
@@ -140,19 +140,19 @@ func (bot *Bot) unchannelban(ctx *bcr.Context) (err error) {
 	}
 
 	if len(ctx.Args) < 1 {
-		_, err = ctx.Send("You must give a member to unban.", nil)
+		_, err = ctx.Send("You must give a member to unban.")
 		return
 	}
 
 	member, err := ctx.ParseMember(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("Member not found.", nil)
+		_, err = ctx.Send("Member not found.")
 		return err
 	}
 
 	// get permissions for the invoking user
 	if perms, _ := ctx.State.Permissions(channel.ID, ctx.Author.ID); !perms.Has(discord.PermissionManageMessages) {
-		_, err = ctx.Send("You're not a mod, you can't do that!", nil)
+		_, err = ctx.Send("You're not a mod, you can't do that!")
 		return
 	}
 
@@ -161,7 +161,7 @@ func (bot *Bot) unchannelban(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 	if !banned {
-		_, err = ctx.Send("User is not banned from that channel.", nil)
+		_, err = ctx.Send("User is not banned from that channel.")
 		return
 	}
 
@@ -187,7 +187,7 @@ func (bot *Bot) unchannelban(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	err = bot.State.EditChannelPermission(channel.ID, discord.Snowflake(member.User.ID), api.EditChannelPermissionData{
+	err = ctx.State.EditChannelPermission(channel.ID, discord.Snowflake(member.User.ID), api.EditChannelPermissionData{
 		Type:  discord.OverwriteMember,
 		Allow: allow,
 		Deny:  deny,
@@ -203,12 +203,12 @@ func (bot *Bot) unchannelban(ctx *bcr.Context) (err error) {
 		reason = strings.Join(ctx.Args[1:], " ")
 	}
 
-	err = bot.ModLog.Unchannelban(ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Unchannelban(ctx, ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
 	if err != nil {
 		bot.Sugar.Errorf("Error logging unchannelban: %v", err)
 	}
 
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Color:       bcr.ColourBlurple,
 		Description: fmt.Sprintf("Unbanned %v from %v", member.Mention(), channel.Mention()),
 	})
@@ -227,13 +227,15 @@ func (bot *Bot) channelbanOnJoin(m *gateway.GuildMemberAddEvent) {
 		return
 	}
 
+	s, _ := bot.Router.StateFromGuildID(m.GuildID)
+
 	for _, ch := range channels {
 		deny := discord.PermissionSendMessages | discord.PermissionAddReactions
 		if ch.FullBan {
 			deny |= discord.PermissionViewChannel
 		}
 
-		err = bot.State.EditChannelPermission(ch.ChannelID, discord.Snowflake(m.User.ID), api.EditChannelPermissionData{
+		err = s.EditChannelPermission(ch.ChannelID, discord.Snowflake(m.User.ID), api.EditChannelPermissionData{
 			Type: discord.OverwriteMember,
 			Deny: deny,
 		})

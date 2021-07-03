@@ -10,7 +10,7 @@ import (
 func (bot *Bot) addTag(ctx *bcr.Context) (err error) {
 	args := strings.Split(ctx.RawArgs, "\n")
 	if len(args) < 2 {
-		_, err = ctx.Send("Not enough arguments given: need at least 2, separated by a newline.", nil)
+		_, err = ctx.Send("Not enough arguments given: need at least 2, separated by a newline.")
 		return
 	}
 
@@ -21,7 +21,7 @@ func (bot *Bot) addTag(ctx *bcr.Context) (err error) {
 
 	t, err = bot.DB.AddTag(ctx, t)
 	if err != nil {
-		_, err = ctx.Send("An error occurred while saving your tag. Are you sure the name is unique?", nil)
+		_, err = ctx.Send("An error occurred while saving your tag. Are you sure the name is unique?")
 		return
 	}
 

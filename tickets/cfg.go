@@ -2,17 +2,16 @@ package tickets
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) cfg(ctx *bcr.Context) (err error) {
 	cat, err := ctx.ParseChannel(ctx.Args[0])
 	if err != nil || cat.GuildID != ctx.Message.GuildID || cat.Type != discord.GuildCategory {
-		_, err = ctx.Sendf("Category not found.", nil)
+		_, err = ctx.Sendf("Category not found.")
 		return
 	}
 
@@ -20,7 +19,7 @@ func (bot *Bot) cfg(ctx *bcr.Context) (err error) {
 
 	logChannel, err := ctx.ParseChannel(ctx.Args[2])
 	if err != nil {
-		_, err = ctx.Send("Given log channel not found.", nil)
+		_, err = ctx.Send("Given log channel not found.")
 		return
 	}
 
@@ -43,14 +42,14 @@ set per_user_limit = $3, log_channel = $4, count = $5, can_creator_close = $6, n
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{Message: fmt.Sprintf("Updated the configuration for %v: %v", cat.Name, name)})
+	_, err = ctx.Reply("Updated the configuration for %v: %v", cat.Name, name)
 	return
 }
 
 func (bot *Bot) mention(ctx *bcr.Context) (err error) {
 	cat, err := ctx.ParseChannel(ctx.Args[0])
 	if err != nil || cat.GuildID != ctx.Message.GuildID || cat.Type != discord.GuildCategory {
-		_, err = ctx.Sendf("Category not found.", nil)
+		_, err = ctx.Sendf("Category not found.")
 		return
 	}
 
@@ -75,14 +74,14 @@ func (bot *Bot) mention(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{Message: fmt.Sprintf("Updated mention to ``%v``.", bcr.EscapeBackticks(mention))})
+	_, err = ctx.Reply("Updated mention to ``%v``.", bcr.EscapeBackticks(mention))
 	return err
 }
 
 func (bot *Bot) description(ctx *bcr.Context) (err error) {
 	cat, err := ctx.ParseChannel(ctx.Args[0])
 	if err != nil || cat.GuildID != ctx.Message.GuildID || cat.Type != discord.GuildCategory {
-		_, err = ctx.Sendf("Category not found.", nil)
+		_, err = ctx.Sendf("Category not found.")
 		return
 	}
 
@@ -107,6 +106,6 @@ func (bot *Bot) description(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{Message: fmt.Sprintf("Updated description to\n```%v```", description)})
+	_, err = ctx.Reply("Updated description to\n```%v```", description)
 	return err
 }

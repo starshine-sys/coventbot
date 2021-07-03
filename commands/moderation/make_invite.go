@@ -3,8 +3,8 @@ package moderation
 import (
 	"flag"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -21,7 +21,7 @@ func (bot *Bot) makeInvite(ctx *bcr.Context) (err error) {
 	if len(ctx.Args) > 0 {
 		channel, err = ctx.ParseChannel(ctx.Args[0])
 		if err != nil {
-			_, err = ctx.Send("Channel not found!", nil)
+			_, err = ctx.Send("Channel not found!")
 			return
 		}
 	}
@@ -33,7 +33,7 @@ func (bot *Bot) makeInvite(ctx *bcr.Context) (err error) {
 		Unique:    !existing,
 	})
 	if err != nil {
-		_, err = ctx.Send("There was an error creating the invite. Please make sure I have permission to create an invite.", nil)
+		_, err = ctx.Send("There was an error creating the invite. Please make sure I have permission to create an invite.")
 		return
 	}
 

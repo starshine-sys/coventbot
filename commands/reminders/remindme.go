@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"codeberg.org/eviedelta/detctime/durationparser"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -61,6 +61,6 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 		e.Description += "\n\nthe time isn't correct, we know, no need to report it, that's what you get for setting it to something so big that Go doesn't support it ([see here](https://golang.org/pkg/time/#Duration))"
 	}
 
-	_, err = ctx.Send("", &e)
+	_, err = ctx.Send("", e)
 	return err
 }

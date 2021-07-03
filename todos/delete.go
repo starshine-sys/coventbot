@@ -19,7 +19,7 @@ func (bot *Bot) delete(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	bot.State.DeleteMessage(t.ChannelID, t.MID)
+	ctx.State.DeleteMessage(t.ChannelID, t.MID)
 
 	ct, err := bot.DB.Pool.Exec(context.Background(), "delete from todos where id = $1 and user_id = $2", id, ctx.Author.ID)
 	if err != nil {

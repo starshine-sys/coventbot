@@ -3,7 +3,7 @@ package pklog
 import (
 	"context"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -13,12 +13,12 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 	if ctx.RawArgs != "-clear" {
 		ch, err := ctx.ParseChannel(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("Channel not found.", nil)
+			_, err = ctx.Send("Channel not found.")
 			return err
 		}
 
 		if ctx.Message.GuildID != ch.GuildID {
-			_, err = ctx.Send("The given channel isn't in this server.", nil)
+			_, err = ctx.Send("The given channel isn't in this server.")
 			return err
 		}
 
@@ -31,7 +31,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 	}
 
 	if id == 0 {
-		_, err = ctx.Send("PluralKit message logging disabled.", nil)
+		_, err = ctx.Send("PluralKit message logging disabled.")
 	} else {
 		_, err = ctx.Sendf("PluralKit messages are now being logged to %v.", id.Mention())
 	}
@@ -40,6 +40,6 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 
 func (bot *Bot) resetCache(ctx *bcr.Context) (err error) {
 	bot.ResetCache(ctx.Message.GuildID)
-	_, err = ctx.Send("Webhook cache reset.", nil)
+	_, err = ctx.Send("Webhook cache reset.")
 	return
 }

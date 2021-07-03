@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -35,7 +35,7 @@ var simpleEmotes = []string{
 func (bot *Bot) simple(ctx *bcr.Context) (err error) {
 	ch, err := ctx.ParseChannel(ctx.Args[0])
 	if err != nil || ch.GuildID != ctx.Message.GuildID || (ch.Type != discord.GuildText && ch.Type != discord.GuildNews) {
-		_, err = ctx.Send("Channel not found.", nil)
+		_, err = ctx.Send("Channel not found.")
 		return
 	}
 
@@ -43,12 +43,12 @@ func (bot *Bot) simple(ctx *bcr.Context) (err error) {
 
 	rls, n := ctx.GreedyRoleParser(ctx.Args[2:])
 	if len(rls) == 0 {
-		_, err = ctx.Send("Couldn't parse any of the given roles.", nil)
+		_, err = ctx.Send("Couldn't parse any of the given roles.")
 		return
 	} else if n != -1 {
-		_, err = ctx.Send("Note: not all roles could be parsed; I'm only adding the roles I could parse.", nil)
+		_, err = ctx.Send("Note: not all roles could be parsed; I'm only adding the roles I could parse.")
 	} else if n > 20 {
-		_, err = ctx.Send("You can only have a maximum of 20 reaction roles per message.", nil)
+		_, err = ctx.Send("You can only have a maximum of 20 reaction roles per message.")
 		return
 	}
 
@@ -75,9 +75,9 @@ func (bot *Bot) simple(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	m, err := bot.State.SendEmbed(ch.ID, e)
+	m, err := ctx.State.SendEmbeds(ch.ID, e)
 	if err != nil {
-		_, err = ctx.Send("I couldn't send a message in the target channel.", nil)
+		_, err = ctx.Send("I couldn't send a message in the target channel.")
 		return
 	}
 
@@ -97,9 +97,9 @@ func (bot *Bot) simple(ctx *bcr.Context) (err error) {
 
 		emoji := discord.APIEmoji("emoji:" + simpleEmotes[i])
 
-		err = bot.State.React(m.ChannelID, m.ID, emoji)
+		err = ctx.State.React(m.ChannelID, m.ID, emoji)
 		if err != nil {
-			ctx.Send("I couldn't react to the message.", nil)
+			ctx.Send("I couldn't react to the message.")
 			return
 		}
 	}

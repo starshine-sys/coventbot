@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/api/webhook"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/api/webhook"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/gateway/shard"
+	"github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -16,7 +18,7 @@ import (
 func (bot *Bot) MessageCreate(m *gateway.MessageCreateEvent) {
 	// set the bot user if not done already
 	if bot.Router.Bot == nil {
-		err := bot.Router.SetBotUser()
+		err := bot.Router.SetBotUser(m.GuildID)
 		if err != nil {
 			bot.Sugar.Fatal(err)
 		}
@@ -85,7 +87,7 @@ func (bot *Bot) MessageCreate(m *gateway.MessageCreateEvent) {
 
 			c.Execute(data)
 
-			bot.State.React(m.ChannelID, m.ID, "✅")
+			bot.Router.ShardManager.Shard(0).(shard.ShardState).Shard.(*state.State).React(m.ChannelID, m.ID, "✅")
 		}
 		return
 	}

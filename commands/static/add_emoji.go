@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -79,7 +79,7 @@ func (bot *Bot) addEmoji(ctx *bcr.Context) (err error) {
 
 url:
 	if url == "" {
-		_, err = ctx.Send("No URL given.", nil)
+		_, err = ctx.Send("No URL given.")
 		return
 	}
 
@@ -108,7 +108,7 @@ url:
 	if name == "" {
 		u, err := gourl.Parse(url)
 		if err != nil {
-			_, err = ctx.Send("Couldn't parse the URL!", nil)
+			_, err = ctx.Send("Couldn't parse the URL!")
 			return err
 		}
 

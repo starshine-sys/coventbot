@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -166,13 +166,13 @@ func (bot *Bot) sampa(ctx *bcr.Context) (err error) {
 		Color:       bcr.ColourBlurple,
 	}
 
-	msg, err := ctx.Send("", &embed)
+	msg, err := ctx.Send("", embed)
 	if err != nil {
 		return err
 	}
 
 	ctx.AddReactionHandlerWithTimeout(msg.ID, ctx.Author.ID, "❌", true, false, 2*time.Hour, func(ctx *bcr.Context) {
-		err := bot.State.DeleteMessage(msg.ChannelID, msg.ID)
+		err := ctx.State.DeleteMessage(msg.ChannelID, msg.ID)
 		if err != nil {
 			bot.Sugar.Errorf("Error deleting message: %v", err)
 		}

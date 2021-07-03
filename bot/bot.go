@@ -5,10 +5,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/api/webhook"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/state"
-	"github.com/diamondburned/arikawa/v2/utils/handler"
+	"github.com/diamondburned/arikawa/v3/api/webhook"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway/shard"
+	"github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/utils/handler"
 	"github.com/getsentry/sentry-go"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
@@ -21,8 +22,6 @@ import (
 // Bot is the main bot struct
 type Bot struct {
 	*bcrbot.Bot
-
-	State *state.State
 
 	Config *types.BotConfig
 	Sugar  *zap.SugaredLogger
@@ -69,7 +68,6 @@ func New(
 	config *types.BotConfig) *Bot {
 	b := &Bot{
 		Bot:    bot,
-		State:  bot.Router.State,
 		Sugar:  sugar,
 		DB:     db,
 		Config: config,
@@ -102,26 +100,30 @@ func New(
 	// set the prefix checker
 	b.Router.Prefixer = b.CheckPrefix
 
-	// add guild create handler
-	b.State.AddHandler(b.GuildCreate)
+	b.Router.ShardManager.ForEach(func(s shard.Shard) {
+		state := s.(*state.State)
 
-	// add guild remove handler
-	b.State.PreHandler = handler.New()
-	b.State.PreHandler.Synchronous = true
-	b.State.PreHandler.AddHandler(b.guildDelete)
+		// add guild create handler
+		state.AddHandler(b.GuildCreate)
 
-	// add message create handler
-	b.State.AddHandler(b.MessageCreate)
+		// add guild remove handler
+		state.PreHandler = handler.New()
+		state.PreHandler.Synchronous = true
+		state.PreHandler.AddHandler(b.guildDelete)
 
-	// add member update handler (this isn't handled by default apparently?)
-	b.State.AddHandler(b.guildMemberUpdate)
+		// add message create handler
+		state.AddHandler(b.MessageCreate)
 
-	// add cache handlers
-	b.State.AddHandler(b.requestGuildMembers)
-	b.State.AddHandler(b.guildMemberChunk)
-	b.State.AddHandler(b.memberUpdateEvent)
-	b.State.AddHandler(b.memberAddEvent)
-	b.State.AddHandler(b.memberRemoveEvent)
+		// add member update handler (this isn't handled by default apparently?)
+		state.AddHandler(b.guildMemberUpdate)
+
+		// add cache handlers
+		state.AddHandler(b.requestGuildMembers)
+		state.AddHandler(b.guildMemberChunk)
+		state.AddHandler(b.memberUpdateEvent)
+		state.AddHandler(b.memberAddEvent)
+		state.AddHandler(b.memberRemoveEvent)
+	})
 
 	return b
 }

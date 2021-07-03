@@ -3,7 +3,7 @@ package starboard
 import (
 	"sync"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -24,8 +24,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		mu:  make(map[discord.MessageID]*sync.Mutex),
 	}
 
-	b.State.AddHandler(b.MessageReactionAdd)
-	b.State.AddHandler(b.MessageReactionDelete)
-	b.State.AddHandler(b.MessageReactionRemoveEmoji)
+	b.Router.AddHandler(b.MessageReactionAdd)
+	b.Router.AddHandler(b.MessageReactionDelete)
+	b.Router.AddHandler(b.MessageReactionRemoveEmoji)
 	return
 }

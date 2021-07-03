@@ -1,13 +1,14 @@
 package main
 
 import (
+	"context"
 	"math/rand"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
 	"go.uber.org/zap"
@@ -118,7 +119,7 @@ func main() {
 	quotes.Init(bot)
 
 	// connect to discord
-	if err := bot.Start(); err != nil {
+	if err := bot.Start(context.Background()); err != nil {
 		sugar.Fatal("Failed to connect:", err)
 	}
 
@@ -126,14 +127,15 @@ func main() {
 	defer func() {
 		db.Pool.Close()
 		sugar.Info("Closed database connection.")
-		bot.Router.State.Close()
-		bot.Router.State.Gateway.Close()
+		bot.Router.ShardManager.Close()
 		sugar.Info("Disconnected from Discord.")
 	}()
 
 	sugar.Info("Connected to Discord. Press Ctrl-C or send an interrupt signal to stop.")
 
-	botUser, _ := bot.Router.State.Me()
+	s, _ := bot.Router.StateFromGuildID(0)
+
+	botUser, _ := s.Me()
 	sugar.Infof("User: %v#%v (%v)", botUser.Username, botUser.Discriminator, botUser.ID)
 	bot.Router.Bot = botUser
 

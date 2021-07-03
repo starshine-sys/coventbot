@@ -3,14 +3,16 @@ package bot
 import (
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 )
 
 func (bot *Bot) requestGuildMembers(g *gateway.GuildCreateEvent) {
-	bot.State.Gateway.RequestGuildMembers(gateway.RequestGuildMembersData{
-		GuildID: []discord.GuildID{g.ID},
-		Limit:   0,
+	s, _ := bot.Router.StateFromGuildID(g.ID)
+
+	s.Gateway.RequestGuildMembers(gateway.RequestGuildMembersData{
+		GuildIDs: []discord.GuildID{g.ID},
+		Limit:    0,
 	})
 }
 
@@ -74,7 +76,9 @@ func (bot *Bot) Member(guildID discord.GuildID, userID discord.UserID) (m discor
 	}
 	bot.membersMu.RUnlock()
 
-	gm, err := bot.State.Session.Member(guildID, userID)
+	s, _ := bot.Router.StateFromGuildID(guildID)
+
+	gm, err := s.Session.Member(guildID, userID)
 	if err != nil {
 		return
 	}

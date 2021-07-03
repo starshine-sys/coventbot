@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/api/webhook"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/api/webhook"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/tribble/etc"
 )
 
@@ -25,13 +25,15 @@ func (bot *Bot) GuildCreate(g *gateway.GuildCreateEvent) {
 
 	bot.Sugar.Infof("Joined server %v (%v).", g.Name, g.ID)
 
-	botUser, err := bot.State.Me()
+	s, _ := bot.Router.StateFromGuildID(g.ID)
+
+	botUser, err := s.Me()
 	if err != nil {
 		bot.Sugar.Errorf("Error getting bot user: %v", err)
 	}
 
 	owner := g.OwnerID.Mention()
-	if o, err := bot.State.User(g.OwnerID); err == nil {
+	if o, err := s.User(g.OwnerID); err == nil {
 		owner = fmt.Sprintf("%v#%v (%v)", o.Username, o.Discriminator, o.Mention())
 	}
 

@@ -13,7 +13,7 @@ import (
 	// to decode JPG backgrounds
 	_ "image/jpeg"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/disintegration/imaging"
 	"github.com/dustin/go-humanize"
 	"github.com/fogleman/gg"
@@ -36,7 +36,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 	if !sc.LevelsEnabled {
-		_, err = ctx.Send("Levels are not enabled on this server.", nil)
+		_, err = ctx.Send("Levels are not enabled on this server.")
 		return
 	}
 
@@ -50,7 +50,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	if ctx.RawArgs != "" {
 		u, err = ctx.ParseUser(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("User not found.", nil)
+			_, err = ctx.Send("User not found.")
 			return
 		}
 	}
@@ -317,6 +317,6 @@ func (bot *Bot) lvlEmbed(ctx *bcr.Context, u *discord.User, sc Server, uc Levels
 		})
 	}
 
-	_, err = ctx.Send("", &e)
+	_, err = ctx.Send("", e)
 	return
 }

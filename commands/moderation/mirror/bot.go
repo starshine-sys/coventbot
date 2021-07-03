@@ -3,7 +3,7 @@ package mirror
 import (
 	"sync"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 	"github.com/starshine-sys/tribble/commands/moderation/modlog"
@@ -38,7 +38,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.cmdImport,
 	})
 
-	b.State.AddHandler(b.messageCreate)
+	b.Router.AddHandler(b.messageCreate)
 
 	return
 }

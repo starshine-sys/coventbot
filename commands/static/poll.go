@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/pkgo"
 
@@ -17,7 +17,7 @@ func (bot *Bot) poll(ctx *bcr.Context) (err error) {
 	question := ctx.Args[0]
 	options := ctx.Args[1:]
 	if len(options) > 10 {
-		_, err = ctx.Send("Too many options, maximum 10.", nil)
+		_, err = ctx.Send("Too many options, maximum 10.")
 		return err
 	}
 
@@ -27,15 +27,15 @@ func (bot *Bot) poll(ctx *bcr.Context) (err error) {
 	}
 
 	if len(desc) > 2048 {
-		_, err = ctx.Send("Embed description too long.", nil)
+		_, err = ctx.Send("Embed description too long.")
 		return err
 	}
 	if len(question) > 256 {
-		_, err = ctx.Send("Question too long (maximum 256 characters)", nil)
+		_, err = ctx.Send("Question too long (maximum 256 characters)")
 		return err
 	}
 
-	msg, err := ctx.Send("", &discord.Embed{
+	msg, err := ctx.Send("", discord.Embed{
 		Title:       question,
 		Description: desc,
 		Footer: &discord.EmbedFooter{
@@ -65,10 +65,10 @@ func (bot *Bot) quickpoll(ctx *bcr.Context) (err error) {
 
 	// i cant be bothered to write actual error messages so well just do this
 	if reacts != -1 && reacts < 2 {
-		_, err = ctx.Send("less than 2 options? do you really think i can do something with that?", nil)
+		_, err = ctx.Send("less than 2 options? do you really think i can do something with that?")
 		return err
 	} else if reacts != -1 && reacts > 10 {
-		_, err = ctx.Send("look buddy i can't help you with that, that's way too many choices, i can only count to 10", nil)
+		_, err = ctx.Send("look buddy i can't help you with that, that's way too many choices, i can only count to 10")
 		return err
 	}
 

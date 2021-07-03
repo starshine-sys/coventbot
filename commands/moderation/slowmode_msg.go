@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -26,7 +26,9 @@ func (bot *Bot) slowmodeMessage(m *gateway.MessageCreateEvent) {
 
 	delete := bot.userSlowmode(m.ChannelID, m.Author.ID)
 	if delete {
-		err := bot.Router.State.DeleteMessage(m.ChannelID, m.ID)
+		s, _ := bot.Router.StateFromGuildID(m.GuildID)
+
+		err := s.DeleteMessage(m.ChannelID, m.ID)
 		if err != nil {
 			bot.Sugar.Errorf("Error deleting message: %v", err)
 			return
@@ -41,13 +43,13 @@ func (bot *Bot) slowmodeMessage(m *gateway.MessageCreateEvent) {
 
 		msg := fmt.Sprintf("You can send your next message in %v at %v.", m.ChannelID.Mention(), expiry.UTC().Format("15:04:05 UTC, January 02 2006"))
 
-		ch, err := bot.State.CreatePrivateChannel(m.Author.ID)
+		ch, err := s.CreatePrivateChannel(m.Author.ID)
 		if err != nil {
 			bot.Sugar.Errorf("Error creating private channel for %v: %v", m.Author.ID, err)
 			return
 		}
 
-		bot.State.SendMessage(ch.ID, msg, &discord.Embed{
+		s.SendMessage(ch.ID, msg, discord.Embed{
 			Author: &discord.EmbedAuthor{
 				Name: m.Author.Username,
 				Icon: m.Author.AvatarURL(),

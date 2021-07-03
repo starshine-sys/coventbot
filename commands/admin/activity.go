@@ -3,7 +3,9 @@ package admin
 import (
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway/shard"
+	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -31,7 +33,7 @@ func (bot *Bot) activity(ctx *bcr.Context) (err error) {
 			Color: ctx.Router.EmbedColor,
 		}
 
-		_, err = ctx.Send("", &e)
+		_, err = ctx.Send("", e)
 		return
 	}
 
@@ -43,14 +45,19 @@ func (bot *Bot) activity(ctx *bcr.Context) (err error) {
 		if err != nil {
 			return bot.Report(ctx, err)
 		}
-		bot.updateStatus()
 
-		_, err = ctx.Send("Cleared activity.", nil)
+		go bot.Router.ShardManager.ForEach(func(s shard.Shard) {
+			state := s.(*state.State)
+
+			bot.updateStatus(state)
+		})
+
+		_, err = ctx.Send("Cleared activity.")
 		return
 	}
 
 	if len(ctx.Args) < 2 {
-		_, err = ctx.Send("You didn't give both an activity type and activity.", nil)
+		_, err = ctx.Send("You didn't give both an activity type and activity.")
 		return
 	}
 
@@ -75,7 +82,11 @@ func (bot *Bot) activity(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	bot.updateStatus()
+	go bot.Router.ShardManager.ForEach(func(s shard.Shard) {
+		state := s.(*state.State)
+
+		bot.updateStatus(state)
+	})
 
 	_, err = ctx.Sendf("Updated status to `%v %v`!", s.ActivityType, s.Activity)
 	return

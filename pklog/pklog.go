@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/ReneKroon/ttlcache/v2"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -32,9 +32,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	b.WebhookCache.SetCacheSizeLimit(2000)
 	b.WebhookCache.SetTTL(1 * time.Hour)
 
-	b.State.AddHandler(b.pkMessageCreate)
-	b.State.AddHandler(b.messageCreate)
-	b.State.AddHandler(b.messageDelete)
+	b.Router.AddHandler(b.pkMessageCreate)
+	b.Router.AddHandler(b.messageCreate)
+	b.Router.AddHandler(b.messageDelete)
 
 	c := b.Router.AddCommand(&bcr.Command{
 		Name:    "pk-log",

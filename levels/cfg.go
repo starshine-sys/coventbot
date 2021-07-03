@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -57,12 +57,12 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 			})
 		}
 
-		_, err = ctx.Send("", &e)
+		_, err = ctx.Send("", e)
 		return err
 	}
 
 	if len(ctx.Args) < 2 {
-		_, err = ctx.Send("Not enough arguments: you must give both a key and a new value.", nil)
+		_, err = ctx.Send("Not enough arguments: you must give both a key and a new value.")
 		return
 	}
 
@@ -70,7 +70,7 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 	case "levels_enabled", "leaderboard_mod_only", "show_next_reward":
 		b, err := strconv.ParseBool(ctx.Args[1])
 		if err != nil {
-			_, err = ctx.Send("You must give either `true` or `false` for the new value.", nil)
+			_, err = ctx.Send("You must give either `true` or `false` for the new value.")
 			return err
 		}
 		_, err = bot.DB.Pool.Exec(
@@ -81,14 +81,12 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 		if err != nil {
 			return bot.Report(ctx, err)
 		}
-		_, err = ctx.SendEmbed(bcr.SED{
-			Message: fmt.Sprintf("Set `%v` to `%v`.", ctx.Args[0], b),
-		})
+		_, err = ctx.Reply("Set `%v` to `%v`.", ctx.Args[0], b)
 		return err
 	case "between_xp":
 		t, err := time.ParseDuration(ctx.Args[1])
 		if err != nil || t <= 0 || t > 24*time.Hour {
-			_, err = ctx.Send("Couldn't parse your input as a valid duration.", nil)
+			_, err = ctx.Send("Couldn't parse your input as a valid duration.")
 			return err
 		}
 		_, err = bot.DB.Pool.Exec(
@@ -99,14 +97,12 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 		if err != nil {
 			return bot.Report(ctx, err)
 		}
-		_, err = ctx.SendEmbed(bcr.SED{
-			Message: fmt.Sprintf("Set `%v` to `%v`.", ctx.Args[0], t),
-		})
+		_, err = ctx.Reply("Set `%v` to `%v`.", ctx.Args[0], t)
 		return err
 	case "reward_text", "reward":
 		text := strings.TrimSpace(strings.TrimPrefix(ctx.RawArgs, ctx.Args[0]))
 		if len(text) >= 1024 {
-			_, err = ctx.Send("Input too long, maximum of 1024 characters.", nil)
+			_, err = ctx.Send("Input too long, maximum of 1024 characters.")
 			return
 		}
 
@@ -122,9 +118,10 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 		if err != nil {
 			return bot.Report(ctx, err)
 		}
-		_, err = ctx.SendEmbed(bcr.SED{
-			Title:   "Reward message updated",
-			Message: fmt.Sprintf("```%v```", text),
+		_, err = ctx.Send("", discord.Embed{
+			Title:       "Reward message updated",
+			Description: fmt.Sprintf("```%v```", text),
+			Color:       bcr.ColourBlurple,
 		})
 		return err
 	case "reward_log", "nolevels_log":
@@ -132,7 +129,7 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 		if ctx.Args[1] != "clear" {
 			ch, err := ctx.ParseChannel(ctx.Args[1])
 			if err != nil || ch.Type != discord.GuildText || ch.GuildID != ctx.Message.GuildID {
-				_, err = ctx.Send("I couldn't find that channel.", nil)
+				_, err = ctx.Send("I couldn't find that channel.")
 				return err
 			}
 			id = ch.ID
@@ -148,15 +145,11 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 		}
 
 		if id == 0 {
-			_, err = ctx.SendEmbed(bcr.SED{
-				Message: fmt.Sprintf("Cleared `%v`.", ctx.Args[0]),
-			})
+			_, err = ctx.Reply("Cleared `%v`.", ctx.Args[0])
 			return
 		}
 
-		_, err = ctx.SendEmbed(bcr.SED{
-			Message: fmt.Sprintf("Set `%v` to %v.", ctx.Args[0], id.Mention()),
-		})
+		_, err = ctx.Reply("Set `%v` to %v.", ctx.Args[0], id.Mention())
 		return
 	}
 

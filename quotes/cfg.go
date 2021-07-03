@@ -20,9 +20,9 @@ func (bot *Bot) toggle(ctx *bcr.Context) (err error) {
 	current := bot.quotesEnabled(ctx.Guild.ID)
 	if current == enable {
 		if enable {
-			_, err = ctx.Send("Quotes are already enabled on this server.", nil)
+			_, err = ctx.Send("Quotes are already enabled on this server.")
 		} else {
-			_, err = ctx.Send("Quotes are already disabled on this server.", nil)
+			_, err = ctx.Send("Quotes are already disabled on this server.")
 		}
 		return
 	}
@@ -33,9 +33,9 @@ func (bot *Bot) toggle(ctx *bcr.Context) (err error) {
 	}
 
 	if enable {
-		_, err = ctx.Send("Enabled quotes for this server!", nil)
+		_, err = ctx.Send("Enabled quotes for this server!")
 	} else {
-		_, err = ctx.Send("Disabled quotes for this server!", nil)
+		_, err = ctx.Send("Disabled quotes for this server!")
 	}
 	return
 }
@@ -53,9 +53,9 @@ func (bot *Bot) toggleSuppressMessages(ctx *bcr.Context) (err error) {
 	current := bot.suppressMessages(ctx.Guild.ID)
 	if current == disable {
 		if disable {
-			_, err = ctx.Send("Quote messages are already disabled on this server.", nil)
+			_, err = ctx.Send("Quote messages are already disabled on this server.")
 		} else {
-			_, err = ctx.Send("Quote messages are already enabled on this server.", nil)
+			_, err = ctx.Send("Quote messages are already enabled on this server.")
 		}
 		return
 	}
@@ -66,9 +66,9 @@ func (bot *Bot) toggleSuppressMessages(ctx *bcr.Context) (err error) {
 	}
 
 	if disable {
-		_, err = ctx.Send("Disabled quote messages for this server!", nil)
+		_, err = ctx.Send("Disabled quote messages for this server!")
 	} else {
-		_, err = ctx.Send("Enabled quote messages for this server!", nil)
+		_, err = ctx.Send("Enabled quote messages for this server!")
 	}
 	return
 }

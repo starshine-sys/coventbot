@@ -3,7 +3,7 @@ package quotes
 import (
 	"sync"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -29,7 +29,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	copy(b.AESKey[:], bot.Config.AESKey)
 
-	b.State.AddHandler(b.reactionAdd)
+	b.Router.AddHandler(b.reactionAdd)
 
 	cmd := b.Router.AddCommand(&bcr.Command{
 		Name:    "quote",

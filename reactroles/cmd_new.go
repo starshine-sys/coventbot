@@ -4,31 +4,31 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) new(ctx *bcr.Context) (err error) {
 	ch, err := ctx.ParseChannel(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("Couldn't parse a channel from your input.", nil)
+		_, err = ctx.Send("Couldn't parse a channel from your input.")
 		return
 	}
 
 	name := ctx.Args[1]
 
 	if ch.GuildID != ctx.Channel.GuildID || (ch.Type != discord.GuildText && ch.Type != discord.GuildNews) {
-		_, err = ctx.Send("The channel you gave isn't in this server.", nil)
+		_, err = ctx.Send("The channel you gave isn't in this server.")
 		return
 	}
 
 	roles, err := bot.parseRoles(ctx, ctx.Args[2:])
 	if err != nil {
 		if err == errNoPairs {
-			_, err = ctx.Send("You must give emoji-role *pairs*.", nil)
+			_, err = ctx.Send("You must give emoji-role *pairs*.")
 			return
 		}
-		_, err = ctx.Send("Couldn't parse one or more roles.", nil)
+		_, err = ctx.Send("Couldn't parse one or more roles.")
 		return
 	}
 
@@ -49,9 +49,9 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 		e.Description += fmt.Sprintf("%v %v\n", emoji, r.Role.Name)
 	}
 
-	msg, err := bot.State.SendEmbed(ch.ID, e)
+	msg, err := ctx.State.SendEmbeds(ch.ID, e)
 	if err != nil {
-		_, err = ctx.Send("I couldn't send a message in the target channel.", nil)
+		_, err = ctx.Send("I couldn't send a message in the target channel.")
 		return
 	}
 
@@ -74,9 +74,9 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 			emoji = discord.APIEmoji("emoji:" + r.Emote)
 		}
 
-		err = bot.State.React(msg.ChannelID, msg.ID, emoji)
+		err = ctx.State.React(msg.ChannelID, msg.ID, emoji)
 		if err != nil {
-			ctx.Send("I couldn't react to the message.", nil)
+			ctx.Send("I couldn't react to the message.")
 			return
 		}
 	}

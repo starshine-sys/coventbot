@@ -4,19 +4,19 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) deleteTag(ctx *bcr.Context) (err error) {
 	t, err := bot.DB.GetTag(ctx.Message.GuildID, ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("No tag with that name found.", nil)
+		_, err = ctx.Send("No tag with that name found.")
 		return
 	}
 
 	if t.CreatedBy != ctx.Author.ID && !bot.isModerator(ctx) {
-		_, err = ctx.Send("You don't have permission to delete this tag.", nil)
+		_, err = ctx.Send("You don't have permission to delete this tag.")
 		return
 	}
 
@@ -31,7 +31,7 @@ func (bot *Bot) deleteTag(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	m, err := ctx.Send("**Are you sure you want to delete this tag?** React with ✅ to confirm, ❌ to cancel.", &discord.Embed{
+	m, err := ctx.Send("**Are you sure you want to delete this tag?** React with ✅ to confirm, ❌ to cancel.", discord.Embed{
 		Author:      author,
 		Title:       fmt.Sprintf("``%v``", bcr.EscapeBackticks(t.Name)),
 		Description: t.Response,
@@ -57,6 +57,6 @@ func (bot *Bot) deleteTag(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Send("Tag deleted.", nil)
+	_, err = ctx.Send("Tag deleted.")
 	return
 }

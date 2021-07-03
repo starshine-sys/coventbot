@@ -3,7 +3,7 @@ package keyroles
 import (
 	"context"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -15,12 +15,12 @@ func (bot *Bot) channel(ctx *bcr.Context) (err error) {
 	} else {
 		ch, err := ctx.ParseChannel(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("Channel not found.", nil)
+			_, err = ctx.Send("Channel not found.")
 			return err
 		}
 
 		if ch.GuildID != ctx.Message.GuildID {
-			_, err = ctx.Send("The given channel isn't in this server.", nil)
+			_, err = ctx.Send("The given channel isn't in this server.")
 			return err
 		}
 
@@ -34,7 +34,7 @@ func (bot *Bot) channel(ctx *bcr.Context) (err error) {
 	}
 
 	if logChannel == id {
-		_, err = ctx.Send("The given channel is already the key role channel.", nil)
+		_, err = ctx.Send("The given channel is already the key role channel.")
 		return err
 	}
 
@@ -44,7 +44,7 @@ func (bot *Bot) channel(ctx *bcr.Context) (err error) {
 	}
 
 	if id == 0 {
-		_, err = ctx.Send("Key role channel reset.", nil)
+		_, err = ctx.Send("Key role channel reset.")
 		return
 	}
 	_, err = ctx.Sendf("Key role channel changed to %v.", id.Mention())

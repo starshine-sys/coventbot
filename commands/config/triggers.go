@@ -2,12 +2,11 @@ package config
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"emperror.dev/errors"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4"
 	"github.com/starshine-sys/bcr"
@@ -25,17 +24,17 @@ type Trigger struct {
 func (bot *Bot) addTrigger(ctx *bcr.Context) (err error) {
 	msg, err := ctx.ParseMessage(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("Couldn't find that message.", nil)
+		_, err = ctx.Send("Couldn't find that message.")
 		return
 	}
 
 	if msg.GuildID != ctx.Message.GuildID {
-		_, err = ctx.Send("That message isn't in this server.", nil)
+		_, err = ctx.Send("That message isn't in this server.")
 		return
 	}
 
 	if perms, _ := ctx.State.Permissions(msg.ChannelID, ctx.Author.ID); !perms.Has(discord.PermissionManageMessages) {
-		_, err = ctx.Send("You're not a mod, you can't do that!", nil)
+		_, err = ctx.Send("You're not a mod, you can't do that!")
 		return
 	}
 
@@ -45,7 +44,7 @@ func (bot *Bot) addTrigger(ctx *bcr.Context) (err error) {
 
 	err = ctx.State.React(msg.ChannelID, msg.ID, discord.APIEmoji(emoji))
 	if err != nil {
-		_, err = ctx.Send("I couldn't react to the given message with that emoji. Either I don't have the **Add Reactions** permission in the channel, or you didn't give a valid emoji.", nil)
+		_, err = ctx.Send("I couldn't react to the given message with that emoji. Either I don't have the **Add Reactions** permission in the channel, or you didn't give a valid emoji.")
 		return
 	}
 
@@ -57,26 +56,24 @@ update set command = $3`, msg.ID, emoji, command)
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{
-		Message: fmt.Sprintf("Added %v as a trigger on [the given message](https://discord.com/channels/%v/%v/%v), pointing to ``%v``.", emoji, msg.GuildID, msg.ChannelID, msg.ID, strings.Join(command, " ")),
-	})
+	_, err = ctx.Reply("Added %v as a trigger on [the given message](https://discord.com/channels/%v/%v/%v), pointing to ``%v``.", emoji, msg.GuildID, msg.ChannelID, msg.ID, strings.Join(command, " "))
 	return err
 }
 
 func (bot *Bot) delTrigger(ctx *bcr.Context) (err error) {
 	msg, err := ctx.ParseMessage(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("Couldn't find that message.", nil)
+		_, err = ctx.Send("Couldn't find that message.")
 		return
 	}
 
 	if msg.GuildID != ctx.Message.GuildID {
-		_, err = ctx.Send("That message isn't in this server.", nil)
+		_, err = ctx.Send("That message isn't in this server.")
 		return
 	}
 
 	if perms, _ := ctx.State.Permissions(msg.ChannelID, ctx.Author.ID); !perms.Has(discord.PermissionManageMessages) {
-		_, err = ctx.Send("You're not a mod, you can't do that!", nil)
+		_, err = ctx.Send("You're not a mod, you can't do that!")
 		return
 	}
 
@@ -87,7 +84,7 @@ func (bot *Bot) delTrigger(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Send("Trigger deleted.", nil)
+	_, err = ctx.Send("Trigger deleted.")
 	return
 }
 
@@ -109,11 +106,13 @@ func (bot *Bot) triggerReactionAdd(ev *gateway.MessageReactionAddEvent) {
 		return
 	}
 
+	s, _ := bot.Router.StateFromGuildID(ev.GuildID)
+
 	if len(t.Command) == 0 {
 		return
 	}
 
-	err = bot.State.DeleteUserReaction(ev.ChannelID, ev.MessageID, ev.UserID, ev.Emoji.APIString())
+	err = s.DeleteUserReaction(ev.ChannelID, ev.MessageID, ev.UserID, ev.Emoji.APIString())
 	if err != nil {
 		bot.Sugar.Errorf("Error deleting reaction: %v", err)
 	}
@@ -121,11 +120,11 @@ func (bot *Bot) triggerReactionAdd(ev *gateway.MessageReactionAddEvent) {
 	// create a new context, yes this is messy as hell
 	ctx := &bcr.Context{
 		Router: bot.Router,
-		State:  bot.Router.State,
+		State:  s,
 		Bot:    bot.Router.Bot,
 	}
 
-	msg, err := bot.State.Message(ev.ChannelID, ev.MessageID)
+	msg, err := s.Message(ev.ChannelID, ev.MessageID)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting message: %v", err)
 		return
@@ -147,7 +146,7 @@ func (bot *Bot) triggerReactionAdd(ev *gateway.MessageReactionAddEvent) {
 
 	ctx.AdditionalParams = make(map[string]interface{})
 
-	channel, err := bot.State.Channel(ev.ChannelID)
+	channel, err := s.Channel(ev.ChannelID)
 	if err != nil {
 		return
 	}

@@ -11,7 +11,7 @@ import (
 
 func (bot *ModLog) cmdImport(ctx *bcr.Context) (err error) {
 	if len(ctx.Message.Attachments) == 0 {
-		_, err = ctx.Send("No file to import attached.", nil)
+		_, err = ctx.Send("No file to import attached.")
 		return
 	}
 
@@ -23,14 +23,14 @@ func (bot *ModLog) cmdImport(ctx *bcr.Context) (err error) {
 	}
 
 	if currentCount > 0 {
-		m, err := ctx.Send("⚠️ There are existing mod logs for this server, which will be deleted if you proceed with this import. Are you sure you want to proceed?", nil)
+		m, err := ctx.Send("⚠️ There are existing mod logs for this server, which will be deleted if you proceed with this import. Are you sure you want to proceed?")
 		if err != nil {
 			return err
 		}
 
 		yes, timeout := ctx.YesNoHandler(*m, ctx.Author.ID)
 		if !yes || timeout {
-			_, err = ctx.Send("Import cancelled.", nil)
+			_, err = ctx.Send("Import cancelled.")
 			return err
 		}
 
@@ -59,19 +59,19 @@ func (bot *ModLog) cmdImport(ctx *bcr.Context) (err error) {
 	}
 
 	if len(ex.Entries) == 0 {
-		_, err = ctx.Send("The export did not contain any entries.", nil)
+		_, err = ctx.Send("The export did not contain any entries.")
 		return
 	}
 
 	if ctx.Message.GuildID != ex.ServerID {
-		m, err := ctx.Send("The server ID in the export doesn't match this server's ID. Do you want to continue anyway?", nil)
+		m, err := ctx.Send("The server ID in the export doesn't match this server's ID. Do you want to continue anyway?")
 		if err != nil {
 			return err
 		}
 
 		yes, timeout := ctx.YesNoHandler(*m, ctx.Author.ID)
 		if !yes || !timeout {
-			_, err = ctx.Send("Import cancelled.", nil)
+			_, err = ctx.Send("Import cancelled.")
 			return err
 		}
 	}

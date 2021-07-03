@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 )
@@ -34,7 +34,7 @@ func (bot *ModLog) export(ctx *bcr.Context) (err error) {
 	if len(ctx.Args) > 0 {
 		u, err := ctx.ParseUser(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("Couldn't find that user.", nil)
+			_, err = ctx.Send("Couldn't find that user.")
 			return err
 		}
 		err = pgxscan.Select(context.Background(), bot.DB.Pool, &ex.Entries, sql, ctx.Message.GuildID, u.ID)
@@ -46,7 +46,7 @@ func (bot *ModLog) export(ctx *bcr.Context) (err error) {
 	}
 
 	if len(ex.Entries) == 0 {
-		_, err = ctx.Send("There are no mod logs to export.", nil)
+		_, err = ctx.Send("There are no mod logs to export.")
 		return
 	}
 

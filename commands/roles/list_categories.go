@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"emperror.dev/errors"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/jackc/pgx/v4"
 	"github.com/starshine-sys/bcr"
 )
@@ -78,7 +78,7 @@ func (bot *Bot) categories(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	roles, err := bot.roles(ctx.Guild.ID, cat.Roles)
+	roles, err := bot.roles(ctx, ctx.Guild.ID, cat.Roles)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -119,6 +119,6 @@ func (bot *Bot) categories(ctx *bcr.Context) (err error) {
 		e.Color = bcr.ColourBlurple
 	}
 
-	_, err = ctx.Send("", &e)
+	_, err = ctx.Send("", e)
 	return
 }

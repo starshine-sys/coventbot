@@ -1,6 +1,6 @@
 package types
 
-import "github.com/diamondburned/arikawa/v2/discord"
+import "github.com/diamondburned/arikawa/v3/discord"
 
 // BotConfig ...
 type BotConfig struct {

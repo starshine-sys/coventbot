@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/dustin/go-humanize"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/etc"
@@ -133,7 +133,7 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 		},
 	}
 
-	_, err = ctx.Send("", &e)
+	_, err = ctx.Send("", e)
 	return
 }
 

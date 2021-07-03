@@ -23,26 +23,26 @@ func (bot *Bot) roll(ctx *bcr.Context) (err error) {
 		} else {
 			num, err = strconv.Atoi(numStr)
 			if err != nil {
-				_, err = ctx.Send("Couldn't parse your input as standard dice notation.", nil)
+				_, err = ctx.Send("Couldn't parse your input as standard dice notation.")
 				return
 			}
 		}
 		die, err = strconv.Atoi(dieStr)
 		if err != nil {
-			_, err = ctx.Send("Couldn't parse your input as standard dice notation.", nil)
+			_, err = ctx.Send("Couldn't parse your input as standard dice notation.")
 			return
 		}
 
 		if num > 100 {
-			_, err = ctx.Send("Too many dice! (Maximum 100)", nil)
+			_, err = ctx.Send("Too many dice! (Maximum 100)")
 			return
 		}
 		if die > 1000 {
-			_, err = ctx.Send("Too large a die! (Maximum 1000)", nil)
+			_, err = ctx.Send("Too large a die! (Maximum 1000)")
 			return
 		}
 		if num <= 0 || die <= 0 {
-			_, err = ctx.Send("Both the number of dice and the dice to use must be larger than 0.", nil)
+			_, err = ctx.Send("Both the number of dice and the dice to use must be larger than 0.")
 			return
 		}
 
@@ -61,7 +61,7 @@ func (bot *Bot) roll(ctx *bcr.Context) (err error) {
 	if len(ctx.Args) > 0 {
 		die, err = strconv.Atoi(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("Couldn't parse your input as a number.", nil)
+			_, err = ctx.Send("Couldn't parse your input as a number.")
 			return
 		}
 	}

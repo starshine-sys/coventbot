@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -19,9 +20,10 @@ func (bot *Bot) prefix(ctx *bcr.Context) (err error) {
 
 	prefixes = append([]string{ctx.Bot.Mention()}, prefixes...)
 
-	_, err = ctx.SendEmbed(bcr.SED{
-		Title:   "Prefixes",
-		Message: strings.Join(prefixes, "\n"),
+	_, err = ctx.Send("", discord.Embed{
+		Title:       "Prefixes",
+		Description: strings.Join(prefixes, "\n"),
+		Color:       bcr.ColourBlurple,
 	})
 	return err
 }
@@ -33,18 +35,18 @@ func (bot *Bot) prefixAdd(ctx *bcr.Context) (err error) {
 	}
 
 	if len(prefixes) > 20 {
-		_, err = bot.Send(ctx, "This server already has the maximum number of prefixes (20).")
+		_, err = ctx.Reply("This server already has the maximum number of prefixes (20).")
 		return
 	}
 
 	if strings.Contains(ctx.RawArgs, "@") {
-		_, err = bot.Send(ctx, "Prefix can't include a mention.")
+		_, err = ctx.Reply("Prefix can't include a mention.")
 		return
 	}
 
 	for _, p := range prefixes {
 		if strings.EqualFold(p, ctx.RawArgs) {
-			_, err = bot.Send(ctx, "``%v`` is already a prefix for this server.", bcr.EscapeBackticks(ctx.RawArgs))
+			_, err = ctx.Reply("``%v`` is already a prefix for this server.", bcr.EscapeBackticks(ctx.RawArgs))
 			return
 		}
 	}
@@ -54,7 +56,7 @@ func (bot *Bot) prefixAdd(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = bot.Send(ctx, "Added prefix ``%v``", bcr.EscapeBackticks(ctx.RawArgs))
+	_, err = ctx.Reply("Added prefix ``%v``", bcr.EscapeBackticks(ctx.RawArgs))
 	return
 }
 
@@ -65,7 +67,7 @@ func (bot *Bot) prefixRemove(ctx *bcr.Context) (err error) {
 	}
 
 	if strings.Contains(ctx.RawArgs, "@") {
-		_, err = bot.Send(ctx, "You can't remove the <@!%v> prefix.", ctx.Bot.ID)
+		_, err = ctx.Reply("You can't remove the <@!%v> prefix.", ctx.Bot.ID)
 		return
 	}
 
@@ -78,7 +80,7 @@ func (bot *Bot) prefixRemove(ctx *bcr.Context) (err error) {
 	}
 
 	if !isPrefix {
-		_, err = bot.Send(ctx, "``%v`` is not a prefix for this server.", bcr.EscapeBackticks(ctx.RawArgs))
+		_, err = ctx.Reply("``%v`` is not a prefix for this server.", bcr.EscapeBackticks(ctx.RawArgs))
 	}
 
 	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set prefixes = array_remove(prefixes, $1) where id = $2", ctx.RawArgs, ctx.Message.GuildID)
@@ -86,6 +88,6 @@ func (bot *Bot) prefixRemove(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = bot.Send(ctx, "Removed prefix ``%v``", bcr.EscapeBackticks(ctx.RawArgs))
+	_, err = ctx.Reply("Removed prefix ``%v``", bcr.EscapeBackticks(ctx.RawArgs))
 	return
 }

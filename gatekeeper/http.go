@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 	"github.com/starshine-sys/tribble/types"
@@ -109,7 +109,9 @@ func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request, _ httprouter.
 		return
 	}
 
-	err = bot.State.AddRole(u.ServerID, u.UserID, s.MemberRole)
+	state, _ := bot.Router.StateFromGuildID(u.ServerID)
+
+	err = state.AddRole(u.ServerID, u.UserID, s.MemberRole)
 	if err != nil {
 		fmt.Fprintln(w, "There was an error adding your member role. Please contact a server administrator for help.")
 		bot.Sugar.Errorf("Error adding role for %v in %v: %v", u.UserID, u.ServerID, err)
@@ -117,7 +119,7 @@ func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request, _ httprouter.
 
 	if s.WelcomeChannel.IsValid() && s.WelcomeMessage != "" {
 		msg := strings.NewReplacer("{mention}", u.UserID.Mention()).Replace(s.WelcomeMessage)
-		_, err = bot.State.SendMessage(s.WelcomeChannel, msg, nil)
+		_, err = state.SendMessage(s.WelcomeChannel, msg)
 		if err != nil {
 			bot.Sugar.Errorf("Error sending welcome message: %v", err)
 		}

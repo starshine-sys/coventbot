@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -76,8 +76,10 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	rm.AddSubcommand(b.Router.AliasMust("list", nil, []string{"reminders"}, nil))
 	rm.AddSubcommand(b.Router.AliasMust("delete", []string{"remove", "rm", "del"}, []string{"delreminder"}, nil))
 
+	state, _ := bot.Router.StateFromGuildID(0)
+
 	var o sync.Once
-	bot.State.AddHandler(func(_ *gateway.ReadyEvent) {
+	state.AddHandler(func(_ *gateway.ReadyEvent) {
 		o.Do(func() {
 			go b.doReminders()
 		})
@@ -120,6 +122,8 @@ func (bot *Bot) doReminders() {
 				linkServer = "@me"
 			}
 
+			state, _ := bot.Router.StateFromGuildID(r.ServerID)
+
 			desc := fmt.Sprintf("%v you asked to be reminded about%v", bcr.HumanizeTime(bcr.DurationPrecisionSeconds, r.SetTime), reminder)
 			if len(desc) > 2048 {
 				desc = desc[:2040] + "..."
@@ -134,7 +138,7 @@ func (bot *Bot) doReminders() {
 			bot.Sugar.Debugf("Executing reminder #%v, should DM: %v, embedless: %v", r.ID, shouldDM, embedless)
 
 			content := r.UserID.Mention()
-			e := &discord.Embed{
+			e := []discord.Embed{{
 				Title:       fmt.Sprintf("Reminder #%v", r.ID),
 				Description: desc,
 
@@ -145,23 +149,23 @@ func (bot *Bot) doReminders() {
 					Name:  "Link",
 					Value: fmt.Sprintf("[Jump to message](https://discord.com/channels/%v/%v/%v)", linkServer, r.ChannelID, r.MessageID),
 				}},
-			}
+			}}
 
 			if embedless {
 				s := fmt.Sprintf("%v: %v (%v)", r.UserID.Mention(), r.Reminder, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, r.SetTime))
 
 				if len(s) <= 2000 {
 					content = s
-					e = &discord.Embed{
+					e = []discord.Embed{{
 						Color:       bcr.ColourBlurple,
 						Description: fmt.Sprintf("[Jump to message](https://discord.com/channels/%v/%v/%v)", linkServer, r.ChannelID, r.MessageID),
-					}
+					}}
 				}
 			}
 
 			switch shouldDM {
 			case false:
-				_, err = bot.State.SendMessage(r.ChannelID, content, e)
+				_, err = state.SendMessage(r.ChannelID, content, e...)
 				if err == nil {
 					bot.DB.Pool.Exec(context.Background(), "delete from reminders where id = $1", r.ID)
 					continue
@@ -173,14 +177,14 @@ func (bot *Bot) doReminders() {
 					content = ""
 				}
 
-				ch, err := bot.State.CreatePrivateChannel(r.UserID)
+				ch, err := state.CreatePrivateChannel(r.UserID)
 				if err != nil {
 					bot.Sugar.Errorf("Error sending reminder %v: %v", r.ID, err)
 					bot.DB.Pool.Exec(context.Background(), "delete from reminders where id = $1", r.ID)
 					continue
 				}
 
-				_, err = bot.State.SendMessage(ch.ID, content, e)
+				_, err = state.SendMessage(ch.ID, content, e...)
 				if err != nil {
 					bot.Sugar.Errorf("Error sending reminder %v: %v", r.ID, err)
 				}

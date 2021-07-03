@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/api/webhook"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/api/webhook"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/starshine-sys/tribble/etc"
 )
 
@@ -32,9 +33,11 @@ func (bot *Bot) messageDelete(m *gateway.MessageDeleteEvent) {
 	// try getting the cached webhook
 	var wh *discord.Webhook
 
+	s, _ := bot.Router.StateFromGuildID(m.GuildID)
+
 	w, err := bot.GetWebhooks(m.GuildID)
 	if err != nil {
-		wh, err = bot.getWebhook(logChannel, bot.Router.Bot.Username+" Logging")
+		wh, err = bot.getWebhook(s, logChannel, bot.Router.Bot.Username+" Logging")
 		if err != nil {
 			bot.Sugar.Errorf("Error getting webhook: %v", err)
 			return
@@ -53,7 +56,7 @@ func (bot *Bot) messageDelete(m *gateway.MessageDeleteEvent) {
 
 	mention := msg.UserID.Mention()
 	var author *discord.EmbedAuthor
-	u, err := bot.State.User(msg.UserID)
+	u, err := s.User(msg.UserID)
 	if err == nil {
 		mention = fmt.Sprintf("%v\n%v#%v\nID: %v", u.Mention(), u.Username, u.Discriminator, u.ID)
 		author = &discord.EmbedAuthor{
@@ -112,8 +115,8 @@ func (bot *Bot) messageDelete(m *gateway.MessageDeleteEvent) {
 	}
 }
 
-func (bot *Bot) getWebhook(id discord.ChannelID, name string) (*discord.Webhook, error) {
-	ws, err := bot.State.ChannelWebhooks(id)
+func (bot *Bot) getWebhook(s *state.State, id discord.ChannelID, name string) (*discord.Webhook, error) {
+	ws, err := s.ChannelWebhooks(id)
 	if err == nil {
 		for _, w := range ws {
 			if w.Name == name {
@@ -124,7 +127,7 @@ func (bot *Bot) getWebhook(id discord.ChannelID, name string) (*discord.Webhook,
 		return nil, err
 	}
 
-	w, err := bot.State.CreateWebhook(id, api.CreateWebhookData{
+	w, err := s.CreateWebhook(id, api.CreateWebhookData{
 		Name: name,
 	})
 	return w, err

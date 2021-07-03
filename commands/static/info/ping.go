@@ -10,7 +10,7 @@ import (
 func (bot *Bot) ping(ctx *bcr.Context) (err error) {
 	t := time.Now()
 
-	m, err := ctx.Send("Pong!", nil)
+	m, err := ctx.Send("Pong!")
 	if err != nil {
 		return err
 	}
@@ -21,6 +21,6 @@ func (bot *Bot) ping(ctx *bcr.Context) (err error) {
 	// can't do much about that though
 	heartbeat := ctx.State.Gateway.PacerLoop.EchoBeat.Time().Sub(ctx.State.Gateway.PacerLoop.SentBeat.Time()).Round(time.Millisecond)
 
-	_, err = ctx.Edit(m, fmt.Sprintf("Heartbeat: %v | Message: %v", heartbeat, latency), nil)
+	_, err = ctx.Edit(m, fmt.Sprintf("Heartbeat: %v | Message: %v", heartbeat, latency), false)
 	return err
 }

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -19,7 +19,7 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 	member, err := ctx.ParseMember(ctx.Args[0])
 	if err == nil {
 		if !bot.aboveUser(ctx, member) {
-			_, err = ctx.Send("You're not high enough in the role hierarchy to do that.", nil)
+			_, err = ctx.Send("You're not high enough in the role hierarchy to do that.")
 			return
 		}
 		isMember = true
@@ -27,14 +27,14 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 	} else {
 		target, err = ctx.ParseUser(ctx.Args[0])
 		if err != nil {
-			_, err = ctx.Send("Couldn't find a user with that name.", nil)
+			_, err = ctx.Send("Couldn't find a user with that name.")
 			return
 		}
 	}
 
 	// check bot perms
 	if p, _ := ctx.State.Permissions(ctx.Channel.ID, ctx.Bot.ID); !p.Has(discord.PermissionBanMembers) {
-		_, err = ctx.Send("I do not have the **Ban Members** permission.", nil)
+		_, err = ctx.Send("I do not have the **Ban Members** permission.")
 		return
 	}
 
@@ -46,7 +46,7 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 	if isMember {
 		_, err = ctx.NewDM(target.ID).Content(fmt.Sprintf("You were banned from %v.\nReason: %v", ctx.Guild.Name, reason)).Send()
 		if err != nil {
-			ctx.Send("I was unable to DM the user about their ban.", nil)
+			ctx.Send("I was unable to DM the user about their ban.")
 		}
 	}
 
@@ -56,11 +56,11 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 			fmt.Sprintf("%v#%v: %v", ctx.Author.Username, ctx.Author.Discriminator, reason)),
 	})
 	if err != nil {
-		_, err = ctx.Send("I could not ban that user.", nil)
+		_, err = ctx.Send("I could not ban that user.")
 		return
 	}
 
-	err = bot.ModLog.Ban(ctx.Message.GuildID, target.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Ban(ctx, ctx.Message.GuildID, target.ID, ctx.Author.ID, reason)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -72,13 +72,13 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 func (bot *Bot) unban(ctx *bcr.Context) (err error) {
 	u, err := ctx.ParseUser(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("I couldn't find that user.", nil)
+		_, err = ctx.Send("I couldn't find that user.")
 		return
 	}
 
 	// check bot perms
 	if p, _ := ctx.State.Permissions(ctx.Channel.ID, ctx.Bot.ID); !p.Has(discord.PermissionBanMembers) {
-		_, err = ctx.Send("I do not have the **Ban Members** permission.", nil)
+		_, err = ctx.Send("I do not have the **Ban Members** permission.")
 		return
 	}
 
@@ -101,7 +101,7 @@ func (bot *Bot) unban(ctx *bcr.Context) (err error) {
 	}
 
 	if !isBanned {
-		_, err = ctx.Send("That user is not banned.", nil)
+		_, err = ctx.Send("That user is not banned.")
 		return
 	}
 
@@ -111,7 +111,7 @@ func (bot *Bot) unban(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = bot.ModLog.Unban(ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Unban(ctx, ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}

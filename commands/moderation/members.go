@@ -8,7 +8,7 @@ import (
 
 	flag "github.com/spf13/pflag"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -71,7 +71,7 @@ Supported options:
 			)
 		})
 
-		_, err = ctx.Send("", &discord.Embed{
+		_, err = ctx.Send("", discord.Embed{
 			Title:       "`MEMBERS`",
 			Description: "```" + usage + "```",
 			Fields: []discord.EmbedField{{
@@ -173,7 +173,7 @@ Supported options:
 	if nameRegex != "" {
 		r, err := regexp.Compile(nameRegex)
 		if err != nil {
-			_, err = ctx.Send("There was an error parsing the given regex.", nil)
+			_, err = ctx.Send("There was an error parsing the given regex.")
 			return err
 		}
 
@@ -184,7 +184,7 @@ Supported options:
 
 	// send count if that flag is set
 	if count {
-		_, err = ctx.Send("", &discord.Embed{
+		_, err = ctx.Send("", discord.Embed{
 			Title:       "Members in Query",
 			Description: fmt.Sprintf("Member count is: %v", len(gm)),
 			Color:       ctx.Router.EmbedColor,
@@ -230,7 +230,7 @@ Supported options:
 	if file {
 		_, err = ctx.NewMessage().AddFile("members.txt", strings.NewReader(strings.Join(members, ""))).Send()
 		if err == bcr.ErrBotMissingPermissions {
-			_, err = ctx.Send("I can't attach files in this channel.", nil)
+			_, err = ctx.Send("I can't attach files in this channel.")
 			return
 		}
 		return

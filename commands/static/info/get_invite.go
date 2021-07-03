@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -20,7 +20,7 @@ func (bot *Bot) inviteInfo(ctx *bcr.Context) (err error) {
 
 	g, err := ctx.State.InviteWithCounts(code)
 	if err != nil {
-		_, err = ctx.Send("You did not give a valid invite.", nil)
+		_, err = ctx.Send("You did not give a valid invite.")
 		return
 	}
 
@@ -53,6 +53,6 @@ func (bot *Bot) inviteInfo(ctx *bcr.Context) (err error) {
 		Inline: true,
 	})
 
-	_, err = ctx.Send("", &e)
+	_, err = ctx.Send("", e)
 	return
 }

@@ -5,8 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -27,7 +28,7 @@ func (bot *Bot) cmdComplete(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = bot.complete(t)
+	err = bot.complete(ctx.State, t)
 	if err != nil {
 		bot.Sugar.Errorf("Error completing todo ID %v: %v", t.ID, err)
 		return bot.Report(ctx, err)
@@ -51,14 +52,16 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		return
 	}
 
-	err = bot.complete(t)
+	s, _ := bot.Router.StateFromGuildID(ev.GuildID)
+
+	err = bot.complete(s, t)
 	if err != nil {
 		bot.Sugar.Errorf("Error completing todo ID %v: %v", t.ID, err)
 	}
 }
 
-func (bot *Bot) complete(t *Todo) (err error) {
-	msg, err := bot.State.Message(t.ChannelID, t.MID)
+func (bot *Bot) complete(s *state.State, t *Todo) (err error) {
+	msg, err := s.Message(t.ChannelID, t.MID)
 	if err != nil {
 		return err
 	}
@@ -103,6 +106,6 @@ func (bot *Bot) complete(t *Todo) (err error) {
 		return
 	}
 
-	_, err = bot.State.EditEmbed(t.ChannelID, t.MID, e)
+	_, err = s.EditEmbeds(t.ChannelID, t.MID, e)
 	return
 }

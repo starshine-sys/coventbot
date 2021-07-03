@@ -21,7 +21,7 @@ func (bot *Bot) resetSlowmode(ctx *bcr.Context) (err error) {
 
 		yes, timeout := ctx.YesNoHandler(*m, ctx.Author.ID)
 		if !yes || timeout {
-			_, err = ctx.Send(":x: Cancelled.", nil)
+			_, err = ctx.Send(":x: Cancelled.")
 			return err
 		}
 
@@ -36,11 +36,11 @@ func (bot *Bot) resetSlowmode(ctx *bcr.Context) (err error) {
 
 	ch, err := ctx.ParseChannel(ctx.Args[1])
 	if err != nil {
-		_, err = ctx.Send("Couldn't find that channel.", nil)
+		_, err = ctx.Send("Couldn't find that channel.")
 		return
 	}
 	if ch.GuildID != ctx.Channel.GuildID {
-		_, err = ctx.Send("That channel isn't in this server.", nil)
+		_, err = ctx.Send("That channel isn't in this server.")
 		return
 	}
 

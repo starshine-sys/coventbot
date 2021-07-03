@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/api/webhook"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/api/webhook"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/pkgo"
 )
 
@@ -90,7 +90,9 @@ func (bot *Bot) pkMessage(m *gateway.MessageCreateEvent) {
 
 	orig, err := bot.message(discord.MessageID(pkMsg.Original))
 	if err == nil {
-		bot.State.DeleteMessage(orig.ChannelID, orig.MessageID)
+		s, _ := bot.Router.StateFromGuildID(m.GuildID)
+
+		s.DeleteMessage(orig.ChannelID, orig.MessageID)
 	}
 
 	client := webhook.New(mirror.WebhookID, mirror.Token)

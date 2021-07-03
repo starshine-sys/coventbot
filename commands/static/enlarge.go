@@ -11,14 +11,14 @@ import (
 
 	"net/http"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/etc"
 )
 
 func (bot *Bot) enlarge(ctx *bcr.Context) (err error) {
 	if !emojiMatch.MatchString(ctx.RawArgs) {
-		_, err = ctx.Send("You didn't give a __custom__ emoji to enlarge.", nil)
+		_, err = ctx.Send("You didn't give a __custom__ emoji to enlarge.")
 		return err
 	}
 
@@ -44,7 +44,7 @@ func (bot *Bot) enlarge(ctx *bcr.Context) (err error) {
 		clr = bcr.ColourBlurple
 	}
 
-	_, err = ctx.Send("", &discord.Embed{
+	_, err = ctx.Send("", discord.Embed{
 		Image: &discord.EmbedImage{
 			URL: url,
 		},

@@ -3,8 +3,8 @@ package chanmirror
 import (
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -14,8 +14,10 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		return
 	}
 
+	s, _ := bot.Router.StateFromGuildID(ev.GuildID)
+
 	if ev.Emoji.Name == "❌" && ev.UserID == msgInfo.UserID {
-		err = bot.State.DeleteMessage(ev.ChannelID, ev.MessageID)
+		err = s.DeleteMessage(ev.ChannelID, ev.MessageID)
 		if err != nil {
 			bot.Sugar.Errorf("Error deleting message: %v", err)
 		}
@@ -23,9 +25,9 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 	}
 
 	if ev.Emoji.Name == "❓" || ev.Emoji.Name == "❔" {
-		bot.State.DeleteUserReaction(ev.ChannelID, ev.MessageID, ev.UserID, ev.Emoji.APIString())
+		s.DeleteUserReaction(ev.ChannelID, ev.MessageID, ev.UserID, ev.Emoji.APIString())
 
-		ch, err := bot.State.CreatePrivateChannel(ev.UserID)
+		ch, err := s.CreatePrivateChannel(ev.UserID)
 		if err != nil {
 			return
 		}
@@ -38,7 +40,7 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 			Timestamp: discord.NewTimestamp(msgInfo.MessageID.Time()),
 		}
 
-		msg, err := bot.State.Message(msgInfo.ChannelID, msgInfo.MessageID)
+		msg, err := s.Message(msgInfo.ChannelID, msgInfo.MessageID)
 		if err == nil {
 			e.Description = msg.Content
 		}
@@ -58,7 +60,7 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 			})
 		}
 
-		u, err := bot.State.User(msgInfo.UserID)
+		u, err := s.User(msgInfo.UserID)
 		if err != nil {
 			e.Author = &discord.EmbedAuthor{
 				Name: fmt.Sprintf("[unknown user %v]", msgInfo.UserID),
@@ -82,7 +84,7 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 			})
 		}
 
-		_, err = bot.State.SendEmbed(ch.ID, e)
+		_, err = s.SendEmbeds(ch.ID, e)
 		if err != nil {
 			bot.Sugar.Errorf("Error sending message: %v", err)
 		}

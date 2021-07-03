@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/snowflake/v2"

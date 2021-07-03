@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) list(ctx *bcr.Context) (err error) {
 	if !bot.quotesEnabled(ctx.Guild.ID) {
-		_, err = ctx.Send("Quotes aren't enabled on this server, sorry :(\nAsk a server admin to enable it!", nil)
+		_, err = ctx.Send("Quotes aren't enabled on this server, sorry :(\nAsk a server admin to enable it!")
 		return
 	}
 

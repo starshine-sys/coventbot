@@ -3,8 +3,8 @@ package levels
 import (
 	"sync"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -21,7 +21,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	b := &Bot{bot}
 
-	bot.State.AddHandler(b.messageCreate)
+	bot.Router.AddHandler(b.messageCreate)
 
 	lvl := bot.Router.AddCommand(&bcr.Command{
 		Name:    "level",
@@ -267,8 +267,10 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.nolevelsRemove,
 	})
 
+	state, _ := bot.Router.StateFromGuildID(0)
+
 	var o sync.Once
-	bot.State.AddHandler(func(_ *gateway.ReadyEvent) {
+	state.AddHandler(func(_ *gateway.ReadyEvent) {
 		o.Do(func() {
 			go b.nolevelLoop()
 		})

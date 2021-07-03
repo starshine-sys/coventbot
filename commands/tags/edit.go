@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -32,18 +32,18 @@ func (bot *Bot) isModerator(ctx *bcr.Context) (isMod bool) {
 func (bot *Bot) editTag(ctx *bcr.Context) (err error) {
 	args := strings.Split(ctx.RawArgs, "\n")
 	if len(args) < 2 {
-		_, err = ctx.Send("Not enough arguments given: need at least 2, separated by a newline.", nil)
+		_, err = ctx.Send("Not enough arguments given: need at least 2, separated by a newline.")
 		return
 	}
 
 	t, err := bot.DB.GetTag(ctx.Message.GuildID, args[0])
 	if err != nil {
-		_, err = ctx.Send("No tag with that name found.", nil)
+		_, err = ctx.Send("No tag with that name found.")
 		return
 	}
 
 	if t.CreatedBy != ctx.Author.ID && !bot.isModerator(ctx) {
-		_, err = ctx.Send("You don't have permission to edit this tag.", nil)
+		_, err = ctx.Send("You don't have permission to edit this tag.")
 		return
 	}
 
@@ -56,6 +56,6 @@ func (bot *Bot) editTag(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Send("Tag updated!", nil)
+	_, err = ctx.Send("Tag updated!")
 	return
 }

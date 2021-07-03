@@ -1,7 +1,7 @@
 package tickets
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -127,8 +127,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	})
 
 	// add leave/join handlers
-	b.State.AddHandler(b.guildMemberRemove)
-	b.State.AddHandler(b.guildMemberAdd)
+	b.Router.AddHandler(b.guildMemberRemove)
+	b.Router.AddHandler(b.guildMemberAdd)
 
 	return s, append(list, tickets)
 }

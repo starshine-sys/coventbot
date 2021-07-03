@@ -1,7 +1,7 @@
 package gatekeeper
 
 import (
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/google/uuid"
 )
 

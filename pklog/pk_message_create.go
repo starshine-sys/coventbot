@@ -4,8 +4,8 @@ import (
 	"context"
 	"regexp"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 )
 
 var botsToCheck = []discord.UserID{466378653216014359}
@@ -64,8 +64,10 @@ func (bot *Bot) pkMessageCreate(m *gateway.MessageCreateEvent) {
 		channelID = discord.ChannelID(sf)
 	}
 
+	s, _ := bot.Router.StateFromGuildID(m.GuildID)
+
 	// get full message
-	msg, err := bot.State.Message(channelID, msgID)
+	msg, err := s.Message(channelID, msgID)
 	if err != nil {
 		bot.Sugar.Errorf("Error retrieving original message: %v", err)
 		return

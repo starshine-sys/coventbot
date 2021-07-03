@@ -2,7 +2,6 @@ package levels
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/starshine-sys/bcr"
@@ -11,12 +10,12 @@ import (
 func (bot *Bot) cmdAddReward(ctx *bcr.Context) (err error) {
 	lvl, err := strconv.ParseInt(ctx.Args[0], 0, 0)
 	if err != nil {
-		_, err = ctx.Send("Couldn't parse your input as an integer.", nil)
+		_, err = ctx.Send("Couldn't parse your input as an integer.")
 		return
 	}
 	role, err := ctx.ParseRole(ctx.Args[1])
 	if err != nil {
-		_, err = ctx.Send("Couldn't find a role with that name or ID.", nil)
+		_, err = ctx.Send("Couldn't find a role with that name or ID.")
 		return
 	}
 
@@ -25,16 +24,14 @@ func (bot *Bot) cmdAddReward(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{
-		Message: fmt.Sprintf("Set the reward for level `%v` to `%v`.", lvl, role.Name),
-	})
+	_, err = ctx.Reply("Set the reward for level `%v` to `%v`.", lvl, role.Name)
 	return
 }
 
 func (bot *Bot) cmdDelReward(ctx *bcr.Context) (err error) {
 	lvl, err := strconv.ParseInt(ctx.Args[0], 0, 0)
 	if err != nil {
-		_, err = ctx.Send("Couldn't parse your input as an integer.", nil)
+		_, err = ctx.Send("Couldn't parse your input as an integer.")
 		return
 	}
 
@@ -43,8 +40,6 @@ func (bot *Bot) cmdDelReward(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.SendEmbed(bcr.SED{
-		Message: fmt.Sprintf("Removed the reward for level `%v`.", lvl),
-	})
+	_, err = ctx.Reply("Removed the reward for level `%v`.", lvl)
 	return
 }

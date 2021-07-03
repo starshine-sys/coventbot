@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 )
@@ -22,7 +22,7 @@ type UserConfig struct {
 
 func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 	if len(ctx.Args) == 0 {
-		_, err = ctx.Send("", &discord.Embed{
+		_, err = ctx.Send("", discord.Embed{
 			Title: "User configuration",
 			Fields: []discord.EmbedField{
 				{
@@ -52,7 +52,7 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 
 		pgxscan.Get(context.Background(), bot.DB.Pool, &uc, "select * from user_config where user_id = $1", ctx.Author.ID)
 
-		_, err = ctx.Send("", &discord.Embed{
+		_, err = ctx.Send("", discord.Embed{
 			Title:       "User configuration",
 			Description: fmt.Sprintf("`disable_levelup_messages`: %v\n`reminders_in_dm`: %v\n`usernames_opt_out`: %v", uc.DisableLevelupMessages, uc.RemindersInDM, uc.UsernamesOptOut),
 			Color:       ctx.Router.EmbedColor,
@@ -61,7 +61,7 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 	}
 
 	if len(ctx.Args) != 2 {
-		_, err = ctx.Send("Too few or too many arguments given.", nil)
+		_, err = ctx.Send("Too few or too many arguments given.")
 		return
 	}
 
@@ -69,7 +69,7 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 	case "disable_levelup_messages", "reminders_in_dm", "usernames_opt_out", "embedless_reminders":
 		b, err := strconv.ParseBool(ctx.Args[1])
 		if err != nil {
-			_, err = ctx.Send("Couldn't parse your input as a boolean (true or false)", nil)
+			_, err = ctx.Send("Couldn't parse your input as a boolean (true or false)")
 			return err
 		}
 
@@ -80,7 +80,7 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 
 		_, err = ctx.Sendf("Set `%v` to `%v`!", ctx.Args[0], b)
 	default:
-		_, err = ctx.Send("I don't recognise that config key.", nil)
+		_, err = ctx.Send("I don't recognise that config key.")
 	}
 	return
 }

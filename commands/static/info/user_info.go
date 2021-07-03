@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/etc"
 )
@@ -149,14 +149,14 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 		Timestamp: discord.NowTimestamp(),
 	}
 
-	_, err = ctx.Send("", &e)
+	_, err = ctx.Send("", e)
 	return
 }
 
 func (bot *Bot) userInfo(ctx *bcr.Context) (err error) {
 	u, err := ctx.ParseUser(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("User not found.", nil)
+		_, err = ctx.Send("User not found.")
 		return
 	}
 
@@ -201,7 +201,7 @@ func (bot *Bot) userInfo(ctx *bcr.Context) (err error) {
 		Timestamp: discord.NowTimestamp(),
 	}
 
-	_, err = ctx.Send("", &e)
+	_, err = ctx.Send("", e)
 	return
 }
 

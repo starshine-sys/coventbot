@@ -1,16 +1,12 @@
 package admin
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/state"
 )
 
-func (bot *Bot) ready(_ *gateway.ReadyEvent) {
-	bot.updateStatus()
-	return
-}
-
-func (bot *Bot) updateStatus() {
+func (bot *Bot) updateStatus(state *state.State) {
 	s := bot.Settings()
 
 	usd := gateway.UpdateStatusData{
@@ -36,7 +32,7 @@ func (bot *Bot) updateStatus() {
 		}}
 	}
 
-	err := bot.State.Gateway.UpdateStatus(usd)
+	err := state.Gateway.UpdateStatus(usd)
 	if err != nil {
 		bot.Sugar.Errorf("Error setting status: %v", err)
 	}

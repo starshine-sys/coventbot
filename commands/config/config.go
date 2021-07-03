@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -208,11 +208,11 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	})
 
 	// add trigger handler
-	b.State.AddHandler(b.triggerReactionAdd)
-	b.State.AddHandler(b.triggerMessageDelete)
+	b.Router.AddHandler(b.triggerReactionAdd)
+	b.Router.AddHandler(b.triggerMessageDelete)
 
 	// add join handler
-	b.State.AddHandler(b.watchlistMemberAdd)
+	b.Router.AddHandler(b.watchlistMemberAdd)
 
 	return s, append(list, wl, sb)
 }

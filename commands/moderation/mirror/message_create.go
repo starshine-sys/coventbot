@@ -3,7 +3,7 @@ package mirror
 import (
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/gateway"
 )
 
 const (

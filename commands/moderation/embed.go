@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -15,15 +15,15 @@ func (bot *Bot) embed(ctx *bcr.Context) (err error) {
 func (bot *Bot) embedTo(ctx *bcr.Context) (err error) {
 	ch, err := ctx.ParseChannel(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("Channel not found.", nil)
+		_, err = ctx.Send("Channel not found.")
 	}
 	if ch.GuildID != ctx.Message.GuildID {
-		_, err = ctx.Send("That channel is not in this server.", nil)
+		_, err = ctx.Send("That channel is not in this server.")
 		return
 	}
 
 	if !discord.CalcOverwrites(*ctx.Guild, *ctx.Channel, *ctx.Member).Has(discord.PermissionViewChannel | discord.PermissionSendMessages) {
-		_, err = ctx.Send("You do not have permission to send messages in that channel.", nil)
+		_, err = ctx.Send("You do not have permission to send messages in that channel.")
 		return
 	}
 
@@ -34,7 +34,7 @@ func (bot *Bot) embedTo(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	_, err = ctx.Send("✅ Sent!", nil)
+	_, err = ctx.Send("✅ Sent!")
 	return
 }
 
@@ -45,6 +45,6 @@ func (bot *Bot) embedInner(ctx *bcr.Context, ch discord.ChannelID, input []byte)
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.NewMessage(ch).Embed(&e).Send()
+	_, err = ctx.NewMessage(ch).Embeds(e).Send()
 	return
 }

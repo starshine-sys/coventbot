@@ -60,7 +60,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.cmdComplete,
 	}))
 
-	b.State.AddHandler(b.reactionAdd)
+	b.Router.AddHandler(b.reactionAdd)
 
 	return s, append(list, todo)
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -20,7 +20,7 @@ func (bot *Bot) usernames(ctx *bcr.Context) (err error) {
 	usernames := make([]string, 0)
 	err = bot.DB.Pool.QueryRow(context.Background(), "select array(select name from usernames where user_id = $1 order by time desc)", u.ID).Scan(&usernames)
 	if err != nil {
-		_, err = ctx.Send("Couldn't find any username history for that user.", nil)
+		_, err = ctx.Send("Couldn't find any username history for that user.")
 		return
 	}
 
@@ -74,7 +74,7 @@ func (bot *Bot) nicknames(ctx *bcr.Context) (err error) {
 	if err != nil {
 		fmt.Println(err)
 
-		_, err = ctx.Send("Couldn't find any nickname history for that user.", nil)
+		_, err = ctx.Send("Couldn't find any nickname history for that user.")
 		return
 	}
 

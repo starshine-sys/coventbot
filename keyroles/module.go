@@ -1,7 +1,7 @@
 package keyroles
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 
 	"github.com/starshine-sys/tribble/bot"
@@ -61,7 +61,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.channel,
 	})
 
-	b.State.AddHandler(b.guildMemberUpdate)
+	b.Router.AddHandler(b.guildMemberUpdate)
 
 	return
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/etc"
 )
@@ -12,7 +12,7 @@ import (
 func (bot *Bot) roleInfo(ctx *bcr.Context) (err error) {
 	r, err := ctx.ParseRole(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("The specified role could not be found.", nil)
+		_, err = ctx.Send("The specified role could not be found.")
 		return
 	}
 
@@ -73,6 +73,6 @@ func (bot *Bot) roleInfo(ctx *bcr.Context) (err error) {
 		Timestamp: discord.Timestamp(r.ID.Time()),
 	}
 
-	_, err = ctx.Send("", &e)
+	_, err = ctx.Send("", e)
 	return
 }

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/julienschmidt/httprouter"
 	"github.com/kataras/hcaptcha"
 	"github.com/starshine-sys/bcr"
@@ -93,8 +93,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		}
 	}()
 
-	b.State.AddHandler(b.memberAdd)
-	b.State.AddHandler(b.memberLeave)
+	b.Router.AddHandler(b.memberAdd)
+	b.Router.AddHandler(b.memberLeave)
 
 	return s, append(list, conf)
 }

@@ -3,8 +3,8 @@ package reactroles
 import (
 	"context"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -79,12 +79,12 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	})
 
 	// add handlers
-	bot.State.AddHandler(b.reactionAdd)
-	bot.State.AddHandler(b.reactionRemove)
+	bot.Router.AddHandler(b.reactionAdd)
+	bot.Router.AddHandler(b.reactionRemove)
 
 	// add cleanup handlers
-	bot.State.AddHandler(b.channelDelete)
-	bot.State.AddHandler(b.messageDelete)
+	bot.Router.AddHandler(b.channelDelete)
+	bot.Router.AddHandler(b.messageDelete)
 
 	return
 }

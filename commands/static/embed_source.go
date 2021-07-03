@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) embedSource(ctx *bcr.Context) (err error) {
 	if !linkRegex.MatchString(ctx.RawArgs) {
-		_, err = ctx.Send("You didn't give a valid message ID/link.", nil)
+		_, err = ctx.Send("You didn't give a valid message ID/link.")
 		return
 	}
 
@@ -19,15 +19,15 @@ func (bot *Bot) embedSource(ctx *bcr.Context) (err error) {
 	channelID, _ := discord.ParseSnowflake(groups[2])
 	msgID, _ := discord.ParseSnowflake(groups[3])
 
-	msg, err := bot.State.Message(discord.ChannelID(channelID), discord.MessageID(msgID))
+	msg, err := ctx.State.Message(discord.ChannelID(channelID), discord.MessageID(msgID))
 	if err != nil {
 		fmt.Println(err)
-		_, err = ctx.Send("Could not find that message. Are you sure I have access to that channel?", nil)
+		_, err = ctx.Send("Could not find that message. Are you sure I have access to that channel?")
 		return
 	}
 
 	if len(msg.Embeds) == 0 {
-		_, err = ctx.Send("That message has no embeds.", nil)
+		_, err = ctx.Send("That message has no embeds.")
 	}
 
 	var embedJSON [][]byte
@@ -47,7 +47,7 @@ func (bot *Bot) embedSource(ctx *bcr.Context) (err error) {
 				return err
 			}
 		} else {
-			_, err = ctx.Send("", &discord.Embed{
+			_, err = ctx.Send("", discord.Embed{
 				Title:       "Source",
 				Description: "```" + string(e) + "```",
 				Color:       ctx.Router.EmbedColor,

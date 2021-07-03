@@ -14,12 +14,12 @@ func (bot *Bot) agree(ctx *bcr.Context) (err error) {
 	}
 
 	if !settings.MemberRole.IsValid() {
-		_, err = ctx.Send("This server does not use a gateway.", nil)
+		_, err = ctx.Send("This server does not use a gateway.")
 		return
 	}
 
 	if !bot.isPending(ctx.Message.GuildID, ctx.Author.ID) {
-		_, err = ctx.Send("You are not a pending user.", nil)
+		_, err = ctx.Send("You are not a pending user.")
 		return
 	}
 

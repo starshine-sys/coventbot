@@ -8,9 +8,9 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -38,7 +38,7 @@ func (bot *Bot) addEmojiMsg(ctx *bcr.Context, url string) (err error) {
 	}
 
 	if len(groups) == 0 {
-		_, err = ctx.Send("Invalid message link/ID given.", nil)
+		_, err = ctx.Send("Invalid message link/ID given.")
 		return
 	}
 
@@ -47,14 +47,14 @@ func (bot *Bot) addEmojiMsg(ctx *bcr.Context, url string) (err error) {
 
 	msg, err := ctx.State.Message(discord.ChannelID(channel), discord.MessageID(msgID))
 	if err != nil {
-		_, err = ctx.Send("Couldn't find that message. Are you sure I have access to the channel?", nil)
+		_, err = ctx.Send("Couldn't find that message. Are you sure I have access to the channel?")
 		return
 	}
 
 	// find emojis
 	emojis := emojiMatch.FindAllString(msg.Content, -1)
 	if emojis == nil {
-		_, err = ctx.Send("That message has no custom emoji.", nil)
+		_, err = ctx.Send("That message has no custom emoji.")
 		return
 	}
 
@@ -121,7 +121,7 @@ func (bot *Bot) addEmojiMsg(ctx *bcr.Context, url string) (err error) {
 	})
 
 	if v == nil {
-		_, err = ctx.Send("Timed out.", nil)
+		_, err = ctx.Send("Timed out.")
 		return
 	}
 

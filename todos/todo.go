@@ -3,7 +3,7 @@ package todos
 import (
 	"fmt"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -46,7 +46,7 @@ func (bot *Bot) todo(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	msg, err := ctx.State.SendEmbed(todoCh, e)
+	msg, err := ctx.State.SendEmbeds(todoCh, e)
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourRed, "I couldn't send the todo message. Are you sure I have write perms in your todo channel?")
 		return
@@ -74,7 +74,7 @@ func (bot *Bot) todo(ctx *bcr.Context) (err error) {
 		Text: fmt.Sprintf("ID: %v", out.ID),
 	}
 
-	_, err = ctx.State.EditEmbed(msg.ChannelID, msg.ID, e)
+	_, err = ctx.State.EditEmbeds(msg.ChannelID, msg.ID, e)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}

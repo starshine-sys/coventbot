@@ -1,8 +1,8 @@
 package reactroles
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 )
 
 func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
@@ -24,8 +24,10 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		}
 	}
 
+	s, _ := bot.Router.StateFromGuildID(ev.GuildID)
+
 	for _, r := range toAdd {
-		err = bot.State.AddRole(ev.GuildID, ev.UserID, r)
+		err = s.AddRole(ev.GuildID, ev.UserID, r)
 		if err != nil {
 			bot.Sugar.Errorf("Error adding role %v to user: %v", r, err)
 		}
@@ -51,8 +53,10 @@ func (bot *Bot) reactionRemove(ev *gateway.MessageReactionRemoveEvent) {
 		}
 	}
 
+	s, _ := bot.Router.StateFromGuildID(ev.GuildID)
+
 	for _, r := range toRemove {
-		err = bot.State.RemoveRole(ev.GuildID, ev.UserID, r)
+		err = s.RemoveRole(ev.GuildID, ev.UserID, r)
 		if err != nil {
 			bot.Sugar.Errorf("Error removing role %v from user: %v", r, err)
 		}

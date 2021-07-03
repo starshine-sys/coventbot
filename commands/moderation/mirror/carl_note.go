@@ -6,8 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/starshine-sys/tribble/db"
 )
 
@@ -22,7 +23,9 @@ func (bot *Bot) processCarlNote(m *gateway.MessageCreateEvent) {
 
 	reason := groups[1]
 
-	msgs, err := bot.State.MessagesAround(m.ChannelID, m.ID, 10)
+	s, _ := bot.Router.StateFromGuildID(m.GuildID)
+
+	msgs, err := s.MessagesAround(m.ChannelID, m.ID, 10)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting messages: %v", err)
 		return
@@ -44,7 +47,7 @@ func (bot *Bot) processCarlNote(m *gateway.MessageCreateEvent) {
 
 	var userID discord.UserID
 	for _, arg := range strings.Fields(orig.Content) {
-		u, err := bot.ParseUser(arg)
+		u, err := bot.ParseUser(s, arg)
 		if err == nil {
 			userID = u.ID
 			break
@@ -77,13 +80,13 @@ var (
 )
 
 // ParseUser finds a user by mention or ID
-func (bot *Bot) ParseUser(s string) (u *discord.User, err error) {
+func (bot *Bot) ParseUser(state *state.State, s string) (u *discord.User, err error) {
 	if idRegex.MatchString(s) {
 		sf, err := discord.ParseSnowflake(s)
 		if err != nil {
 			return nil, err
 		}
-		return bot.State.User(discord.UserID(sf))
+		return state.User(discord.UserID(sf))
 	}
 
 	if userMentionRegex.MatchString(s) {
@@ -95,7 +98,7 @@ func (bot *Bot) ParseUser(s string) (u *discord.User, err error) {
 		if err != nil {
 			return nil, err
 		}
-		return bot.State.User(discord.UserID(sf))
+		return state.User(discord.UserID(sf))
 	}
 
 	return nil, errors.New("user not found")

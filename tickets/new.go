@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 )
@@ -51,24 +51,24 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 	if perms, _ := ctx.State.Permissions(cat.CategoryID, ctx.Author.ID); len(ctx.Args) > 1 && perms.Has(discord.PermissionManageMessages) {
 		member, err := ctx.ParseMember(ctx.Args[1])
 		if err != nil {
-			_, err = ctx.Send("Member not found.", nil)
+			_, err = ctx.Send("Member not found.")
 			return err
 		}
 		user = member.User
 	}
 
-	ch, err := bot.State.CreateChannel(ctx.Message.GuildID, api.CreateChannelData{
+	ch, err := ctx.State.CreateChannel(ctx.Message.GuildID, api.CreateChannelData{
 		Name:       fmt.Sprintf("%v-%04d", cat.Name, cat.Count+1),
 		Type:       discord.GuildText,
 		CategoryID: cat.CategoryID,
 	})
 	if err != nil {
 		bot.Sugar.Errorf("Error creating channel: %v", err)
-		_, err = ctx.Send("There was an error creating the ticket channel. Are you sure I have the manage channels permission there, and are you sure the category isn't full?", nil)
+		_, err = ctx.Send("There was an error creating the ticket channel. Are you sure I have the manage channels permission there, and are you sure the category isn't full?")
 		return
 	}
 
-	err = bot.State.EditChannelPermission(ch.ID, discord.Snowflake(user.ID), api.EditChannelPermissionData{
+	err = ctx.State.EditChannelPermission(ch.ID, discord.Snowflake(user.ID), api.EditChannelPermissionData{
 		Type:  discord.OverwriteMember,
 		Allow: discord.PermissionViewChannel | discord.PermissionSendMessages | discord.PermissionReadMessageHistory | discord.PermissionAddReactions,
 	})
@@ -100,7 +100,7 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 		"{everyone}", "@everyone",
 	).Replace(cat.Description)
 
-	e := &discord.Embed{
+	e := discord.Embed{
 		Title: cat.Name,
 		Color: ctx.Router.EmbedColor,
 	}
@@ -114,19 +114,19 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 		e.Title = ""
 	}
 
-	m, err := bot.State.SendMessage(ch.ID, mention, e)
+	m, err := ctx.State.SendMessage(ch.ID, mention, e)
 	if err != nil {
 		bot.Sugar.Errorf("Error sending message: %v", err)
 		return err
 	}
 
-	err = bot.State.PinMessage(m.ChannelID, m.ID)
+	err = ctx.State.PinMessage(m.ChannelID, m.ID)
 	if err == nil {
-		msgs, err := bot.State.Messages(ch.ID)
+		msgs, err := ctx.State.Messages(ch.ID, 100)
 		if err == nil {
 			for _, m := range msgs {
 				if m.Author.ID == ctx.Bot.ID && m.Content == "" && len(m.Embeds) == 0 {
-					bot.State.DeleteMessage(m.ChannelID, m.ID)
+					ctx.State.DeleteMessage(m.ChannelID, m.ID)
 					break
 				}
 			}

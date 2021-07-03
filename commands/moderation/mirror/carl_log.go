@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/tribble/commands/moderation/modlog"
 )
 
@@ -108,12 +108,7 @@ func (bot *Bot) parseCarlEmbed(id discord.GuildID, e discord.Embed) *modlog.Entr
 
 // ParseMember parses a member name, because Carl doesn't show IDs for some reason
 func (bot *Bot) ParseMember(guildID discord.GuildID, s string) (c *discord.Member, err error) {
-	members, err := bot.State.Members(guildID)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, m := range members {
+	for _, m := range bot.Members(guildID) {
 		if m.User.Username+"#"+m.User.Discriminator == s {
 			return &m, nil
 		}

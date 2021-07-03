@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) editEmbed(ctx *bcr.Context) (err error) {
 	msg, err := ctx.ParseMessage(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("I could not find that message.", nil)
+		_, err = ctx.Send("I could not find that message.")
 		return
 	}
 
@@ -27,11 +27,11 @@ func (bot *Bot) editEmbed(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Edit(msg, "", &e)
+	_, err = ctx.Edit(msg, "", true, e)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Send("Message edited!", nil)
+	_, err = ctx.Send("Message edited!")
 	return
 }

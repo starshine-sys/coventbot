@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/dustin/go-humanize"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
@@ -23,7 +23,7 @@ type channelLeaderboard struct {
 
 func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 	if !bot.quotesEnabled(ctx.Guild.ID) {
-		_, err = ctx.Send("Quotes aren't enabled on this server, sorry :(\nAsk a server admin to enable it!", nil)
+		_, err = ctx.Send("Quotes aren't enabled on this server, sorry :(\nAsk a server admin to enable it!")
 		return
 	}
 

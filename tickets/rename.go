@@ -3,8 +3,8 @@ package tickets
 import (
 	"context"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -24,7 +24,7 @@ func (bot *Bot) rename(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = bot.State.ModifyChannel(ctx.Channel.ID, api.ModifyChannelData{
+	err = ctx.State.ModifyChannel(ctx.Channel.ID, api.ModifyChannelData{
 		Name: ctx.RawArgs,
 	})
 	if err != nil {

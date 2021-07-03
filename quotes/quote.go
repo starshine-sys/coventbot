@@ -4,7 +4,7 @@ import (
 	"regexp"
 
 	"emperror.dev/errors"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/jackc/pgx/v4"
 	"github.com/starshine-sys/bcr"
 )
@@ -13,7 +13,7 @@ var idMatch = regexp.MustCompile(`(?i)^[a-zA-Z]{5}$`)
 
 func (bot *Bot) quote(ctx *bcr.Context) (err error) {
 	if !bot.quotesEnabled(ctx.Guild.ID) {
-		_, err = ctx.Send("Quotes aren't enabled on this server, sorry :(\nAsk a server admin to enable it!", nil)
+		_, err = ctx.Send("Quotes aren't enabled on this server, sorry :(\nAsk a server admin to enable it!")
 		return
 	}
 
@@ -21,7 +21,7 @@ func (bot *Bot) quote(ctx *bcr.Context) (err error) {
 		q, err := bot.serverQuote(ctx.Guild.ID)
 		if err != nil {
 			if errors.Cause(err) == pgx.ErrNoRows {
-				_, err = ctx.Send("This server has no quotes yet. React with 💬 to a message to add it as a quote!", nil)
+				_, err = ctx.Send("This server has no quotes yet. React with 💬 to a message to add it as a quote!")
 				return err
 			}
 
@@ -29,19 +29,19 @@ func (bot *Bot) quote(ctx *bcr.Context) (err error) {
 		}
 
 		e := q.Embed(bot.PK)
-		_, err = ctx.Send("", &e)
+		_, err = ctx.Send("", e)
 		return err
 	}
 
 	if idMatch.MatchString(ctx.RawArgs) {
 		q, err := bot.getQuote(ctx.RawArgs, ctx.Guild.ID)
 		if err != nil {
-			_, err = ctx.Send("No quote with that ID found! Note that a quote ID is 5 characters long.", nil)
+			_, err = ctx.Send("No quote with that ID found! Note that a quote ID is 5 characters long.")
 			return err
 		}
 
 		e := q.Embed(bot.PK)
-		_, err = ctx.Send("", &e)
+		_, err = ctx.Send("", e)
 		return err
 	}
 
@@ -50,7 +50,7 @@ func (bot *Bot) quote(ctx *bcr.Context) (err error) {
 	if err != nil {
 		user, err := ctx.ParseUser(ctx.RawArgs)
 		if err != nil {
-			_, err = ctx.Send("No user with that name found.", nil)
+			_, err = ctx.Send("No user with that name found.")
 		}
 		u = *user
 	} else {
@@ -59,11 +59,11 @@ func (bot *Bot) quote(ctx *bcr.Context) (err error) {
 
 	q, err := bot.userQuote(ctx.Guild.ID, u.ID)
 	if err != nil {
-		_, err = ctx.Send("That user doesn't have any quotes, sorry :(", nil)
+		_, err = ctx.Send("That user doesn't have any quotes, sorry :(")
 		return err
 	}
 
 	e := q.Embed(bot.PK)
-	_, err = ctx.Send("", &e)
+	_, err = ctx.Send("", e)
 	return
 }

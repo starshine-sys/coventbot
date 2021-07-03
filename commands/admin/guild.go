@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/etc"
 )
@@ -12,12 +12,12 @@ import (
 func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 	sf, err := discord.ParseSnowflake(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("Couldn't parse your input as a snowflake.", nil)
+		_, err = ctx.Send("Couldn't parse your input as a snowflake.")
 	}
 
 	g, err := ctx.State.GuildWithCount(discord.GuildID(sf))
 	if err != nil {
-		_, err = ctx.Send("I'm not in that server, so I can't show info for it.", nil)
+		_, err = ctx.Send("I'm not in that server, so I can't show info for it.")
 		return
 	}
 
@@ -123,7 +123,7 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 		},
 	}
 
-	_, err = ctx.Send("", &e)
+	_, err = ctx.Send("", e)
 	return
 }
 

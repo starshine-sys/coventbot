@@ -3,11 +3,12 @@ package roles
 import (
 	"errors"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/starshine-sys/bcr"
 )
 
-func (bot *Bot) roles(guildID discord.GuildID, roleIDs []uint64) (roles []discord.Role, err error) {
-	rls, err := bot.State.Roles(guildID)
+func (bot *Bot) roles(ctx *bcr.Context, guildID discord.GuildID, roleIDs []uint64) (roles []discord.Role, err error) {
+	rls, err := ctx.State.Roles(guildID)
 	if err != nil {
 		return nil, err
 	}

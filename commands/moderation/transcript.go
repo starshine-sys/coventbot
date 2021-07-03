@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -45,7 +45,7 @@ func (bot *Bot) transcript(ctx *bcr.Context) (err error) {
 
 	msgs, err := ctx.State.MessagesAfter(ch.ID, 0, limit)
 	if err != nil {
-		_, err = ctx.Send("I couldn't fetch all messages in this channel, aborting.", nil)
+		_, err = ctx.Send("I couldn't fetch all messages in this channel, aborting.")
 		return
 	}
 
@@ -97,7 +97,7 @@ Messages: %v
 
 	text := strings.Join(buf, "\n")
 
-	e := &discord.Embed{
+	e := discord.Embed{
 		Title: "Transcript of #" + ch.Name,
 
 		Author: &discord.EmbedAuthor{
@@ -149,7 +149,7 @@ Messages: %v
 		})
 	}
 
-	_, err = ctx.NewMessage(outCh.ID).Embed(e).AddFile(
+	_, err = ctx.NewMessage(outCh.ID).Embeds(e).AddFile(
 		fmt.Sprintf("transcript-%v.txt", ctx.Channel.Name), strings.NewReader(text),
 	).Send()
 	if err != nil {

@@ -3,8 +3,8 @@ package mirror
 import (
 	"context"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -19,7 +19,7 @@ func (bot *Bot) cmdImport(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	msgs, err := bot.State.Session.Messages(modlog.ID, 0)
+	msgs, err := ctx.State.Session.Messages(modlog.ID, 0)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}

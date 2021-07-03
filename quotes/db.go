@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"emperror.dev/errors"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4"
 	"github.com/starshine-sys/bcr"

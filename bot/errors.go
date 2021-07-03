@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/httputil"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/httputil"
 	"github.com/getsentry/sentry-go"
 	"github.com/starshine-sys/bcr"
 )
@@ -46,7 +46,7 @@ func (bot *Bot) Report(ctx *bcr.Context, e error) (err error) {
 		id = hub.CaptureException(e)
 	}
 
-	m = m.Embed(&discord.Embed{
+	m = m.Embeds(discord.Embed{
 		Title:       "Internal error occurred",
 		Description: "An internal error has occurred. If this issue persists, please contact the bot developer in the support server (linked in the help command).",
 		Color:       0xE74C3C,
@@ -56,8 +56,8 @@ func (bot *Bot) Report(ctx *bcr.Context, e error) (err error) {
 
 	if id != nil {
 		m = m.Content(fmt.Sprintf("Error code: ``%v``", bcr.EscapeBackticks(string(*id))))
-		m.Data.Embed.Description = "An internal error has occurred. If this issue persists, please contact the bot developer in the support server (linked in the help command) with the error code above."
-		m.Data.Embed.Footer = &discord.EmbedFooter{
+		m.Data.Embeds[0].Description = "An internal error has occurred. If this issue persists, please contact the bot developer in the support server (linked in the help command) with the error code above."
+		m.Data.Embeds[0].Footer = &discord.EmbedFooter{
 			Text: string(*id),
 		}
 	}

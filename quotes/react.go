@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/pkgo"
 )
 
@@ -31,7 +31,9 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		return
 	}
 
-	u, err := bot.State.User(ev.UserID)
+	s, _ := bot.Router.StateFromGuildID(ev.GuildID)
+
+	u, err := s.User(ev.UserID)
 	if err != nil || u.Bot {
 		return
 	}
@@ -40,7 +42,7 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		return
 	}
 
-	msg, err := bot.State.Message(ev.ChannelID, ev.MessageID)
+	msg, err := s.Message(ev.ChannelID, ev.MessageID)
 	if err != nil {
 		bot.Sugar.Errorf("Couldn't fetch message: %v", err)
 		return
@@ -84,7 +86,7 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		bot.Sugar.Errorf("Error inserting quote: %v", err)
 	}
 
-	err = bot.State.React(ev.ChannelID, ev.MessageID, ev.Emoji.APIString())
+	err = s.React(ev.ChannelID, ev.MessageID, ev.Emoji.APIString())
 	if err != nil {
 		bot.Sugar.Errorf("Couldn't react to the quote message: %v", err)
 	}
@@ -93,12 +95,12 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		return
 	}
 
-	perms, err := bot.State.Permissions(ev.ChannelID, ev.UserID)
+	perms, err := s.Permissions(ev.ChannelID, ev.UserID)
 	if err == nil && !perms.Has(discord.PermissionSendMessages) {
 		return
 	}
 
-	_, err = bot.State.SendMessageComplex(ev.ChannelID, api.SendMessageData{
+	_, err = s.SendMessageComplex(ev.ChannelID, api.SendMessageData{
 		Content: fmt.Sprintf("New quote added with ID `%v` by %v.", q.HID, u.Username),
 		AllowedMentions: &api.AllowedMentions{
 			Parse: []api.AllowedMentionType{},

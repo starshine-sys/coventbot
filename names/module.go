@@ -2,7 +2,7 @@
 package names
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -18,8 +18,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	b := &Bot{bot}
 
-	b.State.AddHandler(b.nicknameChange)
-	b.State.AddHandler(b.usernameChange)
+	b.Router.AddHandler(b.nicknameChange)
+	b.Router.AddHandler(b.usernameChange)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "nicknames",

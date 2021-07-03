@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -18,12 +18,12 @@ func (bot *Bot) echoTo(ctx *bcr.Context) (err error) {
 
 	ch, err := ctx.ParseChannel(ctx.Args[0])
 	if err != nil {
-		_, err = ctx.Send("Could not find that channel.", nil)
+		_, err = ctx.Send("Could not find that channel.")
 		return
 	}
 
 	if ch.GuildID != ctx.Message.GuildID {
-		_, err = ctx.Send("That channel isn't in this server.", nil)
+		_, err = ctx.Send("That channel isn't in this server.")
 		return
 	}
 
@@ -32,7 +32,7 @@ func (bot *Bot) echoTo(ctx *bcr.Context) (err error) {
 
 func (bot *Bot) echoInner(ctx *bcr.Context, ch *discord.Channel) (err error) {
 	if ctx.RawArgs == "" && len(ctx.Message.Attachments) == 0 {
-		_, err = ctx.Send("You need to give me something to say!", nil)
+		_, err = ctx.Send("You need to give me something to say!")
 		return
 	}
 

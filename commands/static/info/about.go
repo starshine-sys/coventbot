@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/dustin/go-humanize"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/etc"
@@ -89,6 +89,6 @@ Member cache size: %v members`, bot.Counters.Mentions, bot.Counters.Messages,
 		Footer:    &discord.EmbedFooter{Text: "Made with Arikawa"},
 	}
 
-	_, err = ctx.Send("", &embed)
+	_, err = ctx.Send("", embed)
 	return
 }

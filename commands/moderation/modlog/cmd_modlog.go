@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 )
@@ -15,7 +15,7 @@ func (bot *ModLog) modlog(ctx *bcr.Context) (err error) {
 
 	u, err := ctx.ParseUser(ctx.RawArgs)
 	if err != nil {
-		_, err = ctx.Send("Couldn't find that user.", nil)
+		_, err = ctx.Send("Couldn't find that user.")
 		return
 	}
 
@@ -32,7 +32,7 @@ func (bot *ModLog) modlog(ctx *bcr.Context) (err error) {
 	for _, entry := range entries {
 		mod := modCache[entry.ModID]
 		if mod == nil {
-			mod, err = bot.State.User(entry.ModID)
+			mod, err = ctx.State.User(entry.ModID)
 			if err != nil {
 				return bot.Report(ctx, err)
 			}

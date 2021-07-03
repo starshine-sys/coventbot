@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) roleCreate(ctx *bcr.Context) (err error) {
 	if p, _ := ctx.State.Permissions(ctx.Channel.ID, ctx.Bot.ID); !p.Has(discord.PermissionManageRoles) {
-		_, err = ctx.Send("I do not have the Manage Roles permission in this server, and cannot create any roles.", nil)
+		_, err = ctx.Send("I do not have the Manage Roles permission in this server, and cannot create any roles.")
 	}
 
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
@@ -50,7 +50,7 @@ func (bot *Bot) roleCreate(ctx *bcr.Context) (err error) {
 		Mentionable: mentionable,
 	})
 	if err != nil {
-		_, err = ctx.Send("I could not create a new role. Is this server at the 250 role limit?", nil)
+		_, err = ctx.Send("I could not create a new role. Is this server at the 250 role limit?")
 		return err
 	}
 
@@ -59,7 +59,7 @@ func (bot *Bot) roleCreate(ctx *bcr.Context) (err error) {
 		embedColor = ctx.Router.EmbedColor
 	}
 
-	e := &discord.Embed{
+	e := discord.Embed{
 		Title: "Success!",
 		Description: fmt.Sprintf(`The role **%v** has been created.
 **Colour:** #%06X

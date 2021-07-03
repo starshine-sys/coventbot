@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
+	"github.com/starshine-sys/bcr"
 )
 
 // Entry ...
@@ -63,7 +64,7 @@ func (bot *ModLog) InsertEntry(guildID discord.GuildID, user, mod discord.UserID
 }
 
 // Channelban logs a channel ban
-func (bot *ModLog) Channelban(guildID discord.GuildID, channel discord.ChannelID, userID, modID discord.UserID, reason string) (err error) {
+func (bot *ModLog) Channelban(ctx *bcr.Context, guildID discord.GuildID, channel discord.ChannelID, userID, modID discord.UserID, reason string) (err error) {
 	if reason == "" {
 		reason = "N/A"
 	}
@@ -82,11 +83,11 @@ func (bot *ModLog) Channelban(guildID discord.GuildID, channel discord.ChannelID
 		reason = reason[:1000] + "..."
 	}
 
-	user, err := bot.State.User(userID)
+	user, err := ctx.State.User(userID)
 	if err != nil {
 		return err
 	}
-	mod, err := bot.State.User(modID)
+	mod, err := ctx.State.User(modID)
 	if err != nil {
 		return err
 	}
@@ -96,12 +97,12 @@ func (bot *ModLog) Channelban(guildID discord.GuildID, channel discord.ChannelID
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, channel.Mention(), entry.ID, user.Username, user.Discriminator, entry.UserID, reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = bot.State.SendText(ch, text)
+	_, err = ctx.State.SendMessage(ch, text)
 	return
 }
 
 // Unchannelban logs a channel unban
-func (bot *ModLog) Unchannelban(guildID discord.GuildID, channel discord.ChannelID, userID, modID discord.UserID, reason string) (err error) {
+func (bot *ModLog) Unchannelban(ctx *bcr.Context, guildID discord.GuildID, channel discord.ChannelID, userID, modID discord.UserID, reason string) (err error) {
 	if reason == "" {
 		reason = "N/A"
 	}
@@ -120,11 +121,11 @@ func (bot *ModLog) Unchannelban(guildID discord.GuildID, channel discord.Channel
 		reason = reason[:1000] + "..."
 	}
 
-	user, err := bot.State.User(userID)
+	user, err := ctx.State.User(userID)
 	if err != nil {
 		return err
 	}
-	mod, err := bot.State.User(modID)
+	mod, err := ctx.State.User(modID)
 	if err != nil {
 		return err
 	}
@@ -134,12 +135,12 @@ func (bot *ModLog) Unchannelban(guildID discord.GuildID, channel discord.Channel
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, channel.Mention(), entry.ID, user.Username, user.Discriminator, entry.UserID, reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = bot.State.SendText(ch, text)
+	_, err = ctx.State.SendMessage(ch, text)
 	return
 }
 
 // Warn logs a warn
-func (bot *ModLog) Warn(guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
+func (bot *ModLog) Warn(ctx *bcr.Context, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
 	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "warn", reason)
 	if err != nil {
 		return err
@@ -154,11 +155,11 @@ func (bot *ModLog) Warn(guildID discord.GuildID, userID, modID discord.UserID, r
 		entry.Reason = entry.Reason[:1000] + "..."
 	}
 
-	user, err := bot.State.User(userID)
+	user, err := ctx.State.User(userID)
 	if err != nil {
 		return err
 	}
-	mod, err := bot.State.User(modID)
+	mod, err := ctx.State.User(modID)
 	if err != nil {
 		return err
 	}
@@ -168,12 +169,12 @@ func (bot *ModLog) Warn(guildID discord.GuildID, userID, modID discord.UserID, r
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = bot.State.SendText(ch, text)
+	_, err = ctx.State.SendMessage(ch, text)
 	return
 }
 
 // Ban logs a ban
-func (bot *ModLog) Ban(guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
+func (bot *ModLog) Ban(ctx *bcr.Context, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
 	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "ban", reason)
 	if err != nil {
 		return err
@@ -188,11 +189,11 @@ func (bot *ModLog) Ban(guildID discord.GuildID, userID, modID discord.UserID, re
 		entry.Reason = entry.Reason[:1000] + "..."
 	}
 
-	user, err := bot.State.User(userID)
+	user, err := ctx.State.User(userID)
 	if err != nil {
 		return err
 	}
-	mod, err := bot.State.User(modID)
+	mod, err := ctx.State.User(modID)
 	if err != nil {
 		return err
 	}
@@ -202,12 +203,12 @@ func (bot *ModLog) Ban(guildID discord.GuildID, userID, modID discord.UserID, re
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = bot.State.SendText(ch, text)
+	_, err = ctx.State.SendMessage(ch, text)
 	return
 }
 
 // Unban logs a unban
-func (bot *ModLog) Unban(guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
+func (bot *ModLog) Unban(ctx *bcr.Context, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
 	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "unban", reason)
 	if err != nil {
 		return err
@@ -222,11 +223,11 @@ func (bot *ModLog) Unban(guildID discord.GuildID, userID, modID discord.UserID, 
 		entry.Reason = entry.Reason[:1000] + "..."
 	}
 
-	user, err := bot.State.User(userID)
+	user, err := ctx.State.User(userID)
 	if err != nil {
 		return err
 	}
-	mod, err := bot.State.User(modID)
+	mod, err := ctx.State.User(modID)
 	if err != nil {
 		return err
 	}
@@ -236,6 +237,6 @@ func (bot *ModLog) Unban(guildID discord.GuildID, userID, modID discord.UserID, 
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = bot.State.SendText(ch, text)
+	_, err = ctx.State.SendMessage(ch, text)
 	return
 }
