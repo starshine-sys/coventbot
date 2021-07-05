@@ -87,7 +87,11 @@ func (bot *Bot) setRolePerms(g *gateway.GuildCreateEvent) (err error) {
 		return
 	}
 
-	var helperRoles, modRoles, adminRoles []uint64
+	var (
+		helperRoles = []uint64{}
+		modRoles    = []uint64{}
+		adminRoles  = []uint64{}
+	)
 
 	for _, r := range g.Roles {
 		if r.Permissions.Has(discord.PermissionAdministrator) {
