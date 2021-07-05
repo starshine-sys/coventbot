@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -16,6 +17,11 @@ func (bot *Bot) GuildCreate(g *gateway.GuildCreateEvent) {
 	exists, err := bot.DB.CreateServerIfNotExists(g.ID)
 	if err != nil {
 		bot.Sugar.Errorf("Error creating database entry for server: %v", err)
+	}
+
+	err = bot.setRolePerms(g)
+	if err != nil {
+		bot.Sugar.Errorf("Error setting permissions for server: %v", err)
 	}
 
 	// if we already joined the server, don't log the join
@@ -70,6 +76,32 @@ func (bot *Bot) GuildCreate(g *gateway.GuildCreateEvent) {
 				Timestamp: discord.NowTimestamp(),
 			}},
 		})
+	}
+	return
+}
+
+func (bot *Bot) setRolePerms(g *gateway.GuildCreateEvent) (err error) {
+	var rolesSetUp bool
+	err = bot.DB.Pool.QueryRow(context.Background(), "select roles_set_up from servers where id = $1", g.ID).Scan(&rolesSetUp)
+	if err != nil || rolesSetUp {
+		return
+	}
+
+	var helperRoles, modRoles, adminRoles []uint64
+
+	for _, r := range g.Roles {
+		if r.Permissions.Has(discord.PermissionAdministrator) {
+			adminRoles = append(adminRoles, uint64(r.ID))
+		} else if r.Permissions.Has(discord.PermissionManageGuild) {
+			modRoles = append(modRoles, uint64(r.ID))
+		} else if r.Permissions.Has(discord.PermissionManageMessages) {
+			helperRoles = append(helperRoles, uint64(r.ID))
+		}
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set helper_roles = $1, mod_roles = $2, admin_roles = $3, roles_set_up = true where id = $4", helperRoles, modRoles, adminRoles, g.ID)
+	if err == nil {
+		bot.Sugar.Infof("Set helper/mod/admin roles for server %v (%v)", g.Name, g.ID)
 	}
 	return
 }

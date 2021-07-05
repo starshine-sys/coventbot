@@ -1,7 +1,6 @@
 package notes
 
 import (
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -23,8 +22,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user>",
 		Args:    bcr.MinArgs(1),
 
-		GuildOnly: true,
-		Command:   b.list,
+		CustomPermissions: bot.HelperRole,
+		Command:           b.list,
 	})
 
 	b.Router.AddCommand(&bcr.Command{
@@ -34,8 +33,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> <note>",
 		Args:    bcr.MinArgs(2),
 
-		GuildOnly: true,
-		Command:   b.addNote,
+		CustomPermissions: bot.HelperRole,
+		Command:           b.addNote,
 	})
 
 	b.Router.AddCommand(&bcr.Command{
@@ -45,8 +44,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<note ID>",
 		Args:    bcr.MinArgs(1),
 
-		GuildPermissions: discord.PermissionManageRoles,
-		Command:          b.delNote,
+		CustomPermissions: bot.ModRole,
+		Command:           b.delNote,
 	})
 
 	b.Router.AddCommand(&bcr.Command{
@@ -55,14 +54,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Show a background check for the given user.",
 		Usage:   "[user]",
 
-		GuildOnly: true,
+		CustomPermissions: bot.HelperRole,
 		Command: func(ctx *bcr.Context) (err error) {
-			perms := ctx.GuildPerms()
-			if !perms.Has(discord.PermissionMoveMembers) && !perms.Has(discord.PermissionManageMessages) {
-				_, err = ctx.Replyc(bcr.ColourRed, "You're not allowed to use this command.")
-				return
-			}
-
 			if len(ctx.Args) == 0 {
 				ctx.Args = []string{ctx.Author.ID.String()}
 				ctx.RawArgs = ctx.Author.ID.String()

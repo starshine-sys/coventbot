@@ -15,7 +15,8 @@ type Bot struct {
 
 	AESKey [32]byte
 
-	mu map[discord.MessageID]*sync.Mutex
+	mu   map[discord.MessageID]*sync.Mutex
+	muMu sync.Mutex
 }
 
 // Init ...
@@ -47,8 +48,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<quote ID>",
 		Args:    bcr.MinArgs(1),
 
-		GuildPermissions: discord.PermissionManageMessages,
-		Command:          b.cmdQuoteDelete,
+		CustomPermissions: bot.HelperRole,
+		Command:           b.cmdQuoteDelete,
 	})
 
 	cmd.AddSubcommand(&bcr.Command{
@@ -89,8 +90,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<on|off>",
 		Args:    bcr.MinArgs(1),
 
-		GuildPermissions: discord.PermissionManageGuild,
-		Command:          b.toggle,
+		CustomPermissions: bot.ModRole,
+		Command:           b.toggle,
 	})
 
 	quotes.AddSubcommand(&bcr.Command{
@@ -99,8 +100,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<on|off>",
 		Args:    bcr.MinArgs(1),
 
-		GuildPermissions: discord.PermissionManageGuild,
-		Command:          b.toggleSuppressMessages,
+		CustomPermissions: bot.ModRole,
+		Command:           b.toggleSuppressMessages,
 	})
 
 	return s, append(list, cmd, quotes)

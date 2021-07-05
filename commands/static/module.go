@@ -32,16 +32,17 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Usage: "<source> [name]",
 
 		Permissions: discord.PermissionManageEmojis,
-
-		Command: b.addEmoji,
+		Command:     b.addEmoji,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
-		Name:        "exportemotes",
-		Aliases:     []string{"export-emotes"},
-		Summary:     "Export this server's emotes to a zip file.",
-		Permissions: discord.PermissionManageEmojis,
-		Command:     b.exportEmotes,
+		Name:    "exportemotes",
+		Aliases: []string{"export-emotes"},
+		Summary: "Export this server's emotes to a zip file.",
+
+		CustomPermissions: bot.ModRole,
+		Permissions:       discord.PermissionManageEmojis,
+		Command:           b.exportEmotes,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{

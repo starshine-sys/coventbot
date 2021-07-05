@@ -3,7 +3,6 @@ package reactroles
 import (
 	"context"
 
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
@@ -38,8 +37,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<message> <emote/role pairs...>",
 		Args:    bcr.MinArgs(3),
 
-		Permissions: discord.PermissionManageRoles,
-		Command:     b.update,
+		CustomPermissions: bot.ModRole,
+		Command:           b.update,
 	})
 
 	rr.AddSubcommand(&bcr.Command{
@@ -48,8 +47,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel> <name> <emote/role pairs...>",
 		Args:    bcr.MinArgs(4),
 
-		Permissions: discord.PermissionManageRoles,
-		Command:     b.new,
+		CustomPermissions: bot.ModRole,
+		Command:           b.new,
 	})
 
 	rr.AddSubcommand(&bcr.Command{
@@ -65,8 +64,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		Permissions: discord.PermissionManageRoles,
-		Command:     b.simple,
+		CustomPermissions: bot.ModRole,
+		Command:           b.simple,
 	})
 
 	rr.AddSubcommand(&bcr.Command{
@@ -74,8 +73,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Clear react roles from the given message or the entire server.",
 		Usage:   "[message]",
 
-		Permissions: discord.PermissionManageRoles,
-		Command:     b.clear,
+		CustomPermissions: bot.ModRole,
+		Command:           b.clear,
 	})
 
 	// add handlers

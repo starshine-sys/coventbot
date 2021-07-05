@@ -1,7 +1,6 @@
 package roles
 
 import (
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -42,8 +41,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		Permissions: discord.PermissionManageRoles,
-		Command:     b.config,
+		CustomPermissions: bot.ModRole,
+		Command:           b.config,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -52,8 +51,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<id>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageRoles,
-		Command:     b.delete,
+		CustomPermissions: bot.ModRole,
+		Command:           b.delete,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -63,8 +62,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<id> <roles...>",
 		Args:    bcr.MinArgs(2),
 
-		Permissions: discord.PermissionManageRoles,
-		Command:     b.setRoles,
+		CustomPermissions: bot.ModRole,
+		Command:           b.setRoles,
 	})
 
 	role := bot.Router.GetCommand("role")

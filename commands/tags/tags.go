@@ -118,10 +118,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 Tag ownership is bypassed completely with this setting. If there is no mod role set, only the creator of a tag, and anyone with the manage server permission, can edit or delete it.`,
 		Usage: "[new role|-clear]",
 
-		GuildOnly:   true,
-		Permissions: discord.PermissionManageGuild,
-
-		Command: b.tagModerator,
+		GuildOnly:         true,
+		CustomPermissions: bot.ModRole,
+		Command:           b.tagModerator,
 	})
 
 	tag.AddSubcommand(b.Router.AliasMust("list", nil, []string{"tags"}, nil))

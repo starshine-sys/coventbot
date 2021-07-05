@@ -1,7 +1,6 @@
 package tickets
 
 import (
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -81,8 +80,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "list",
 		Summary: "Show a list of ticket categories.",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.list,
+		CustomPermissions: bot.ModRole,
+		Command:           b.list,
 	})
 
 	cfg := tickets.AddSubcommand(&bcr.Command{
@@ -101,8 +100,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.cfg,
+		CustomPermissions: bot.ModRole,
+		Command:           b.cfg,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -112,8 +111,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:       "<category> <mention|-clear>",
 		Args:        bcr.MinArgs(2),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.mention,
+		CustomPermissions: bot.ModRole,
+		Command:           b.mention,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -122,8 +121,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<category> <description|-clear>",
 		Args:    bcr.MinArgs(2),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.description,
+		CustomPermissions: bot.ModRole,
+		Command:           b.description,
 	})
 
 	// add leave/join handlers

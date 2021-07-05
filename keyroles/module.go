@@ -1,7 +1,6 @@
 package keyroles
 
 import (
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 
 	"github.com/starshine-sys/tribble/bot"
@@ -25,8 +24,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"key-role", "keyroles", "key-roles"},
 		Summary: "Show this server's key roles.",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.list,
+		CustomPermissions: bot.ModRole,
+		Command:           b.list,
 	})
 
 	kr.AddSubcommand(&bcr.Command{
@@ -35,8 +34,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<role>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.add,
+		CustomPermissions: bot.ModRole,
+		Command:           b.add,
 	})
 
 	kr.AddSubcommand(&bcr.Command{
@@ -46,8 +45,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<role>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.remove,
+		CustomPermissions: bot.ModRole,
+		Command:           b.remove,
 	})
 
 	kr.AddSubcommand(&bcr.Command{
@@ -57,8 +56,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel|-clear>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.channel,
+		CustomPermissions: bot.ModRole,
+		Command:           b.channel,
 	})
 
 	b.Router.AddHandler(b.guildMemberUpdate)

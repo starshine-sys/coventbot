@@ -42,8 +42,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Set the PluralKit logging channel.",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.setChannel,
+		CustomPermissions: bot.ModRole,
+		Command:           b.setChannel,
 	})
 
 	c.AddSubcommand(&bcr.Command{
@@ -51,8 +51,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"clearcache"},
 		Summary: "Clear the webhook cache for this server.",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.resetCache,
+		CustomPermissions: bot.ModRole,
+		Command:           b.resetCache,
 	})
 
 	// start clean messages loop

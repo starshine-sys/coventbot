@@ -33,8 +33,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Show a filtered list of members.",
 		Usage:   "--help",
 
-		Permissions: discord.PermissionManageMessages,
-		Command:     b.members,
+		CustomPermissions: bot.HelperRole,
+		Command:           b.members,
 	}))
 
 	roles := b.Router.AddCommand(&bcr.Command{
@@ -50,8 +50,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "dump",
 		Summary: "Show a list of *all* roles with permissions and basic information.",
 
-		Permissions: discord.PermissionManageRoles,
-		Command:     b.roleDump,
+		CustomPermissions: bot.HelperRole,
+		Command:           b.roleDump,
 	})
 
 	roles.AddSubcommand(&bcr.Command{
@@ -86,9 +86,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary:     "Make the bot say something.",
 		Description: "To echo something into a different channel, use the `echo to` subcommand.",
 
-		Permissions: discord.PermissionManageMessages,
-
-		Command: b.echo,
+		CustomPermissions: bot.ModRole,
+		Command:           b.echo,
 	})
 
 	echo.AddSubcommand(&bcr.Command{
@@ -96,9 +95,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Echo something to the specified channel.",
 		Usage:   "<channel>",
 
-		Permissions: discord.PermissionManageMessages,
-
-		Command: b.echoTo,
+		CustomPermissions: bot.ModRole,
+		Command:           b.echoTo,
 	})
 
 	embed := b.Router.AddCommand(&bcr.Command{
@@ -107,9 +105,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<JSON>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageMessages,
-
-		Command: b.embed,
+		CustomPermissions: bot.ModRole,
+		Command:           b.embed,
 	})
 
 	embed.AddSubcommand(&bcr.Command{
@@ -118,9 +115,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel> <JSON>",
 		Args:    bcr.MinArgs(2),
 
-		Permissions: discord.PermissionManageMessages,
-
-		Command: b.embedTo,
+		CustomPermissions: bot.ModRole,
+		Command:           b.embedTo,
 	})
 
 	embed.AddSubcommand(&bcr.Command{
@@ -129,9 +125,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<message> <JSON>",
 		Args:    bcr.MinArgs(2),
 
-		Permissions: discord.PermissionManageMessages,
-
-		Command: b.editEmbed,
+		CustomPermissions: bot.ModRole,
+		Command:           b.editEmbed,
 	})
 
 	list = append(list, echo, embed)
@@ -142,8 +137,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Make an invite for the current channel, or the given channel.",
 		Usage:   "[channel]",
 
-		Permissions: discord.PermissionCreateInstantInvite,
-		Command:     b.makeInvite,
+		CustomPermissions: bot.ModRole,
+		Permissions:       discord.PermissionCreateInstantInvite,
+		Command:           b.makeInvite,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
@@ -158,8 +154,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		Permissions: discord.PermissionManageChannels,
-		Command:     b.transcript,
+		CustomPermissions: bot.ModRole,
+		Permissions:       discord.PermissionManageChannels,
+		Command:           b.transcript,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
@@ -168,8 +165,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Toggles a channel being locked, hiding it from the `@everyone` role.",
 		Usage:   "[channel]",
 
-		Permissions: discord.PermissionManageRoles,
-		Command:     b.lockdown,
+		CustomPermissions: bot.ModRole,
+		Command:           b.lockdown,
 	}))
 
 	slowmode := b.Router.AddCommand(&bcr.Command{
@@ -186,7 +183,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<duration> [channel]",
 		Args:    bcr.MinArgs(1),
 
-		Command: b.discordSlowmode,
+		CustomPermissions: bot.ModRole,
+		Command:           b.discordSlowmode,
 	})
 
 	slowmode.AddSubcommand(&bcr.Command{
@@ -201,9 +199,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		Command: b.cmdSetSlowmode,
-
-		Permissions: discord.PermissionManageGuild,
+		Command:           b.cmdSetSlowmode,
+		CustomPermissions: bot.ModRole,
 	})
 
 	slowmode.AddSubcommand(&bcr.Command{
@@ -212,9 +209,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> [channel]",
 		Args:    bcr.MinArgs(1),
 
-		Command: b.resetSlowmode,
-
-		Permissions: discord.PermissionManageMessages,
+		Command:           b.resetSlowmode,
+		CustomPermissions: bot.HelperRole,
 	})
 
 	slowmode.AddSubcommand(&bcr.Command{
@@ -223,9 +219,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "[role|--clear]",
 		Args:    bcr.MinArgs(1),
 
-		Command: b.slowmodeRole,
-
-		Permissions: discord.PermissionManageGuild,
+		Command:           b.slowmodeRole,
+		CustomPermissions: bot.ModRole,
 	})
 
 	list = append(list, slowmode)
@@ -262,8 +257,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<member> <reason>",
 		Args:    bcr.MinArgs(2),
 
-		Permissions: discord.PermissionManageMessages,
-		Command:     b.warn,
+		CustomPermissions: bot.HelperRole,
+		Command:           b.warn,
 	}))
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{

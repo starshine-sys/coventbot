@@ -43,6 +43,10 @@ type Bot struct {
 
 	members   map[memberKey]member
 	membersMu sync.RWMutex
+
+	HelperRole bcr.CustomPerms
+	ModRole    bcr.CustomPerms
+	AdminRole  bcr.CustomPerms
 }
 
 type member struct {
@@ -76,6 +80,10 @@ func New(
 
 		members: map[memberKey]member{},
 	}
+
+	b.HelperRole = &HelperRole{b}
+	b.ModRole = &ModRole{b}
+	b.AdminRole = &AdminRole{b}
 
 	// create a Sentry config
 	if config.SentryURL != "" {

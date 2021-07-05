@@ -20,11 +20,15 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 	}
 
 	// make sure only one quote gets added for a message
-	if bot.mu[ev.MessageID] == nil {
-		bot.mu[ev.MessageID] = &sync.Mutex{}
+	bot.muMu.Lock()
+	mu := bot.mu[ev.MessageID]
+	if mu == nil {
+		mu = &sync.Mutex{}
+		bot.mu[ev.MessageID] = mu
 	}
-	bot.mu[ev.MessageID].Lock()
-	defer bot.mu[ev.MessageID].Unlock()
+	bot.muMu.Unlock()
+	mu.Lock()
+	defer mu.Unlock()
 
 	_, err := bot.quoteMessage(ev.MessageID)
 	if err == nil {

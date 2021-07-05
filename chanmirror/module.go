@@ -22,8 +22,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Show a list of mirrored channels, or set a channel mirror.",
 		Usage:   "[<source> <destination|--clear>]",
 
-		Permissions: discord.PermissionManageWebhooks,
-		Command:     b.set,
+		Permissions:       discord.PermissionManageWebhooks,
+		CustomPermissions: bot.ModRole,
+		Command:           b.set,
 	})
 
 	b.Router.AddHandler(b.messageCreate)

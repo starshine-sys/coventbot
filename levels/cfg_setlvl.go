@@ -16,8 +16,8 @@ func (bot *Bot) setlvl(ctx *bcr.Context) (err error) {
 	}
 
 	lvl, err := strconv.ParseInt(ctx.Args[1], 0, 0)
-	if err != nil || lvl < 0 {
-		_, err = ctx.Send("Couldn't parse your input as a number.")
+	if err != nil || lvl < 0 || lvl > 1000 {
+		_, err = ctx.Send("Couldn't parse your input as a valid level.")
 		return
 	}
 

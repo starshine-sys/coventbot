@@ -4,18 +4,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/db"
 )
 
 func (bot *Bot) addNote(ctx *bcr.Context) (err error) {
-	perms := ctx.GuildPerms()
-	if !perms.Has(discord.PermissionMoveMembers) && !perms.Has(discord.PermissionManageMessages) {
-		_, err = ctx.Replyc(bcr.ColourRed, "You're not allowed to use this command.")
-		return
-	}
-
 	u, err := ctx.ParseUser(ctx.Args[0])
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourRed, "User not found.")

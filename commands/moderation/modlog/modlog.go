@@ -1,7 +1,6 @@
 package modlog
 
 import (
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -24,8 +23,8 @@ func InitCommands(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user>",
 		Args:    bcr.MinArgs(1),
 
-		GuildPermissions: discord.PermissionManageMessages,
-		Command:          b.modlog,
+		CustomPermissions: bot.HelperRole,
+		Command:           b.modlog,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -34,8 +33,8 @@ func InitCommands(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel|-clear>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.setchannel,
+		CustomPermissions: bot.ModRole,
+		Command:           b.setchannel,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -43,16 +42,16 @@ func InitCommands(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Export a user's (or the entire server's) mod log.",
 		Usage:   "[user]",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.export,
+		CustomPermissions: bot.ModRole,
+		Command:           b.export,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
 		Name:    "import",
 		Summary: "Import a mod log. *This will overwrite any existing entries.*",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.cmdImport,
+		CustomPermissions: bot.ModRole,
+		Command:           b.cmdImport,
 	})
 
 	return s, append(list, cfg)

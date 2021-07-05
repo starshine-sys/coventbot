@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/dustin/go-humanize"
 	"github.com/starshine-sys/bcr"
 )
@@ -16,7 +15,9 @@ func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 	}
 
 	if sc.LeaderboardModOnly || !sc.LevelsEnabled {
-		if !bot.GlobalPerms(ctx).Has(discord.PermissionManageMessages) {
+		perm, _ := bot.HelperRole.Check(ctx)
+
+		if !perm {
 			_, err = ctx.Sendf("You don't have permission to use this command, you need the **Manage Messages** permission to use it.")
 			return
 		}

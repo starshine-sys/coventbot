@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/julienschmidt/httprouter"
 	"github.com/kataras/hcaptcha"
 	"github.com/starshine-sys/bcr"
@@ -49,8 +48,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"verify", "verification"},
 		Summary: "View or change this server's captcha verification settings.",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.settings,
+		CustomPermissions: bot.ModRole,
+		Command:           b.settings,
 	})
 
 	conf.AddSubcommand(&bcr.Command{
@@ -59,8 +58,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<new channel>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.setChannel,
+		CustomPermissions: bot.ModRole,
+		Command:           b.setChannel,
 	})
 
 	conf.AddSubcommand(&bcr.Command{
@@ -69,8 +68,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<new message>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.setMessage,
+		CustomPermissions: bot.ModRole,
+		Command:           b.setMessage,
 	})
 
 	conf.AddSubcommand(&bcr.Command{
@@ -79,8 +78,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<new role>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.setRole,
+		CustomPermissions: bot.ModRole,
+		Command:           b.setRole,
 	})
 
 	go func() {

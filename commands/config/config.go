@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -40,8 +39,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<prefix>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.prefixAdd,
+		CustomPermissions: bot.ModRole,
+		Command:           b.prefixAdd,
 	})
 
 	prefix.AddSubcommand(&bcr.Command{
@@ -50,8 +49,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<prefix>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.prefixRemove,
+		CustomPermissions: bot.ModRole,
+		Command:           b.prefixRemove,
 	})
 
 	list = append(list, prefix)
@@ -62,9 +61,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary:     "Show the users currently on the watchlist.",
 		Description: "The server watchlist notifies you when a member on it joins your server. Intended to be used for potential problem members who aren't worth banning.",
 
-		Permissions: discord.PermissionKickMembers,
-
-		Command: b.watchlist,
+		CustomPermissions: bot.ModRole,
+		Command:           b.watchlist,
 	})
 
 	wl.AddSubcommand(&bcr.Command{
@@ -75,9 +73,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:       "<new channel>",
 		Args:        bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-
-		Command: b.watchlistChannel,
+		CustomPermissions: bot.ModRole,
+		Command:           b.watchlistChannel,
 	})
 
 	wl.AddSubcommand(b.Router.AliasMust("show", nil, []string{"watchlist"}, nil))
@@ -87,9 +84,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Add a user to the watch list.",
 		Usage:   "<user>",
 
-		Args:        bcr.MinArgs(1),
-		Permissions: discord.PermissionKickMembers,
-		Command:     b.watchlistAdd,
+		Args:              bcr.MinArgs(1),
+		CustomPermissions: bot.ModRole,
+		Command:           b.watchlistAdd,
 	})
 
 	wl.AddSubcommand(&bcr.Command{
@@ -97,9 +94,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Remove a user from the watch list.",
 		Usage:   "<user>",
 
-		Args:        bcr.MinArgs(1),
-		Permissions: discord.PermissionKickMembers,
-		Command:     b.watchlistRemove,
+		Args:              bcr.MinArgs(1),
+		CustomPermissions: bot.ModRole,
+		Command:           b.watchlistRemove,
 	})
 
 	wl.AddSubcommand(&bcr.Command{
@@ -107,17 +104,18 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Set the reason for a user on the watchlist.",
 		Usage:   "[user ID] [reason]",
 
-		Args:        bcr.MinArgs(1),
-		Permissions: discord.PermissionKickMembers,
-		Command:     b.watchlistReason,
+		Args:              bcr.MinArgs(1),
+		CustomPermissions: bot.ModRole,
+		Command:           b.watchlistReason,
 	})
 
 	sb := b.Router.AddCommand(&bcr.Command{
 		Name:    "starboard",
 		Summary: "View or change this server's starboard settings.",
 
-		GuildOnly: true,
-		Command:   b.starboardSettings,
+		GuildOnly:         true,
+		CustomPermissions: bot.ModRole,
+		Command:           b.starboardSettings,
 	})
 
 	sb.AddSubcommand(&bcr.Command{
@@ -126,8 +124,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<new channel|-clear>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.starboardSetChannel,
+		CustomPermissions: bot.ModRole,
+		Command:           b.starboardSetChannel,
 	})
 
 	sb.AddSubcommand(&bcr.Command{
@@ -136,8 +134,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<new emoji>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.starboardSetEmoji,
+		CustomPermissions: bot.ModRole,
+		Command:           b.starboardSetEmoji,
 	})
 
 	sb.AddSubcommand(&bcr.Command{
@@ -146,8 +144,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<new limit>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.starboardSetLimit,
+		CustomPermissions: bot.ModRole,
+		Command:           b.starboardSetLimit,
 	})
 
 	bl := sb.AddSubcommand(&bcr.Command{
@@ -155,8 +153,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"block", "bl"},
 		Summary: "View this server's starboard blacklist.",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklist,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklist,
 	})
 
 	bl.AddSubcommand(&bcr.Command{
@@ -165,8 +163,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistAdd,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistAdd,
 	})
 
 	bl.AddSubcommand(&bcr.Command{
@@ -175,8 +173,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistRemove,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistRemove,
 	})
 
 	triggers := b.Router.AddCommand(&bcr.Command{
@@ -184,7 +182,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Add or remove triggers (reactions that trigger commands)",
 
 		GuildOnly: true,
-		Command:   func(ctx *bcr.Context) (err error) { return },
+		Command:   func(ctx *bcr.Context) (err error) { return ctx.Help([]string{"triggers"}) },
 	})
 
 	triggers.AddSubcommand(&bcr.Command{
@@ -193,8 +191,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<message> <emoji> <command>",
 		Args:    bcr.MinArgs(3),
 
-		GuildOnly: true,
-		Command:   b.addTrigger,
+		GuildOnly:         true,
+		CustomPermissions: bot.ModRole,
+		Command:           b.addTrigger,
 	})
 
 	triggers.AddSubcommand(&bcr.Command{
@@ -203,8 +202,96 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<message> <emoji>",
 		Args:    bcr.MinArgs(2),
 
-		GuildOnly: true,
-		Command:   b.delTrigger,
+		GuildOnly:         true,
+		CustomPermissions: bot.ModRole,
+		Command:           b.delTrigger,
+	})
+
+	helper := b.Router.AddCommand(&bcr.Command{
+		Name:    "helper-roles",
+		Aliases: []string{"helperroles"},
+		Summary: "View this server's helper roles.",
+
+		CustomPermissions: bot.ModRole,
+		Command:           b.helperRoles,
+	})
+
+	helper.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add a helper role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.ModRole,
+		Command:           b.helperAddRole,
+	})
+
+	helper.AddSubcommand(&bcr.Command{
+		Name:    "remove",
+		Summary: "Remove a helper role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.ModRole,
+		Command:           b.helperRemoveRole,
+	})
+
+	mod := b.Router.AddCommand(&bcr.Command{
+		Name:    "mod-roles",
+		Aliases: []string{"modroles"},
+		Summary: "View this server's mod roles.",
+
+		CustomPermissions: bot.AdminRole,
+		Command:           b.modRoles,
+	})
+
+	mod.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add a mod role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.AdminRole,
+		Command:           b.modAddRole,
+	})
+
+	mod.AddSubcommand(&bcr.Command{
+		Name:    "remove",
+		Summary: "Remove a mod role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.AdminRole,
+		Command:           b.modRemoveRole,
+	})
+
+	admin := b.Router.AddCommand(&bcr.Command{
+		Name:    "admin-roles",
+		Aliases: []string{"adminroles"},
+		Summary: "View this server's admin roles.",
+
+		CustomPermissions: bot.AdminRole,
+		Command:           b.adminRoles,
+	})
+
+	admin.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add a admin role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.AdminRole,
+		Command:           b.adminAddRole,
+	})
+
+	admin.AddSubcommand(&bcr.Command{
+		Name:    "remove",
+		Summary: "Remove a admin role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.AdminRole,
+		Command:           b.adminRemoveRole,
 	})
 
 	// add trigger handler

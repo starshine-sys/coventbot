@@ -2,7 +2,6 @@
 package names
 
 import (
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -26,8 +25,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Show the nickname history for a user.",
 		Usage:   "[user]",
 
-		Permissions: discord.PermissionManageRoles,
-		Command:     b.nicknames,
+		CustomPermissions: bot.ModRole,
+		Command:           b.nicknames,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
@@ -35,8 +34,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Show the username history for a user.",
 		Usage:   "[user]",
 
-		Permissions: discord.PermissionManageRoles,
-		Command:     b.usernames,
+		CustomPermissions: bot.ModRole,
+		Command:           b.usernames,
 	}))
 
 	return

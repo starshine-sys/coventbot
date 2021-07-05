@@ -40,8 +40,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> <new XP>",
 		Args:    bcr.MinArgs(2),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.setXP,
+		CustomPermissions: bot.ModRole,
+		Command:           b.setXP,
 	})
 
 	lvl.AddSubcommand(&bcr.Command{
@@ -51,8 +51,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> <new level>",
 		Args:    bcr.MinArgs(2),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.setlvl,
+		CustomPermissions: bot.ModRole,
+		Command:           b.setlvl,
 	})
 
 	lvl.AddSubcommand(&bcr.Command{
@@ -81,8 +81,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Set this server's default level background.",
 		Usage:   "[clear]",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.serverBackground,
+		CustomPermissions: bot.ModRole,
+		Command:           b.serverBackground,
 	})
 
 	cfg := lvl.AddSubcommand(&bcr.Command{
@@ -91,8 +91,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Configure levels.",
 		Usage:   "[key <new value>]",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.config,
+		CustomPermissions: bot.ModRole,
+		Command:           b.config,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -122,8 +122,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"bl"},
 		Summary: "Configure this server's blacklists.",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     func(ctx *bcr.Context) error { return nil },
+		CustomPermissions: bot.ModRole,
+		Command:           func(ctx *bcr.Context) error { return nil },
 	})
 
 	channels := bl.AddSubcommand(&bcr.Command{
@@ -131,8 +131,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"channel", "ch"},
 		Summary: "Show the channel blacklist.",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistChannels,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistChannels,
 	})
 
 	channels.AddSubcommand(&bcr.Command{
@@ -141,8 +141,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistChannelAdd,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistChannelAdd,
 	})
 
 	channels.AddSubcommand(&bcr.Command{
@@ -151,8 +151,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistChannelRemove,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistChannelRemove,
 	})
 
 	roles := bl.AddSubcommand(&bcr.Command{
@@ -160,8 +160,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"role"},
 		Summary: "Show the role blacklist.",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistRoles,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistRoles,
 	})
 
 	roles.AddSubcommand(&bcr.Command{
@@ -170,8 +170,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<role>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistRoleAdd,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistRoleAdd,
 	})
 
 	roles.AddSubcommand(&bcr.Command{
@@ -180,8 +180,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<role>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistRoleRemove,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistRoleRemove,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -190,8 +190,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Block the given category(s) from levels. Leave clear to unblock all categories.",
 		Usage:   "[categories...]",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistCategories,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistCategories,
 	})
 
 	categories := bl.AddSubcommand(&bcr.Command{
@@ -199,8 +199,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"category", "cat"},
 		Summary: "Show the category blacklist.",
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistCategories,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistCategories,
 	})
 
 	categories.AddSubcommand(&bcr.Command{
@@ -209,8 +209,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<category>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistCategoryAdd,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistCategoryAdd,
 	})
 
 	categories.AddSubcommand(&bcr.Command{
@@ -219,8 +219,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<category>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageGuild,
-		Command:     b.blacklistCategoryRemove,
+		CustomPermissions: bot.ModRole,
+		Command:           b.blacklistCategoryRemove,
 	})
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{
@@ -243,8 +243,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"nolevel"},
 		Summary: "Manage the user blacklist for levels.",
 
-		Permissions: discord.PermissionManageMessages,
-		Command:     b.nolevelsList,
+		CustomPermissions: bot.ModRole,
+		Command:           b.nolevelsList,
 	})
 
 	nolevels.AddSubcommand(&bcr.Command{
@@ -253,8 +253,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> [time]",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageMessages,
-		Command:     b.nolevelsAdd,
+		CustomPermissions: bot.ModRole,
+		Command:           b.nolevelsAdd,
 	})
 
 	nolevels.AddSubcommand(&bcr.Command{
@@ -263,8 +263,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user>",
 		Args:    bcr.MinArgs(1),
 
-		Permissions: discord.PermissionManageMessages,
-		Command:     b.nolevelsRemove,
+		CustomPermissions: bot.ModRole,
+		Command:           b.nolevelsRemove,
 	})
 
 	state, _ := bot.Router.StateFromGuildID(0)
