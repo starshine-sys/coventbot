@@ -17,6 +17,32 @@ func (bot *Bot) reminders(ctx *bcr.Context) (err error) {
 		bot.Report(ctx, err)
 	}
 
+	title := "reminders"
+
+	limitChannel, _ := ctx.Flags.GetBool("channel")
+	if limitChannel {
+		title = "Reminders in #" + ctx.Channel.Name
+		prev := rms
+		rms = nil
+		for _, r := range prev {
+			if r.ChannelID == ctx.Channel.ID {
+				rms = append(rms, r)
+			}
+		}
+	}
+
+	limitServer, _ := ctx.Flags.GetBool("server")
+	if limitServer {
+		title = "Reminders in " + ctx.Guild.Name
+		prev := rms
+		rms = nil
+		for _, r := range prev {
+			if r.ServerID == ctx.Guild.ID {
+				rms = append(rms, r)
+			}
+		}
+	}
+
 	if len(rms) == 0 {
 		_, err = ctx.Sendf("You have no reminders. Set some with `%vremindme`!", ctx.Prefix)
 		return
@@ -41,6 +67,6 @@ func (bot *Bot) reminders(ctx *bcr.Context) (err error) {
 `, r.ID, text, r.Expires.Format("2006-01-02 | 15:04"), linkServer, r.ChannelID, r.MessageID))
 	}
 
-	_, err = bot.PagedEmbed(ctx, bcr.StringPaginator(fmt.Sprintf("Reminders (%v)", len(rms)), bcr.ColourBlurple, slice, 5), 10*time.Minute)
+	_, err = bot.PagedEmbed(ctx, bcr.StringPaginator(fmt.Sprintf("%v (%v)", title, len(rms)), bcr.ColourBlurple, slice, 5), 10*time.Minute)
 	return
 }

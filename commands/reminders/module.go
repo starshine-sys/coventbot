@@ -13,6 +13,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/georgysavva/scany/pgxscan"
+	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -57,6 +58,13 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{
 		Name: "reminders",
+
+		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.BoolP("channel", "c", false, "Only show reminders in this channel.")
+			fs.BoolP("server", "s", false, "Only show reminders in this server.")
+
+			return fs
+		},
 
 		Summary: "Show your reminders.",
 
