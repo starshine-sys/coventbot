@@ -36,6 +36,48 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 
 	embeds := []discord.Embed{}
 
+	if m.Reference != nil {
+		s, _ := bot.Router.StateFromGuildID(m.GuildID)
+		ref, err := s.Message(m.Reference.ChannelID, m.Reference.MessageID)
+		if err == nil {
+			content := fmt.Sprintf("**[Reply to:](https://discord.com/channels/%v/", m.GuildID)
+
+			dbm, err := bot.message(m.Reference.MessageID)
+			if err == nil {
+				content += fmt.Sprintf("%v/%v)**", dbm.ChannelID, dbm.MessageID)
+			} else {
+				content += fmt.Sprintf("%v/%v)**", m.Reference.ChannelID, m.Reference.MessageID)
+			}
+
+			msgContent := ref.Content
+			if len(msgContent) > 100 {
+				msgContent = msgContent[:100]
+
+				if strings.Count(msgContent, "||")%2 == 1 && strings.Count(ref.Content, "||")%2 == 0 {
+					msgContent += "||"
+				}
+
+				msgContent += "..."
+			}
+
+			if ref.Content == "" {
+				msgContent = "*(attachment)*"
+			}
+
+			embeds = append(embeds, discord.Embed{
+				Author: &discord.EmbedAuthor{
+					Icon: ref.Author.AvatarURLWithType(discord.PNGImage),
+					Name: ref.Author.Username + " \u2004\u21a9\ufe0f",
+				},
+				Description: fmt.Sprintf("%v %v", content, msgContent),
+			})
+		}
+	}
+
+	if len(embeds) > 10 {
+		embeds = embeds[:9]
+	}
+
 	for i, a := range m.Attachments {
 		if hasAnySuffix(a.Filename, ".png", ".jpeg", ".jpg", ".gif", ".webp") {
 			embeds = append(embeds, discord.Embed{
@@ -97,7 +139,11 @@ func (bot *Bot) pkMessage(m *gateway.MessageCreateEvent) {
 
 	client := webhook.New(mirror.WebhookID, mirror.Token)
 
-	embeds := []discord.Embed{}
+	embeds := m.Embeds
+
+	if len(embeds) > 10 {
+		embeds = embeds[:9]
+	}
 
 	for i, a := range m.Attachments {
 		if hasAnySuffix(a.Filename, ".png", ".jpeg", ".jpg", ".gif", ".webp") {
