@@ -40,13 +40,24 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 		},
 	}
 
+	description, _ := ctx.Flags.GetString("description")
+	if description != "" {
+		e.Description = description + "\n\n"
+	}
+
+	showAsMention, _ := ctx.Flags.GetBool("mention")
+
 	for _, r := range roles {
 		emoji := r.Emote
 		if r.Custom {
 			emoji = "<:emoji:" + r.Emote + ">"
 		}
 
-		e.Description += fmt.Sprintf("%v %v\n", emoji, r.Role.Name)
+		if showAsMention {
+			e.Description += fmt.Sprintf("%v %v\n", emoji, r.Role.Mention())
+		} else {
+			e.Description += fmt.Sprintf("%v %v\n", emoji, r.Role.Name)
+		}
 	}
 
 	msg, err := ctx.State.SendEmbeds(ch.ID, e)

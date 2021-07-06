@@ -47,6 +47,13 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel> <name> <emote/role pairs...>",
 		Args:    bcr.MinArgs(4),
 
+		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.BoolP("mention", "m", false, "Show roles as @mentions")
+			fs.StringP("description", "d", "", "A description to show before the role list")
+
+			return fs
+		},
+
 		CustomPermissions: bot.ModRole,
 		Command:           b.new,
 	})
