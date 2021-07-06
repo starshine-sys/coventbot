@@ -70,7 +70,7 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 			rm = "**" + rm + "**"
 		}
 
-		content = fmt.Sprintf("I'll remind you about %v in %v. (#%v)", rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), id)
+		content = fmt.Sprintf("I'll remind you about %v %v. (#%v)", rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), id)
 	} else {
 		e = []discord.Embed{{
 			Color:       bcr.ColourGreen,
