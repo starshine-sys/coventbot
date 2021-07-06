@@ -3,6 +3,7 @@ package reminders
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -50,17 +51,40 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	dur := t.Sub(time.Now().UTC()) + time.Minute
-
-	e := discord.Embed{
-		Color:       bcr.ColourGreen,
-		Description: fmt.Sprintf("Reminder #%v set for %v from now.\n(%v UTC)", id, bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, dur), t.Format("2006-01-02 15:04:05")),
+	var embedless bool
+	err = bot.DB.Pool.QueryRow(context.Background(), "select embedless_reminders from user_config where user_id = $1", ctx.Author.ID).Scan(&embedless)
+	if err != nil {
+		return bot.Report(ctx, err)
 	}
 
-	if t.After(time.Now().Add(100 * 365 * 24 * time.Hour)) {
-		e.Description += "\n\nthe time isn't correct, we know, no need to report it, that's what you get for setting it to something so big that Go doesn't support it ([see here](https://golang.org/pkg/time/#Duration))"
+	content := ""
+	e := []discord.Embed{}
+
+	if embedless {
+		if len(rm) > 128 {
+			rm = rm[:128] + "..."
+		}
+		if rm == "N/A" {
+			rm = "something"
+		} else {
+			rm = "**" + rm + "**"
+		}
+
+		content = fmt.Sprintf("I'll remind you about %v in %v. (#%v)", rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), id)
+	} else {
+		e = []discord.Embed{{
+			Color:       bcr.ColourGreen,
+			Description: fmt.Sprintf("Reminder #%v set for %v from now.\n(%v UTC)", id, bcr.HumanizeDuration(bcr.DurationPrecisionSeconds, t.Sub(time.Now())+time.Second), t.Format("2006-01-02 15:04:05")),
+		}}
+
+		// only show this "ad" every few reminders
+		if rand.Intn(2) == 1 {
+			e[0].Footer = &discord.EmbedFooter{
+				Text: "Did you know? You can use `" + ctx.Prefix + "usercfg` to make reminders more compact!",
+			}
+		}
 	}
 
-	_, err = ctx.Send("", e)
+	_, err = ctx.Send(content, e...)
 	return err
 }

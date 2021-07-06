@@ -23,7 +23,8 @@ type UserConfig struct {
 func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 	if len(ctx.Args) == 0 {
 		_, err = ctx.Send("", discord.Embed{
-			Title: "User configuration",
+			Title:       "User configuration",
+			Description: fmt.Sprintf("To enable any of these, use `%vusercfg` with the name and `true`; for example: `%vusercfg embedless_reminders true`. To disable them, run the same command but with `false` instead of `true`.", ctx.Prefix, ctx.Prefix),
 			Fields: []discord.EmbedField{
 				{
 					Name:  "`disable_levelup_messages`",
