@@ -84,7 +84,7 @@ func (bot *Bot) parseRoles(ctx *bcr.Context, args []string) (roles []role, err e
 
 		if !idRe.MatchString(args[i]) {
 			if emojiMatch.MatchString(args[i]) {
-				r.Emote = emojiMatch.FindStringSubmatch(ctx.Args[0])[3]
+				r.Emote = emojiMatch.FindStringSubmatch(args[i])[3]
 				r.Custom = true
 			}
 		} else {
