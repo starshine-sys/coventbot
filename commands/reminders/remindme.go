@@ -52,10 +52,7 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 	}
 
 	var embedless bool
-	err = bot.DB.Pool.QueryRow(context.Background(), "select embedless_reminders from user_config where user_id = $1", ctx.Author.ID).Scan(&embedless)
-	if err != nil {
-		return bot.Report(ctx, err)
-	}
+	bot.DB.Pool.QueryRow(context.Background(), "select embedless_reminders from user_config where user_id = $1", ctx.Author.ID).Scan(&embedless)
 
 	content := ""
 	e := []discord.Embed{}
