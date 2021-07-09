@@ -104,6 +104,6 @@ func (bot *Bot) simple(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.Sendf("Done! Added %v react roles.", len(rls))
+	_, err = ctx.Sendf("Done! Added %v react roles.\nNote that my highest role must be above the roles you added to this message for the reactions to work.", len(rls))
 	return
 }

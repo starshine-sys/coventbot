@@ -94,7 +94,7 @@ func ParseTime(args []string) (t time.Time, i int, err error) {
 	}
 
 	if t.Hour() == 0 && t.Minute() == 0 && t.Second() == 0 {
-		now := time.Now()
+		now := time.Now().UTC()
 
 		t = time.Date(t.Year(), t.Month(), t.Day(), now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), time.UTC)
 	}
@@ -119,7 +119,7 @@ func parseTime(args []string) (t time.Time, i int, err error) {
 		}
 
 		for _, f := range formats {
-			t, err = time.Parse(f, input)
+			t, err = time.ParseInLocation(f, input, time.UTC)
 			if err == nil {
 				return t, i - 1, nil
 			}

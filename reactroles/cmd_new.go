@@ -92,6 +92,6 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.Sendf("Success! Added %v reaction roles to the given message.", len(roles))
+	_, err = ctx.Sendf("Success! Added %v reaction roles to the given message.\nNote that my highest role must be above the roles you added to this message for the reactions to work.", len(roles))
 	return
 }
