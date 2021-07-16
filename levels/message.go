@@ -38,7 +38,7 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		return
 	}
 
-	if uc.NextTime.After(time.Now().UTC()) {
+	if uc.NextTime.Add(sc.BetweenXP).After(time.Now().UTC()) {
 		return
 	}
 
@@ -66,7 +66,7 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	}
 
 	// increment the user's xp!
-	newXP, err := bot.incrementXP(m.GuildID, m.Author.ID, sc.BetweenXP)
+	newXP, err := bot.incrementXP(m.GuildID, m.Author.ID)
 	if err != nil {
 		bot.Sugar.Errorf("Error updating XP for user: %v", err)
 		return

@@ -2,6 +2,7 @@ package levels
 
 import (
 	"context"
+	"math/rand"
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
@@ -58,10 +59,10 @@ func (bot *Bot) getUser(guildID discord.GuildID, userID discord.UserID) (l Level
 	return l, err
 }
 
-func (bot *Bot) incrementXP(guildID discord.GuildID, userID discord.UserID, interval time.Duration) (newXP int64, err error) {
-	t := time.Now().UTC().Add(interval)
+func (bot *Bot) incrementXP(guildID discord.GuildID, userID discord.UserID) (newXP int64, err error) {
+	xp := 2 + rand.Intn(4)
 
-	err = bot.DB.Pool.QueryRow(context.Background(), "update levels set xp = xp + 3, next_time = $3 where server_id = $1 and user_id = $2 returning xp", guildID, userID, t).Scan(&newXP)
+	err = bot.DB.Pool.QueryRow(context.Background(), "update levels set xp = xp + $4, next_time = $3 where server_id = $1 and user_id = $2 returning xp", guildID, userID, time.Now().UTC(), xp).Scan(&newXP)
 	return
 }
 
