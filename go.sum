@@ -71,6 +71,8 @@ github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZm
 github.com/dgryski/go-farm v0.0.0-20190423205320-6a90982ecee2/go.mod h1:SqUrOPUnsFjfmXRMNPybcSiG0BgUW2AuFH8PAnS2iTw=
 github.com/diamondburned/arikawa/v3 v3.0.0-20210630071930-af35c03b8e77 h1:J/FO9EGtvOMKRIQZUAPJsepv/3NeDS6MdeAYp+CTMpY=
 github.com/diamondburned/arikawa/v3 v3.0.0-20210630071930-af35c03b8e77/go.mod h1:sNqM/iGXuH87wEH1rpQBEY1PR0AAkRKJuUhJGOdo7To=
+github.com/diamondburned/arikawa/v3 v3.0.0-20210711175618-29a3094a7523 h1:9iZEmRQ05Au8J1UacKC8TFYK/HdvuXsw3iqA64W5Y1c=
+github.com/diamondburned/arikawa/v3 v3.0.0-20210711175618-29a3094a7523/go.mod h1:sNqM/iGXuH87wEH1rpQBEY1PR0AAkRKJuUhJGOdo7To=
 github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1ei82L+c=
 github.com/disintegration/imaging v1.6.2/go.mod h1:44/5580QXChDfwIclfc/PCwrr44amcmDAg8hxG0Ewe4=
 github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
@@ -437,6 +439,8 @@ github.com/starshine-sys/bcr v0.19.0 h1:yIDzkIzuqgGJj7q6qVrt2iQ8XeyTH7iAKZkXyYH5
 github.com/starshine-sys/bcr v0.19.0/go.mod h1:UuFCKV8iLp9eFz1wEZCC4+xav+vsf2u3u8kK7fZmlFE=
 github.com/starshine-sys/bcr v0.19.1-0.20210703213732-c3b66a24c2ca h1:R+8J1/PhlQ+8Bv3nFI2fjYI9u5+XoQKTC64aTfIzgOo=
 github.com/starshine-sys/bcr v0.19.1-0.20210703213732-c3b66a24c2ca/go.mod h1:UuFCKV8iLp9eFz1wEZCC4+xav+vsf2u3u8kK7fZmlFE=
+github.com/starshine-sys/bcr v0.19.1 h1:cDD9NKdRdmH3lfYXTrvdnpuP50lMq+D6814t+zJAPN4=
+github.com/starshine-sys/bcr v0.19.1/go.mod h1:KjCu6F0tOKVLvPf0DagcxCkRTduXeTJ5YnwyhznA1c4=
 github.com/starshine-sys/pkgo v1.0.0 h1:NQ+g6LgY+tkQdxXGZ2oTH5Hp2n5/57Vo+RFcHbwkeHs=
 github.com/starshine-sys/pkgo v1.0.0/go.mod h1:w1ObBZa7/lOvCqOx9690uPM5uuaovH8nCZXpt84cAu4=
 github.com/starshine-sys/snowflake/v2 v2.0.0/go.mod h1:6E5AYqTPb9DL7bp24tcbTLx0/thTcAmyLgscZIP7tzw=
