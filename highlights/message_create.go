@@ -159,11 +159,12 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 					err = bot.makeAndSendHighlight(s, g, member.User.ID, m.ChannelID, hl.Highlights[i], messages)
 					if err != nil {
 						bot.Sugar.Errorf("Error sending message to %v (%v): %v", member.User.Tag(), member.User.ID, err)
-						continue
 					}
+					goto hlDone
 				}
 			}
 		}
+	hlDone:
 	}
 }
 
