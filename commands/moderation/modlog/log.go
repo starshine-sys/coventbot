@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 )
@@ -64,7 +65,7 @@ func (bot *ModLog) InsertEntry(guildID discord.GuildID, user, mod discord.UserID
 }
 
 // Channelban logs a channel ban
-func (bot *ModLog) Channelban(ctx *bcr.Context, guildID discord.GuildID, channel discord.ChannelID, userID, modID discord.UserID, reason string) (err error) {
+func (bot *ModLog) Channelban(state *state.State, guildID discord.GuildID, channel discord.ChannelID, userID, modID discord.UserID, reason string) (err error) {
 	if reason == "" {
 		reason = "N/A"
 	}
@@ -83,11 +84,11 @@ func (bot *ModLog) Channelban(ctx *bcr.Context, guildID discord.GuildID, channel
 		reason = reason[:1000] + "..."
 	}
 
-	user, err := ctx.State.User(userID)
+	user, err := state.User(userID)
 	if err != nil {
 		return err
 	}
-	mod, err := ctx.State.User(modID)
+	mod, err := state.User(modID)
 	if err != nil {
 		return err
 	}
@@ -97,12 +98,12 @@ func (bot *ModLog) Channelban(ctx *bcr.Context, guildID discord.GuildID, channel
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, channel.Mention(), entry.ID, user.Username, user.Discriminator, entry.UserID, reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = ctx.State.SendMessage(ch, text)
+	_, err = state.SendMessage(ch, text)
 	return
 }
 
 // Unchannelban logs a channel unban
-func (bot *ModLog) Unchannelban(ctx *bcr.Context, guildID discord.GuildID, channel discord.ChannelID, userID, modID discord.UserID, reason string) (err error) {
+func (bot *ModLog) Unchannelban(state *state.State, guildID discord.GuildID, channel discord.ChannelID, userID, modID discord.UserID, reason string) (err error) {
 	if reason == "" {
 		reason = "N/A"
 	}
@@ -121,11 +122,11 @@ func (bot *ModLog) Unchannelban(ctx *bcr.Context, guildID discord.GuildID, chann
 		reason = reason[:1000] + "..."
 	}
 
-	user, err := ctx.State.User(userID)
+	user, err := state.User(userID)
 	if err != nil {
 		return err
 	}
-	mod, err := ctx.State.User(modID)
+	mod, err := state.User(modID)
 	if err != nil {
 		return err
 	}
@@ -135,12 +136,12 @@ func (bot *ModLog) Unchannelban(ctx *bcr.Context, guildID discord.GuildID, chann
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, channel.Mention(), entry.ID, user.Username, user.Discriminator, entry.UserID, reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = ctx.State.SendMessage(ch, text)
+	_, err = state.SendMessage(ch, text)
 	return
 }
 
 // Warn logs a warn
-func (bot *ModLog) Warn(ctx *bcr.Context, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
+func (bot *ModLog) Warn(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
 	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "warn", reason)
 	if err != nil {
 		return err
@@ -155,11 +156,11 @@ func (bot *ModLog) Warn(ctx *bcr.Context, guildID discord.GuildID, userID, modID
 		entry.Reason = entry.Reason[:1000] + "..."
 	}
 
-	user, err := ctx.State.User(userID)
+	user, err := state.User(userID)
 	if err != nil {
 		return err
 	}
-	mod, err := ctx.State.User(modID)
+	mod, err := state.User(modID)
 	if err != nil {
 		return err
 	}
@@ -169,12 +170,12 @@ func (bot *ModLog) Warn(ctx *bcr.Context, guildID discord.GuildID, userID, modID
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = ctx.State.SendMessage(ch, text)
+	_, err = state.SendMessage(ch, text)
 	return
 }
 
 // Ban logs a ban
-func (bot *ModLog) Ban(ctx *bcr.Context, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
+func (bot *ModLog) Ban(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
 	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "ban", reason)
 	if err != nil {
 		return err
@@ -189,11 +190,11 @@ func (bot *ModLog) Ban(ctx *bcr.Context, guildID discord.GuildID, userID, modID 
 		entry.Reason = entry.Reason[:1000] + "..."
 	}
 
-	user, err := ctx.State.User(userID)
+	user, err := state.User(userID)
 	if err != nil {
 		return err
 	}
-	mod, err := ctx.State.User(modID)
+	mod, err := state.User(modID)
 	if err != nil {
 		return err
 	}
@@ -203,12 +204,12 @@ func (bot *ModLog) Ban(ctx *bcr.Context, guildID discord.GuildID, userID, modID 
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = ctx.State.SendMessage(ch, text)
+	_, err = state.SendMessage(ch, text)
 	return
 }
 
 // Unban logs a unban
-func (bot *ModLog) Unban(ctx *bcr.Context, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
+func (bot *ModLog) Unban(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
 	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "unban", reason)
 	if err != nil {
 		return err
@@ -223,11 +224,11 @@ func (bot *ModLog) Unban(ctx *bcr.Context, guildID discord.GuildID, userID, modI
 		entry.Reason = entry.Reason[:1000] + "..."
 	}
 
-	user, err := ctx.State.User(userID)
+	user, err := state.User(userID)
 	if err != nil {
 		return err
 	}
-	mod, err := ctx.State.User(modID)
+	mod, err := state.User(modID)
 	if err != nil {
 		return err
 	}
@@ -237,6 +238,154 @@ func (bot *ModLog) Unban(ctx *bcr.Context, guildID discord.GuildID, userID, modI
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = ctx.State.SendMessage(ch, text)
+	_, err = state.SendMessage(ch, text)
+	return
+}
+
+// Mute logs a mute
+func (bot *ModLog) Mute(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, duration time.Duration, reason string) (err error) {
+	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "mute", reason)
+	if err != nil {
+		return err
+	}
+
+	ch := bot.logChannelFor(guildID)
+	if !ch.IsValid() {
+		return
+	}
+
+	if len(entry.Reason) > 1000 {
+		entry.Reason = entry.Reason[:1000] + "..."
+	}
+
+	user, err := state.User(userID)
+	if err != nil {
+		return err
+	}
+	mod, err := state.User(modID)
+	if err != nil {
+		return err
+	}
+
+	time := "indefinite"
+	if duration == 0 {
+		time = bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, duration)
+	}
+
+	text := fmt.Sprintf(`**Mute | Case %v**
+**User:** %v#%v (%v)
+**Reason:** %v
+**Duration:** %v
+**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, time, mod.Username, mod.Discriminator, entry.ModID)
+
+	_, err = state.SendMessage(ch, text)
+	return
+}
+
+// Pause logs a pause
+func (bot *ModLog) Pause(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, duration time.Duration, reason string) (err error) {
+	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "pause", reason)
+	if err != nil {
+		return err
+	}
+
+	ch := bot.logChannelFor(guildID)
+	if !ch.IsValid() {
+		return
+	}
+
+	if len(entry.Reason) > 1000 {
+		entry.Reason = entry.Reason[:1000] + "..."
+	}
+
+	user, err := state.User(userID)
+	if err != nil {
+		return err
+	}
+	mod, err := state.User(modID)
+	if err != nil {
+		return err
+	}
+
+	time := "indefinite"
+	if duration == 0 {
+		time = bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, duration)
+	}
+
+	text := fmt.Sprintf(`**Pause | Case %v**
+**User:** %v#%v (%v)
+**Reason:** %v
+**Duration:** %v
+**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, time, mod.Username, mod.Discriminator, entry.ModID)
+
+	_, err = state.SendMessage(ch, text)
+	return
+}
+
+// Unmute logs a unmute
+func (bot *ModLog) Unmute(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
+	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "unmute", reason)
+	if err != nil {
+		return err
+	}
+
+	ch := bot.logChannelFor(guildID)
+	if !ch.IsValid() {
+		return
+	}
+
+	if len(entry.Reason) > 1000 {
+		entry.Reason = entry.Reason[:1000] + "..."
+	}
+
+	user, err := state.User(userID)
+	if err != nil {
+		return err
+	}
+	mod, err := state.User(modID)
+	if err != nil {
+		return err
+	}
+
+	text := fmt.Sprintf(`**Unmute | Case %v**
+**User:** %v#%v (%v)
+**Reason:** %v
+**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
+
+	_, err = state.SendMessage(ch, text)
+	return
+}
+
+// Unpause logs a unpause
+func (bot *ModLog) Unpause(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
+	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "unpause", reason)
+	if err != nil {
+		return err
+	}
+
+	ch := bot.logChannelFor(guildID)
+	if !ch.IsValid() {
+		return
+	}
+
+	if len(entry.Reason) > 1000 {
+		entry.Reason = entry.Reason[:1000] + "..."
+	}
+
+	user, err := state.User(userID)
+	if err != nil {
+		return err
+	}
+	mod, err := state.User(modID)
+	if err != nil {
+		return err
+	}
+
+	text := fmt.Sprintf(`**Unpause | Case %v**
+**User:** %v#%v (%v)
+**Reason:** %v
+**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
+
+	_, err = state.SendMessage(ch, text)
 	return
 }

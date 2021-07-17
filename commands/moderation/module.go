@@ -1,7 +1,10 @@
 package moderation
 
 import (
+	"sync"
+
 	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -281,10 +284,76 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:     b.unban,
 	}))
 
+	list = append(list, bot.Router.AddCommand(&bcr.Command{
+		Name:    "muterole",
+		Summary: "Show or set this server's mute role.",
+		Usage:   "[role]",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: b.ModRole,
+		Command:           b.muteRole,
+	}))
+
+	list = append(list, bot.Router.AddCommand(&bcr.Command{
+		Name:    "pauserole",
+		Summary: "Show or set this server's pause role.",
+		Usage:   "[role]",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: b.ModRole,
+		Command:           b.pauseRole,
+	}))
+
+	muteme := bot.Router.AddCommand(&bcr.Command{
+		Name:    "muteme",
+		Summary: "Mute yourself for the specified duration.",
+		Usage:   "<duration>",
+		Args:    bcr.MinArgs(1),
+
+		GuildOnly: true,
+		Command:   b.muteme,
+	})
+
+	muteme.AddSubcommand(&bcr.Command{
+		Name:    "message",
+		Summary: "Set the message used for the `muteme` command.",
+		Description: `Available templates:
+- {mention}: replaced with the user's @mention
+- {tag}: replaced with the user's tag (username#0000)
+- {duration}: replaced with the duration
+- {action}: replaced with the action type`,
+		Usage: "[new message|-clear]",
+
+		CustomPermissions: b.ModRole,
+		Command:           b.cmdMutemeMessage,
+	})
+
+	list = append(list, bot.Router.AddCommand(&bcr.Command{
+		Name:    "pauseme",
+		Summary: "Pause yourself for the specified duration.",
+		Usage:   "<duration>",
+		Args:    bcr.MinArgs(1),
+
+		GuildOnly: true,
+		Command:   b.pauseme,
+	}))
+
 	bot.Router.AddHandler(b.channelbanOnJoin)
+	bot.Router.AddHandler(b.muteRoleDelete)
+	bot.Router.AddHandler(b.muteOnJoin)
 
 	_, modLogList := modlog.InitCommands(bot)
 
 	list = append(list, modLogList...)
+
+	state, _ := bot.Router.StateFromGuildID(0)
+
+	var o sync.Once
+	state.AddHandler(func(_ *gateway.ReadyEvent) {
+		o.Do(func() {
+			go b.doPendingActions(state)
+		})
+	})
+
 	return
 }

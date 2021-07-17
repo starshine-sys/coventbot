@@ -60,7 +60,7 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = bot.ModLog.Ban(ctx, ctx.Message.GuildID, target.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Ban(ctx.State, ctx.Message.GuildID, target.ID, ctx.Author.ID, reason)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -111,7 +111,7 @@ func (bot *Bot) unban(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = bot.ModLog.Unban(ctx, ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Unban(ctx.State, ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}

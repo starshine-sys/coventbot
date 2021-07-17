@@ -74,7 +74,7 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 			return
 		}
 
-		bot.ModLog.Ban(ctx, ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
+		bot.ModLog.Ban(ctx.State, ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
 	}
 
 	_, err = ctx.Sendf("Banned %v members.", len(users))

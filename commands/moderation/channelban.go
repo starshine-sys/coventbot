@@ -108,7 +108,7 @@ func (bot *Bot) channelban(ctx *bcr.Context) (err error) {
 		reason = strings.Join(ctx.Args[1:], " ")
 	}
 
-	err = bot.ModLog.Channelban(ctx, ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Channelban(ctx.State, ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
 	if err != nil {
 		bot.Sugar.Errorf("Error logging channelban: %v", err)
 	}
@@ -203,7 +203,7 @@ func (bot *Bot) unchannelban(ctx *bcr.Context) (err error) {
 		reason = strings.Join(ctx.Args[1:], " ")
 	}
 
-	err = bot.ModLog.Unchannelban(ctx, ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Unchannelban(ctx.State, ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
 	if err != nil {
 		bot.Sugar.Errorf("Error logging unchannelban: %v", err)
 	}

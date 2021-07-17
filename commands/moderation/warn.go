@@ -32,7 +32,7 @@ func (bot *Bot) warn(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = bot.ModLog.Warn(ctx, ctx.Message.GuildID, u.User.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Warn(ctx.State, ctx.Message.GuildID, u.User.ID, ctx.Author.ID, reason)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
