@@ -6,6 +6,7 @@ require (
 	codeberg.org/eviedelta/detctime v0.0.0-20201201223733-52d0e0a1ba3d
 	emperror.dev/errors v0.8.0
 	github.com/ReneKroon/ttlcache/v2 v2.7.0
+	github.com/caneroj1/stemmer v0.0.0-20170128035808-c9f2ce1504d5
 	github.com/diamondburned/arikawa/v3 v3.0.0-20210711175618-29a3094a7523
 	github.com/disintegration/imaging v1.6.2
 	github.com/dustin/go-humanize v1.0.0

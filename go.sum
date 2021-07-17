@@ -39,6 +39,8 @@ github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
+github.com/caneroj1/stemmer v0.0.0-20170128035808-c9f2ce1504d5 h1:KrgIOxLMw9OvGiPOX1WlxUOZzhJ6NvslCVEMb3SrIXQ=
+github.com/caneroj1/stemmer v0.0.0-20170128035808-c9f2ce1504d5/go.mod h1:FX8SGAdUYnFYgGoy+xeGdnVIEq/ITKM7iMewnmng4Y4=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=
 github.com/cenkalti/backoff v2.2.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
@@ -69,8 +71,6 @@ github.com/denisenkom/go-mssqldb v0.0.0-20191124224453-732737034ffd/go.mod h1:xb
 github.com/dgraph-io/badger v1.6.0/go.mod h1:zwt7syl517jmP8s94KqSxTlM6IMsdhYy6psNgSztDR4=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-farm v0.0.0-20190423205320-6a90982ecee2/go.mod h1:SqUrOPUnsFjfmXRMNPybcSiG0BgUW2AuFH8PAnS2iTw=
-github.com/diamondburned/arikawa/v3 v3.0.0-20210630071930-af35c03b8e77 h1:J/FO9EGtvOMKRIQZUAPJsepv/3NeDS6MdeAYp+CTMpY=
-github.com/diamondburned/arikawa/v3 v3.0.0-20210630071930-af35c03b8e77/go.mod h1:sNqM/iGXuH87wEH1rpQBEY1PR0AAkRKJuUhJGOdo7To=
 github.com/diamondburned/arikawa/v3 v3.0.0-20210711175618-29a3094a7523 h1:9iZEmRQ05Au8J1UacKC8TFYK/HdvuXsw3iqA64W5Y1c=
 github.com/diamondburned/arikawa/v3 v3.0.0-20210711175618-29a3094a7523/go.mod h1:sNqM/iGXuH87wEH1rpQBEY1PR0AAkRKJuUhJGOdo7To=
 github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1ei82L+c=
@@ -435,10 +435,6 @@ github.com/spf13/pflag v1.0.3/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnIn
 github.com/spf13/pflag v1.0.5 h1:iy+VFUOCP1a+8yFto/drg2CJ5u0yRoB7fZw3DKv/JXA=
 github.com/spf13/pflag v1.0.5/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
 github.com/spf13/viper v1.3.2/go.mod h1:ZiWeW+zYFKm7srdB9IoDzzZXaJaI5eL9QjNiN/DMA2s=
-github.com/starshine-sys/bcr v0.19.0 h1:yIDzkIzuqgGJj7q6qVrt2iQ8XeyTH7iAKZkXyYH50zo=
-github.com/starshine-sys/bcr v0.19.0/go.mod h1:UuFCKV8iLp9eFz1wEZCC4+xav+vsf2u3u8kK7fZmlFE=
-github.com/starshine-sys/bcr v0.19.1-0.20210703213732-c3b66a24c2ca h1:R+8J1/PhlQ+8Bv3nFI2fjYI9u5+XoQKTC64aTfIzgOo=
-github.com/starshine-sys/bcr v0.19.1-0.20210703213732-c3b66a24c2ca/go.mod h1:UuFCKV8iLp9eFz1wEZCC4+xav+vsf2u3u8kK7fZmlFE=
 github.com/starshine-sys/bcr v0.19.1 h1:cDD9NKdRdmH3lfYXTrvdnpuP50lMq+D6814t+zJAPN4=
 github.com/starshine-sys/bcr v0.19.1/go.mod h1:KjCu6F0tOKVLvPf0DagcxCkRTduXeTJ5YnwyhznA1c4=
 github.com/starshine-sys/pkgo v1.0.0 h1:NQ+g6LgY+tkQdxXGZ2oTH5Hp2n5/57Vo+RFcHbwkeHs=

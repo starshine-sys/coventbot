@@ -28,6 +28,7 @@ import (
 	"github.com/starshine-sys/tribble/db"
 	"github.com/starshine-sys/tribble/etc"
 	"github.com/starshine-sys/tribble/gatekeeper"
+	"github.com/starshine-sys/tribble/highlights"
 	"github.com/starshine-sys/tribble/keyroles"
 	"github.com/starshine-sys/tribble/levels"
 	"github.com/starshine-sys/tribble/names"
@@ -117,6 +118,7 @@ func main() {
 	tickets.Init(bot)
 	keyroles.Init(bot)
 	quotes.Init(bot)
+	highlights.Init(bot)
 
 	// connect to discord
 	if err := bot.Start(context.Background()); err != nil {
