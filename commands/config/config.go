@@ -148,6 +148,15 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:           b.starboardSetLimit,
 	})
 
+	sb.AddSubcommand(&bcr.Command{
+		Name:    "stats",
+		Aliases: []string{"statistics", "leaderboard", "lb"},
+		Summary: "Show starboard statistics for this server.",
+
+		GuildOnly: true,
+		Command:   b.starboardStats,
+	})
+
 	bl := sb.AddSubcommand(&bcr.Command{
 		Name:    "blacklist",
 		Aliases: []string{"block", "bl"},
