@@ -14,6 +14,8 @@ type BotConfig struct {
 	Prefixes []string
 	Owners   []discord.UserID
 
+	SyncCommandsIn []discord.GuildID `yaml:"sync_commands_in"`
+
 	GuildLogWebhook Webhook `yaml:"guild_log"`
 
 	VerifyListen    string `yaml:"verify_listen"`

@@ -26,7 +26,7 @@ func (bot *Bot) poll(ctx *bcr.Context) (err error) {
 		desc += fmt.Sprintf("%v %v\n", keycaps[i], o)
 	}
 
-	if len(desc) > 2048 {
+	if len(desc) > 4000 {
 		_, err = ctx.Send("Embed description too long.")
 		return err
 	}

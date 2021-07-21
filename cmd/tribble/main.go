@@ -141,6 +141,17 @@ func main() {
 	sugar.Infof("User: %v#%v (%v)", botUser.Username, botUser.Discriminator, botUser.ID)
 	bot.Router.Bot = botUser
 
+	// sync slash commands
+	err = bot.Router.SyncCommands(c.SyncCommandsIn...)
+	if err == nil {
+		sugar.Infof("Synced slash commands!")
+		if len(c.SyncCommandsIn) != 0 {
+			sugar.Infof("Synced in %v", c.SyncCommandsIn)
+		}
+	} else {
+		sugar.Errorf("Couldn't sync slash commands: %v", err)
+	}
+
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc

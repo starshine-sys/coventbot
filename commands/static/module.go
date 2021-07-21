@@ -51,6 +51,26 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Usage:   "[-prepop] [-size 1-13]",
 
 		Command: b.bubble,
+
+		SlashCommand: b.bubbleSlash,
+		Options:      &[]discord.CommandOption{},
+		// Options: &[]discord.CommandOption{
+		// 	{
+		// 		Type:        discord.IntegerOption,
+		// 		Name:        "size",
+		// 		Description: "The size of the bubble wrap to generate. (minimum of 1, maximum of 13)",
+		// 	},
+		// 	{
+		// 		Type:        discord.BooleanOption,
+		// 		Name:        "prepop",
+		// 		Description: "Whether to pre-pop some bubbles.",
+		// 	},
+		// 	{
+		// 		Type:        discord.BooleanOption,
+		// 		Name:        "ephemeral",
+		// 		Description: "Whether or not to only show the bubble wrap to you.",
+		// 	},
+		// },
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
@@ -86,7 +106,8 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Name:    "meow",
 		Summary: "Send a random meowmoji.",
 
-		Command: b.meow,
+		SlashCommand: b.meow,
+		Options:      &[]discord.CommandOption{},
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
@@ -115,6 +136,9 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Hidden:  true,
 
 		Command: b.hello,
+
+		SlashCommand: b.helloSlash,
+		Options:      &[]discord.CommandOption{},
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{

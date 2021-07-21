@@ -122,6 +122,8 @@ func New(
 
 		// add message create handler
 		state.AddHandler(b.MessageCreate)
+		// add interaction handler
+		state.AddHandler(b.Router.InteractionCreate)
 
 		// add member update handler (this isn't handled by default apparently?)
 		state.AddHandler(b.guildMemberUpdate)
