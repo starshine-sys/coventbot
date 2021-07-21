@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"sort"
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
@@ -92,7 +93,8 @@ func (bot *Bot) Member(guildID discord.GuildID, userID discord.UserID) (m discor
 	return *gm, nil
 }
 
-// Members gets all *cached* members for a guild
+// Members gets all *cached* members for a guild.
+// Members are sorted by their ID.
 func (bot *Bot) Members(guildID discord.GuildID) (members []discord.Member) {
 	bot.membersMu.RLock()
 	defer bot.membersMu.RUnlock()
@@ -102,6 +104,10 @@ func (bot *Bot) Members(guildID discord.GuildID) (members []discord.Member) {
 			members = append(members, m.Member)
 		}
 	}
+
+	sort.Slice(members, func(i, j int) bool {
+		return members[i].User.ID < members[j].User.ID
+	})
 
 	return
 }

@@ -3,6 +3,7 @@ package moderation
 import (
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -26,6 +27,9 @@ func (bot *Bot) members(ctx *bcr.Context) (err error) {
 		code       bool
 
 		file bool
+
+		sortOption     string
+		sortDescending bool
 	)
 
 	var b strings.Builder
@@ -33,12 +37,17 @@ func (bot *Bot) members(ctx *bcr.Context) (err error) {
 	fs := flag.NewFlagSet(fmt.Sprintf("%vmembers", ctx.Prefix), flag.ContinueOnError)
 	// set output for help
 	fs.SetOutput(&b)
+	fs.SortFlags = false
 
 	fs.StringVarP(&flagRoles, "roles", "r", "", "Shows members with at least one of these roles (comma-separated)")
 	fs.StringVarP(&flagAllRoles, "all-roles", "a", "", "Shows members with all of these roles (comma-separated)")
 	fs.StringVarP(&flagNotRoles, "not-roles", "n", "", "Shows members with none of these roles (comma-separated)")
+
 	fs.StringVarP(&nameContains, "name-contains", "C", "", "Shows members whose names contain the given text")
 	fs.StringVarP(&nameRegex, "name-regex", "R", "", "Shows members whose names match the given regex (use `(?i)` at the beginning for case-insensitive matching)")
+
+	fs.BoolVarP(&humans, "humans", "h", false, "Shows only humans")
+	fs.BoolVarP(&bots, "bots", "b", false, "Shows only bots")
 
 	fs.StringVarP(&format, "format", "f", "%in. %u#%d (%id)", `Format to use for the member list.
 Supported options:
@@ -51,12 +60,20 @@ Supported options:
 - %cd: creation date
 - %jd: join date`)
 
-	fs.BoolVarP(&count, "count", "c", false, "Shows a member count instead of a member list")
-	fs.BoolVarP(&humans, "humans", "h", false, "Shows only humans")
-	fs.BoolVarP(&bots, "bots", "b", false, "Shows only bots")
 	fs.BoolVarP(&enkoFormat, "enko-format", "E", false, "Use EnkoMojishia's format for the member list.")
+
 	fs.BoolVarP(&code, "code", "B", false, "Output as a code block (only in embeds).")
 	fs.BoolVarP(&file, "file", "F", false, "Output to a file instead of a paginated embed.")
+
+	fs.BoolVarP(&count, "count", "c", false, "Shows a member count instead of a member list")
+
+	fs.StringVarP(&sortOption, "sort-by", "S", "id", `What to sort the member list by.
+Supported values:
+- id: sort by member ID
+- nick: sort by member nickname
+- name: sort by member username
+- joined: sort by member joined date`)
+	fs.BoolVarP(&sortDescending, "sort-descending", "D", false, "Sort the member list in descending order.")
 
 	fs.Parse(ctx.Args)
 	// send help if needed
@@ -73,12 +90,8 @@ Supported options:
 
 		_, err = ctx.Send("", discord.Embed{
 			Title:       "`MEMBERS`",
-			Description: "```" + usage + "```",
-			Fields: []discord.EmbedField{{
-				Name:  "Flags",
-				Value: b.String(),
-			}},
-			Color: ctx.Router.EmbedColor,
+			Description: "```" + usage + "```\n**Flags**\n\n" + b.String(),
+			Color:       ctx.Router.EmbedColor,
 		})
 		return
 	}
@@ -194,6 +207,33 @@ Supported options:
 			}},
 		})
 		return
+	}
+
+	// sort the members!
+	if sortDescending || strings.ToLower(sortOption) != "id" {
+		var f func(i, j int) bool
+
+		if sortDescending {
+			switch strings.ToLower(sortOption) {
+			case "name":
+				f = func(i, j int) bool { return gm[i].User.Username > gm[j].User.Username }
+			case "joined":
+				f = func(i, j int) bool { return gm[i].Joined.Time().After(gm[j].Joined.Time()) }
+			default:
+				f = func(i, j int) bool { return gm[i].User.ID > gm[j].User.ID }
+			}
+		} else {
+			switch strings.ToLower(sortOption) {
+			case "name":
+				f = func(i, j int) bool { return gm[i].User.Username < gm[j].User.Username }
+			case "joined":
+				f = func(i, j int) bool { return gm[i].Joined.Time().Before(gm[j].Joined.Time()) }
+			default:
+				f = func(i, j int) bool { return gm[i].User.ID < gm[j].User.ID }
+			}
+		}
+
+		sort.Slice(gm, f)
 	}
 
 	var members []string
