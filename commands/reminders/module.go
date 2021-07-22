@@ -54,6 +54,21 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Args:    bcr.MinArgs(1),
 
 		Command: b.remindme,
+
+		SlashCommand: b.remindmeSlash,
+		Options: &[]discord.CommandOption{
+			{
+				Name:        "when",
+				Type:        discord.StringOption,
+				Description: "When or in how long to remind you.",
+				Required:    true,
+			},
+			{
+				Name:        "text",
+				Type:        discord.StringOption,
+				Description: "What to remind you of.",
+			},
+		},
 	})
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{

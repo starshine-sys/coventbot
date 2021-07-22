@@ -11,6 +11,59 @@ import (
 	"github.com/starshine-sys/bcr"
 )
 
+// ReportSlash is like Report but takes a SlashContext instead
+func (bot *Bot) ReportSlash(ctx *bcr.SlashContext, e error) (err error) {
+	bot.Sugar.Errorf("Error in %v (%v), guild %v: %v", ctx.Channel.ID, ctx.Channel.Name, ctx.Event.GuildID, e)
+
+	if bot.Hub == nil {
+		return
+	}
+
+	hub := bot.Hub.Clone()
+
+	// add the user's ID
+	hub.ConfigureScope(func(scope *sentry.Scope) {
+		scope.SetUser(sentry.User{ID: ctx.User.ID.String()})
+	})
+
+	// add some more info
+	hub.AddBreadcrumb(&sentry.Breadcrumb{
+		Category: "cmd",
+		Data: map[string]interface{}{
+			"user":    ctx.User.ID,
+			"channel": ctx.Channel.ID,
+			"guild":   ctx.Event.GuildID,
+			"command": ctx.Command,
+		},
+		Level:     sentry.LevelError,
+		Timestamp: time.Now().UTC(),
+	}, nil)
+
+	var id *sentry.EventID
+	if IsOurProblem(e) {
+		id = hub.CaptureException(e)
+	}
+
+	content := ""
+	embed := discord.Embed{
+		Title:       "Internal error occurred",
+		Description: "An internal error has occurred. If this issue persists, please contact the bot developer in the support server (linked in the help command).",
+		Color:       0xE74C3C,
+
+		Timestamp: discord.NowTimestamp(),
+	}
+
+	if id != nil {
+		content = fmt.Sprintf("Error code: ``%v``", bcr.EscapeBackticks(string(*id)))
+		embed.Description = "An internal error has occurred. If this issue persists, please contact the bot developer in the support server (linked in the help command) with the error code above."
+		embed.Footer = &discord.EmbedFooter{
+			Text: string(*id),
+		}
+	}
+
+	return ctx.SendX(content, embed)
+}
+
 // Report reports a issue to Sentry, if it's enabled
 func (bot *Bot) Report(ctx *bcr.Context, e error) (err error) {
 	bot.Sugar.Errorf("Error in %v (%v), guild %v: %v", ctx.Channel.ID, ctx.Channel.Name, ctx.Message.GuildID, e)

@@ -147,3 +147,26 @@ func (bot *Bot) handleTagCommand(ctx *bcr.Context) (err error) {
 	_, err = ctx.State.SendMessageComplex(ctx.Message.ChannelID, data)
 	return err
 }
+
+func (bot *Bot) interactionCreate(ic *gateway.InteractionCreateEvent) {
+	bot.Sugar.Infof("Received interaction create event")
+
+	if ic.Type != gateway.CommandInteraction {
+		return
+	}
+
+	bot.Sugar.Infof("Received command event")
+
+	ctx, err := bot.Router.NewSlashContext(ic)
+	if err != nil {
+		bot.Sugar.Errorf("Couldn't create slash context: %v", err)
+		return
+	}
+
+	bot.Sugar.Infof("Created slash context with command %v", ctx.CommandName)
+
+	err = bot.Router.ExecuteSlash(ctx)
+	if err != nil {
+		bot.Sugar.Errorf("Couldn't create slash context: %v", err)
+	}
+}

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"codeberg.org/eviedelta/detctime/durationparser"
+	"github.com/diamondburned/arikawa/v3/bot/extras/shellwords"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
@@ -84,4 +85,61 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 
 	_, err = ctx.Send(content, e...)
 	return err
+}
+
+func (bot *Bot) remindmeSlash(v bcr.Contexter) (err error) {
+	ctx := v.(*bcr.SlashContext)
+
+	var t time.Time
+	rm := "N/A"
+
+	for _, o := range ctx.CommandOptions {
+		switch o.Name {
+		case "when":
+			args, err := shellwords.Parse(o.Value)
+			if err != nil {
+				args = strings.Fields(o.Value)
+			}
+			t, _, err = ParseTime(args)
+			if err != nil {
+				dur, err := durationparser.Parse(o.Value)
+				if err != nil {
+					return ctx.SendEphemeral("I couldn't parse your input as a valid time or duration.")
+				}
+				t = time.Now().UTC().Add(dur)
+			}
+		case "text":
+			if o.Value != "" {
+				rm = o.Value
+			}
+		}
+	}
+
+	guildID := discord.GuildID(0)
+	if ctx.Guild != nil {
+		guildID = ctx.Guild.ID
+	}
+	// as there isn't a message associated with a slash command, we just use an approximate message ID
+	// it'll still link to the correct(ish) time
+	msgID := discord.NewSnowflake(time.Now())
+
+	var id uint64
+	err = bot.DB.Pool.QueryRow(context.Background(), `insert into reminders
+	(user_id, message_id, channel_id, server_id, reminder, expires)
+	values
+	($1, $2, $3, $4, $5, $6) returning id`, ctx.User.ID, msgID, ctx.Event.ChannelID, guildID, rm, t).Scan(&id)
+	if err != nil {
+		return bot.ReportSlash(ctx, err)
+	}
+
+	if len(rm) > 128 {
+		rm = rm[:128] + "..."
+	}
+	if rm == "N/A" {
+		rm = "something"
+	} else {
+		rm = "**" + rm + "**"
+	}
+
+	return ctx.SendfX("Okay, I'll remind you about %v %v. (#%v)", rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), id)
 }
