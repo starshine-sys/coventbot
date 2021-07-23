@@ -1,6 +1,9 @@
 package static
 
 import (
+	"context"
+	"time"
+
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -128,12 +131,32 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Name:        "sampa",
 		Aliases:     []string{"xsampa", "x-sampa"},
 		Summary:     "Convert X-SAMPA to IPA.",
-		Description: "Convert [X-SAMPA](https://en.wikipedia.org/wiki/X-SAMPA) to IPA.\nThe converted message can be deleted by the user by reacting :x:, until two hours after it was posted.",
+		Description: "Convert [X-SAMPA](https://en.wikipedia.org/wiki/X-SAMPA) to IPA.\nThe converted message can be deleted by the user by reacting :x: or 🗑️.",
 		Usage:       "<X-SAMPA>",
 		Args:        bcr.MinArgs(1),
 
 		Command: b.sampa,
+
+		SlashCommand: b.sampaSlash,
+		Options: &[]discord.CommandOption{{
+			Name:        "text",
+			Description: "The text to convert to IPA.",
+			Type:        discord.StringOption,
+			Required:    true,
+		}},
 	}))
+
+	bot.Router.AddHandler(b.sampaReaction)
+
+	// delete ?sampa messages (and potentially other responses) over a month old
+	sf := discord.NewSnowflake(time.Now().UTC().Add(-720 * time.Hour))
+	ct, err := bot.DB.Pool.Exec(context.Background(), "delete from command_responses where message_id < $1", sf)
+	if err != nil {
+		bot.Sugar.Errorf("Error cleaning command responses: %v", err)
+	}
+	if ct.RowsAffected() != 0 {
+		bot.Sugar.Errorf("Deleted %v command response(s)!", ct.RowsAffected())
+	}
 
 	return s, list
 }

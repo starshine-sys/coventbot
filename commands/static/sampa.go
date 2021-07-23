@@ -1,10 +1,13 @@
 package static
 
 import (
+	"context"
 	"strings"
-	"time"
 
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -171,11 +174,71 @@ func (bot *Bot) sampa(ctx *bcr.Context) (err error) {
 		return err
 	}
 
-	ctx.AddReactionHandlerWithTimeout(msg.ID, ctx.Author.ID, "❌", true, false, 2*time.Hour, func(ctx *bcr.Context) {
-		err := ctx.State.DeleteMessage(msg.ChannelID, msg.ID)
-		if err != nil {
-			bot.Sugar.Errorf("Error deleting message: %v", err)
+	_, err = bot.DB.Pool.Exec(context.Background(), "insert into command_responses (message_id, user_id) values ($1, $2)", msg.ID, ctx.Author.ID)
+	return
+}
+
+func (bot *Bot) sampaSlash(v bcr.Contexter) (err error) {
+	ctx := v.(*bcr.SlashContext)
+
+	var text string
+	for _, o := range ctx.Event.Data.Options {
+		if o.Value != "" {
+			text = o.Value
 		}
+	}
+
+	err = ctx.State.RespondInteraction(ctx.InteractionID, ctx.InteractionToken, api.InteractionResponse{
+		Type: api.MessageInteractionWithSource,
+		Data: &api.InteractionResponseData{
+			Content: option.NewNullableString(re.Replace(text)),
+			AllowedMentions: &api.AllowedMentions{
+				Parse: []api.AllowedMentionType{},
+			},
+		},
 	})
-	return nil
+	if err != nil {
+		return
+	}
+
+	url := api.EndpointWebhooks + ctx.Router.Bot.ID.String() + "/" + ctx.InteractionToken + "/messages/@original"
+	var msg *discord.Message
+
+	err = ctx.State.RequestJSON(&msg, "GET", url)
+	if err != nil {
+		return err
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "insert into command_responses (message_id, user_id) values ($1, $2)", msg.ID, ctx.User.ID)
+	return
+}
+
+func (bot *Bot) sampaReaction(ev *gateway.MessageReactionAddEvent) {
+	if ev.Emoji.Name != "❌" && ev.Emoji.Name != "🗑️" {
+		return
+	}
+
+	var matchUser discord.UserID
+
+	err := bot.DB.Pool.QueryRow(context.Background(), "select user_id from command_responses where message_id = $1", ev.MessageID).Scan(&matchUser)
+	if err != nil {
+		return
+	}
+
+	if matchUser != ev.UserID {
+		return
+	}
+
+	s, _ := bot.Router.StateFromGuildID(ev.GuildID)
+
+	err = s.DeleteMessage(ev.ChannelID, ev.MessageID)
+	if err != nil {
+		bot.Sugar.Errorf("Error deleting message: %v", err)
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "delete from command_responses where message_id = $1", ev.MessageID)
+	if err != nil {
+		bot.Sugar.Errorf("Error deleting message: %v", err)
+	}
 }
