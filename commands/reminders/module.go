@@ -83,7 +83,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 		Summary: "Show your reminders.",
 
-		Command: b.reminders,
+		SlashCommand: b.reminders,
+		Options:      &[]discord.CommandOption{},
 	}))
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{

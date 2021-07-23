@@ -201,15 +201,12 @@ func (bot *Bot) sampaSlash(v bcr.Contexter) (err error) {
 		return
 	}
 
-	url := api.EndpointWebhooks + ctx.Router.Bot.ID.String() + "/" + ctx.InteractionToken + "/messages/@original"
-	var msg *discord.Message
-
-	err = ctx.State.RequestJSON(&msg, "GET", url)
+	msg, err := ctx.Original()
 	if err != nil {
 		return err
 	}
 
-	_, err = bot.DB.Pool.Exec(context.Background(), "insert into command_responses (message_id, user_id) values ($1, $2)", msg.ID, ctx.User.ID)
+	_, err = bot.DB.Pool.Exec(context.Background(), "insert into command_responses (message_id, user_id) values ($1, $2)", msg.ID, ctx.Author.ID)
 	return
 }
 

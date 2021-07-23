@@ -127,7 +127,7 @@ func (bot *Bot) remindmeSlash(v bcr.Contexter) (err error) {
 	err = bot.DB.Pool.QueryRow(context.Background(), `insert into reminders
 	(user_id, message_id, channel_id, server_id, reminder, expires)
 	values
-	($1, $2, $3, $4, $5, $6) returning id`, ctx.User.ID, msgID, ctx.Event.ChannelID, guildID, rm, t).Scan(&id)
+	($1, $2, $3, $4, $5, $6) returning id`, ctx.Author.ID, msgID, ctx.Event.ChannelID, guildID, rm, t).Scan(&id)
 	if err != nil {
 		return bot.ReportSlash(ctx, err)
 	}
@@ -141,5 +141,16 @@ func (bot *Bot) remindmeSlash(v bcr.Contexter) (err error) {
 		rm = "**" + rm + "**"
 	}
 
-	return ctx.SendfX("Okay, I'll remind you about %v %v. (#%v)", rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), id)
+	err = ctx.SendfX("Okay, I'll remind you about %v %v. (#%v)", rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), id)
+	if err != nil {
+		return err
+	}
+
+	msg, err := ctx.Original()
+	if err != nil {
+		return err
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update reminders set message_id = $1 where id = $2", msg.ID, id)
+	return
 }

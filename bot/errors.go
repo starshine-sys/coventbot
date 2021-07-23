@@ -11,7 +11,17 @@ import (
 	"github.com/starshine-sys/bcr"
 )
 
-// ReportSlash is like Report but takes a SlashContext instead
+// Report wraps around both ReportCtx and ReportSlash
+func (bot *Bot) Report(ctx bcr.Contexter, e error) (err error) {
+	if v, ok := ctx.(*bcr.Context); ok {
+		return bot.ReportCtx(v, e)
+	} else if v, ok := ctx.(*bcr.SlashContext); ok {
+		return bot.ReportSlash(v, e)
+	}
+	return nil
+}
+
+// ReportSlash is like ReportCtx but takes a SlashContext instead
 func (bot *Bot) ReportSlash(ctx *bcr.SlashContext, e error) (err error) {
 	bot.Sugar.Errorf("Error in %v (%v), guild %v: %v", ctx.Channel.ID, ctx.Channel.Name, ctx.Event.GuildID, e)
 
@@ -23,14 +33,14 @@ func (bot *Bot) ReportSlash(ctx *bcr.SlashContext, e error) (err error) {
 
 	// add the user's ID
 	hub.ConfigureScope(func(scope *sentry.Scope) {
-		scope.SetUser(sentry.User{ID: ctx.User.ID.String()})
+		scope.SetUser(sentry.User{ID: ctx.Author.ID.String()})
 	})
 
 	// add some more info
 	hub.AddBreadcrumb(&sentry.Breadcrumb{
 		Category: "cmd",
 		Data: map[string]interface{}{
-			"user":    ctx.User.ID,
+			"user":    ctx.Author.ID,
 			"channel": ctx.Channel.ID,
 			"guild":   ctx.Event.GuildID,
 			"command": ctx.Command,
@@ -64,8 +74,8 @@ func (bot *Bot) ReportSlash(ctx *bcr.SlashContext, e error) (err error) {
 	return ctx.SendX(content, embed)
 }
 
-// Report reports a issue to Sentry, if it's enabled
-func (bot *Bot) Report(ctx *bcr.Context, e error) (err error) {
+// ReportCtx reports a issue to Sentry, if it's enabled
+func (bot *Bot) ReportCtx(ctx *bcr.Context, e error) (err error) {
 	bot.Sugar.Errorf("Error in %v (%v), guild %v: %v", ctx.Channel.ID, ctx.Channel.Name, ctx.Message.GuildID, e)
 
 	if bot.Hub == nil {
