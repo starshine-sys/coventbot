@@ -82,7 +82,7 @@ func (bot *Bot) simple(ctx *bcr.Context) (err error) {
 	}
 
 	_, err = bot.DB.Pool.Exec(context.Background(), `insert into react_roles
-	(server_id, channel_id, message_id) values ($1, $2, $3) on conflict (message_id) do nothing`, m.GuildID, m.ChannelID, m.ID)
+	(server_id, channel_id, message_id, title, description, mention) values ($1, $2, $3, $4, $5, $6) on conflict (message_id) do nothing`, m.GuildID, m.ChannelID, m.ID, name, description, showAsMention)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}

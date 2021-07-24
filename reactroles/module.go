@@ -58,7 +58,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:           b.new,
 	})
 
-	rr.AddSubcommand(&bcr.Command{
+	simple := rr.AddSubcommand(&bcr.Command{
 		Name:    "simple",
 		Summary: "Create a new message with the given roles.",
 		Usage:   "<channel> <name> <roles...>",
@@ -73,6 +73,26 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 		CustomPermissions: bot.ModRole,
 		Command:           b.simple,
+	})
+
+	simple.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add more roles to the given message.",
+		Usage:   "<message link|ID> <roles...>",
+		Args:    bcr.MinArgs(2),
+
+		CustomPermissions: bot.ModRole,
+		Command:           b.simpleAdd,
+	})
+
+	simple.AddSubcommand(&bcr.Command{
+		Name:    "update",
+		Summary: "Replace the roles on the given message with the given roles.",
+		Usage:   "<message link|ID> <roles...>",
+		Args:    bcr.MinArgs(2),
+
+		CustomPermissions: bot.ModRole,
+		Command:           b.simpleUpdate,
 	})
 
 	rr.AddSubcommand(&bcr.Command{
