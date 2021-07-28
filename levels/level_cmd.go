@@ -20,6 +20,7 @@ import (
 	"github.com/golang/freetype/truetype"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/etc"
+	"golang.org/x/image/font"
 )
 
 // oh gods i hate this
@@ -156,6 +157,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 
 	// set font
 	var f, bf *truetype.Font
+	var emojiFont font.Face
 	{
 		fontBytes, err := imageData.ReadFile("templates/Montserrat-Regular.ttf")
 		if err != nil {
@@ -176,6 +178,20 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		if err != nil {
 			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
 		}
+
+		efb, err := imageData.ReadFile("templates/NotoEmoji-Regular.ttf")
+		if err != nil {
+			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+		}
+
+		ef, err := truetype.Parse(efb)
+		if err != nil {
+			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+		}
+
+		emojiFont = truetype.NewFace(ef, &truetype.Options{
+			Size: 60,
+		})
 	}
 
 	img.SetLineWidth(5)
@@ -215,8 +231,15 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	}))
 
 	name := ""
+	username := u.Username
+	m, err := bot.Member(ctx.Message.GuildID, u.ID)
+	if err == nil {
+		if m.Nick != "" {
+			username = m.Nick
+		}
+	}
 
-	for i, r := range u.Username {
+	for i, r := range username {
 		if i > 16 {
 			name += "..."
 			break
@@ -225,7 +248,28 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		name += string(r)
 	}
 
-	img.DrawStringAnchored(name, 350, 120, 0, 0.5)
+	boldFont := truetype.NewFace(bf, &truetype.Options{
+		Size: 60,
+	})
+
+	x := float64(350)
+	for _, r := range name {
+		if r >= '\u203c' {
+			img.SetFontFace(emojiFont)
+
+			img.DrawStringAnchored(string(r), x, 120, 0, 0.5)
+
+			w, _ := img.MeasureString(string(r))
+			x += w
+
+			img.SetFontFace(boldFont)
+		} else {
+			img.DrawStringAnchored(string(r), x, 120, 0, 0.5)
+
+			w, _ := img.MeasureString(string(r))
+			x += w
+		}
+	}
 
 	// rank/xp
 	img.SetFontFace(truetype.NewFace(f, &truetype.Options{
