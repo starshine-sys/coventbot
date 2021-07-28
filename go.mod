@@ -5,6 +5,7 @@ go 1.16
 require (
 	codeberg.org/eviedelta/detctime v0.0.0-20201201223733-52d0e0a1ba3d
 	emperror.dev/errors v0.8.0
+	github.com/AndreKR/multiface v0.0.0-20190725194701-b414aa6424a8
 	github.com/ReneKroon/ttlcache/v2 v2.7.0
 	github.com/caneroj1/stemmer v0.0.0-20170128035808-c9f2ce1504d5
 	github.com/diamondburned/arikawa/v3 v3.0.0-20210711175618-29a3094a7523
@@ -24,8 +25,9 @@ require (
 	github.com/starshine-sys/bcr v0.19.2-0.20210723182454-ca4f479c3734
 	github.com/starshine-sys/pkgo v1.0.0
 	github.com/starshine-sys/snowflake/v2 v2.1.0
+	github.com/zachomedia/go-bdf v0.0.0-20210522061406-1a147053be95 // indirect
 	go.uber.org/zap v1.17.0
-	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9 // indirect
+	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )

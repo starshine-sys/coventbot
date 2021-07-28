@@ -13,6 +13,7 @@ import (
 	// to decode JPG backgrounds
 	_ "image/jpeg"
 
+	"github.com/AndreKR/multiface"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/disintegration/imaging"
 	"github.com/dustin/go-humanize"
@@ -157,7 +158,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 
 	// set font
 	var f, bf *truetype.Font
-	var emojiFont font.Face
+	var boldFont font.Face
 	{
 		fontBytes, err := imageData.ReadFile("templates/Montserrat-Regular.ttf")
 		if err != nil {
@@ -179,6 +180,16 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
 		}
 
+		notob, err := imageData.ReadFile("templates/NotoSans-Medium.ttf")
+		if err != nil {
+			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+		}
+
+		noto, err := truetype.Parse(notob)
+		if err != nil {
+			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
+		}
+
 		efb, err := imageData.ReadFile("templates/NotoEmoji-Regular.ttf")
 		if err != nil {
 			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
@@ -189,9 +200,24 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
 		}
 
-		emojiFont = truetype.NewFace(ef, &truetype.Options{
+		mf := &multiface.Face{}
+
+		// add montserrat font
+		mf.AddTruetypeFace(truetype.NewFace(bf, &truetype.Options{
 			Size: 60,
-		})
+		}), bf)
+
+		// add noto font
+		mf.AddTruetypeFace(truetype.NewFace(noto, &truetype.Options{
+			Size: 60,
+		}), noto)
+
+		// add noto emoji
+		mf.AddTruetypeFace(truetype.NewFace(ef, &truetype.Options{
+			Size: 60,
+		}), ef)
+
+		boldFont = mf
 	}
 
 	img.SetLineWidth(5)
@@ -226,9 +252,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 
 	img.SetHexColor("#ffffff")
 
-	img.SetFontFace(truetype.NewFace(bf, &truetype.Options{
-		Size: 60,
-	}))
+	img.SetFontFace(boldFont)
 
 	name := ""
 	username := u.Username
@@ -248,28 +272,8 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		name += string(r)
 	}
 
-	boldFont := truetype.NewFace(bf, &truetype.Options{
-		Size: 60,
-	})
-
-	x := float64(350)
-	for _, r := range name {
-		if r >= '\u203c' {
-			img.SetFontFace(emojiFont)
-
-			img.DrawStringAnchored(string(r), x, 120, 0, 0.5)
-
-			w, _ := img.MeasureString(string(r))
-			x += w
-
-			img.SetFontFace(boldFont)
-		} else {
-			img.DrawStringAnchored(string(r), x, 120, 0, 0.5)
-
-			w, _ := img.MeasureString(string(r))
-			x += w
-		}
-	}
+	// name
+	img.DrawStringAnchored(name, 350, 120, 0, 0.5)
 
 	// rank/xp
 	img.SetFontFace(truetype.NewFace(f, &truetype.Options{
