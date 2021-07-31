@@ -3,6 +3,7 @@ package static
 import (
 	"bytes"
 	"embed"
+	"image"
 	"image/png"
 	"io/fs"
 	"net/http"
@@ -13,8 +14,13 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/utils/sendpart"
 	"github.com/disintegration/imaging"
+	"github.com/dustin/go-humanize"
 	"github.com/fogleman/gg"
 	"github.com/starshine-sys/bcr"
+
+	// imports for user-supplied images
+	_ "image/gif"
+	_ "image/jpeg"
 )
 
 //go:embed pride
@@ -70,11 +76,20 @@ func (bot *Bot) pride(ctx bcr.Contexter) (err error) {
 		return ctx.SendfX("The following flags are available: %v", strings.Join(possibleFlags, ", "))
 	}
 
+	filename := strings.ToLower(ctx.User().Username)
 	url := ctx.User().AvatarURLWithType(discord.PNGImage) + "?size=1024"
 	if v, ok := ctx.(*bcr.Context); ok {
 		if len(v.Message.Attachments) > 0 {
-			if strings.HasSuffix(v.Message.Attachments[0].Filename, ".png") {
+			if strings.HasSuffix(v.Message.Attachments[0].Filename, ".png") ||
+				strings.HasSuffix(v.Message.Attachments[0].Filename, ".gif") ||
+				strings.HasSuffix(v.Message.Attachments[0].Filename, ".jpg") ||
+				strings.HasSuffix(v.Message.Attachments[0].Filename, ".jpeg") {
 				url = v.Message.Attachments[0].URL
+				filename = strings.TrimSuffix(v.Message.Attachments[0].Filename, filepath.Ext(v.Message.Attachments[0].Filename))
+
+				if v.Message.Attachments[0].Size > 1*1024*1024 {
+					return ctx.SendfX("That file is too big, sorry. (%v > 1 MB)", humanize.Bytes(v.Message.Attachments[0].Size))
+				}
 			}
 		}
 	}
@@ -85,7 +100,7 @@ func (bot *Bot) pride(ctx bcr.Contexter) (err error) {
 	}
 	defer resp.Body.Close()
 
-	pfp, err := png.Decode(resp.Body)
+	pfp, _, err := image.Decode(resp.Body)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -117,8 +132,9 @@ func (bot *Bot) pride(ctx bcr.Contexter) (err error) {
 		return bot.Report(ctx, err)
 	}
 
+	filename = filename + "-" + flagName + ".png"
 	return ctx.SendFiles("", sendpart.File{
-		Name:   "pride.png",
+		Name:   filename,
 		Reader: buf,
 	})
 }
