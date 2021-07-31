@@ -191,7 +191,11 @@ func (bot *Bot) delQuote(guildID discord.GuildID, hid string) (err error) {
 }
 
 func (bot *Bot) quotes(guildID discord.GuildID) (quotes []Quote, err error) {
-	err = pgxscan.Select(context.Background(), bot.DB.Pool, &quotes, "select id, hid, server_id, channel_id, message_id, user_id, added_by, added, proxied from quotes where server_id = $1 order by added", guildID)
+	if bot.Config.GlobalQuotes {
+		err = pgxscan.Select(context.Background(), bot.DB.Pool, &quotes, "select id, hid, server_id, channel_id, message_id, user_id, added_by, added, proxied from quotes order by added")
+	} else {
+		err = pgxscan.Select(context.Background(), bot.DB.Pool, &quotes, "select id, hid, server_id, channel_id, message_id, user_id, added_by, added, proxied from quotes where server_id = $1 order by added", guildID)
+	}
 	return
 }
 
