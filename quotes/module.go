@@ -76,8 +76,12 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Show a list of quotes.",
 
 		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.SortFlags = false
+
 			fs.StringP("user", "u", "", "Filter by a user.")
 			fs.StringP("channel", "c", "", "Filter by a channel.")
+
+			fs.BoolP("server", "s", false, "Limit search to the current server.")
 
 			fs.BoolP("sort-by-message", "m", false, "Sort by message ID.")
 			fs.BoolP("reversed", "r", false, "Reverse sorting.")

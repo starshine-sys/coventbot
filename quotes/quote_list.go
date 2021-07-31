@@ -24,6 +24,18 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 
 	userString, _ := ctx.Flags.GetString("user")
 	channelString, _ := ctx.Flags.GetString("channel")
+	server, _ := ctx.Flags.GetBool("server")
+
+	if server {
+		orig := quotes
+		quotes = nil
+
+		for _, q := range orig {
+			if q.ServerID == ctx.Message.GuildID {
+				quotes = append(quotes, q)
+			}
+		}
+	}
 
 	if userString != "" {
 		var u *discord.User
