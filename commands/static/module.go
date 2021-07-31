@@ -146,6 +146,20 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		}},
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "pride",
+		Summary: "Add a pride flag circle to your profile picture!",
+		Usage:   "<flag>",
+
+		SlashCommand: b.pride,
+		Options: &[]discord.CommandOption{{
+			Name:        "flag",
+			Description: "Which flag to use.",
+			Type:        discord.StringOption,
+			Required:    false,
+		}},
+	}))
+
 	bot.Router.AddHandler(b.sampaReaction)
 
 	// delete ?sampa messages (and potentially other responses) over a month old
