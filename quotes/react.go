@@ -85,6 +85,12 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 		q.Proxied = true
 	}
 
+	blocked := bot.isUserBlocked(q.UserID)
+	if blocked {
+		s.DeleteUserReaction(ev.ChannelID, ev.MessageID, ev.UserID, ev.Emoji.APIString())
+		return
+	}
+
 	q, err = bot.insertQuote(q)
 	if err != nil {
 		bot.Sugar.Errorf("Error inserting quote: %v", err)

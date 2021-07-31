@@ -63,6 +63,14 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:   b.leaderboard,
 	})
 
+	cmd.AddSubcommand(&bcr.Command{
+		Name:    "block",
+		Aliases: []string{"unblock", "enable", "disable", "no"},
+		Summary: "Disable quotes for yourself (block your messages from being quoted).",
+
+		Command: b.disable,
+	})
+
 	quotes := b.Router.AddCommand(&bcr.Command{
 		Name:    "quotes",
 		Summary: "Show a list of quotes.",

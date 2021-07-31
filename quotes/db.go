@@ -90,7 +90,11 @@ values (find_free_quote_hid($1), $1, $2, $3, $4, $5, $6, $7) returning *`, q.Ser
 }
 
 func (bot *Bot) getQuote(hid string, guildID discord.GuildID) (q Quote, err error) {
-	err = pgxscan.Get(context.Background(), bot.DB.Pool, &q, "select * from quotes where hid ilike $1 and server_id = $2", hid, guildID)
+	if bot.Config.GlobalQuotes {
+		err = pgxscan.Get(context.Background(), bot.DB.Pool, &q, "select * from quotes where hid ilike $1", hid)
+	} else {
+		err = pgxscan.Get(context.Background(), bot.DB.Pool, &q, "select * from quotes where hid ilike $1 and server_id = $2", hid, guildID)
+	}
 	if err != nil {
 		if errors.Cause(err) == pgx.ErrNoRows {
 			return q, errNotExists
@@ -134,7 +138,12 @@ func (bot *Bot) quoteMessage(id discord.MessageID) (q Quote, err error) {
 
 func (bot *Bot) serverQuote(guildID discord.GuildID) (q *Quote, err error) {
 	ids := []string{}
-	err = bot.DB.Pool.QueryRow(context.Background(), "select array(select hid from quotes where server_id = $1)", guildID).Scan(&ids)
+
+	if bot.Config.GlobalQuotes {
+		err = bot.DB.Pool.QueryRow(context.Background(), "select array(select hid from quotes)").Scan(&ids)
+	} else {
+		err = bot.DB.Pool.QueryRow(context.Background(), "select array(select hid from quotes where server_id = $1)", guildID).Scan(&ids)
+	}
 	if err != nil {
 		return
 	}
@@ -184,4 +193,12 @@ func (bot *Bot) delQuote(guildID discord.GuildID, hid string) (err error) {
 func (bot *Bot) quotes(guildID discord.GuildID) (quotes []Quote, err error) {
 	err = pgxscan.Select(context.Background(), bot.DB.Pool, &quotes, "select id, hid, server_id, channel_id, message_id, user_id, added_by, added, proxied from quotes where server_id = $1 order by added", guildID)
 	return
+}
+
+func (bot *Bot) isUserBlocked(id discord.UserID) (blocked bool) {
+	err := bot.DB.Pool.QueryRow(context.Background(), "select exists(select * from quote_block where user_id = $1)", id).Scan(&blocked)
+	if err != nil {
+		bot.Sugar.Errorf("Error getting blocked status for %v: %v", id, err)
+	}
+	return blocked
 }

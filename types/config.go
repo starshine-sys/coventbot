@@ -14,6 +14,8 @@ type BotConfig struct {
 	Prefixes []string
 	Owners   []discord.UserID
 
+	GlobalQuotes bool `yaml:"global_quotes"`
+
 	SyncCommandsIn []discord.GuildID `yaml:"sync_commands_in"`
 
 	GuildLogWebhook Webhook `yaml:"guild_log"`
