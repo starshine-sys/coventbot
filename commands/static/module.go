@@ -174,15 +174,6 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		},
 	})
 
-	if len(possibleFlags) <= 25 {
-		for _, flag := range possibleFlags {
-			(*pride.Options)[0].Choices = append((*pride.Options)[0].Choices, discord.CommandOptionChoice{
-				Name:  flag,
-				Value: flag,
-			})
-		}
-	}
-
 	bot.Router.AddHandler(b.sampaReaction)
 
 	// delete ?sampa messages (and potentially other responses) over a month old

@@ -33,7 +33,7 @@ const (
 
 // AverageColour gets the average colour from an image.
 // Return values are R, G, B, A respectively.
-func AverageColour(img image.Image) (uint8, uint8, uint8, uint8) {
+func AverageColour(img image.Image) (red uint8, green uint8, blue uint8, alpha uint8) {
 	bounds := img.Bounds()
 	minX, minY := bounds.Min.X, bounds.Min.Y
 	maxX, maxY := bounds.Max.X, bounds.Max.Y

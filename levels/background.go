@@ -59,6 +59,7 @@ func (bot *Bot) background(ctx *bcr.Context) (err error) {
 
 	if ctx.Message.Attachments[0].Size > 1024*1024 {
 		_, err = ctx.Replyc(bcr.ColourRed, "The background image can't be bigger than 1 MB.")
+		return
 	}
 
 	url := ctx.Message.Attachments[0].URL
@@ -122,6 +123,7 @@ func (bot *Bot) serverBackground(ctx *bcr.Context) (err error) {
 
 	if ctx.Message.Attachments[0].Size > 1024*1024 {
 		_, err = ctx.Replyc(bcr.ColourRed, "The background image can't be bigger than 1 MB.")
+		return
 	}
 
 	url := ctx.Message.Attachments[0].URL

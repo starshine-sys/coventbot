@@ -32,6 +32,50 @@ var blankPixels = []int{96, 96, 96, 96, 85, 85, 85, 85, 74, 74, 74, 74, 68, 68, 
 //go:embed templates
 var imageData embed.FS
 
+var boldFont font.Face
+
+func mustParse(path string) *truetype.Font {
+	b, err := imageData.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+
+	f, err := truetype.Parse(b)
+	if err != nil {
+		panic(err)
+	}
+
+	return f
+}
+
+func init() {
+	// montserrat for most latin letters
+	montserrat := mustParse("templates/Montserrat-Medium.ttf")
+	// noto as fallback for other characters
+	noto := mustParse("templates/NotoSans-Medium.ttf")
+	// emoji fallback
+	emoji := mustParse("templates/NotoEmoji-Regular.ttf")
+
+	mf := &multiface.Face{}
+
+	// add montserrat font
+	mf.AddTruetypeFace(truetype.NewFace(montserrat, &truetype.Options{
+		Size: 60,
+	}), montserrat)
+
+	// add noto font
+	mf.AddTruetypeFace(truetype.NewFace(noto, &truetype.Options{
+		Size: 60,
+	}), noto)
+
+	// add noto emoji
+	mf.AddTruetypeFace(truetype.NewFace(emoji, &truetype.Options{
+		Size: 60,
+	}), emoji)
+
+	boldFont = mf
+}
+
 func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	sc, err := bot.getGuildConfig(ctx.Message.GuildID)
 	if err != nil {
@@ -157,8 +201,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	img.DrawImageAnchored(pfpImg.Image(), 200, 200, 0.5, 0.5)
 
 	// set font
-	var f, bf *truetype.Font
-	var boldFont font.Face
+	var f *truetype.Font
 	{
 		fontBytes, err := imageData.ReadFile("templates/Montserrat-Regular.ttf")
 		if err != nil {
@@ -169,55 +212,6 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		if err != nil {
 			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
 		}
-
-		bfb, err := imageData.ReadFile("templates/Montserrat-Medium.ttf")
-		if err != nil {
-			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
-		}
-
-		bf, err = truetype.Parse(bfb)
-		if err != nil {
-			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
-		}
-
-		notob, err := imageData.ReadFile("templates/NotoSans-Medium.ttf")
-		if err != nil {
-			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
-		}
-
-		noto, err := truetype.Parse(notob)
-		if err != nil {
-			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
-		}
-
-		efb, err := imageData.ReadFile("templates/NotoEmoji-Regular.ttf")
-		if err != nil {
-			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
-		}
-
-		ef, err := truetype.Parse(efb)
-		if err != nil {
-			return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
-		}
-
-		mf := &multiface.Face{}
-
-		// add montserrat font
-		mf.AddTruetypeFace(truetype.NewFace(bf, &truetype.Options{
-			Size: 60,
-		}), bf)
-
-		// add noto font
-		mf.AddTruetypeFace(truetype.NewFace(noto, &truetype.Options{
-			Size: 60,
-		}), noto)
-
-		// add noto emoji
-		mf.AddTruetypeFace(truetype.NewFace(ef, &truetype.Options{
-			Size: 60,
-		}), ef)
-
-		boldFont = mf
 	}
 
 	img.SetLineWidth(5)
