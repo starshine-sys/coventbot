@@ -38,6 +38,14 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 			e.Description += "\n`nolevels_log`: None"
 		}
 
+		e.Description += "\n`level_messages`: " + string(sc.LevelMessages)
+
+		if sc.LevelChannel.IsValid() {
+			e.Description += "\n`levelup_channel`: " + sc.LevelChannel.Mention()
+		} else {
+			e.Description += "\n`levelup_channel`: None"
+		}
+
 		rewards, err := bot.getAllRewards(ctx.Message.GuildID)
 		if err == nil && len(rewards) > 0 {
 			var buf string
@@ -124,7 +132,8 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 			Color:       bcr.ColourBlurple,
 		})
 		return err
-	case "reward_log", "nolevels_log":
+	case "reward_log", "nolevels_log", "level_channel", "levelup_channel":
+		ctx.Args[0] = strings.ToLower(ctx.Args[0])
 		id := discord.ChannelID(0)
 		if ctx.Args[1] != "clear" {
 			ch, err := ctx.ParseChannel(ctx.Args[1])
@@ -133,6 +142,10 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 				return err
 			}
 			id = ch.ID
+		}
+
+		if ctx.Args[0] == "levelup_channel" {
+			ctx.Args[0] = "level_channel"
 		}
 
 		_, err = bot.DB.Pool.Exec(
@@ -150,6 +163,21 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 		}
 
 		_, err = ctx.Reply("Set `%v` to %v.", ctx.Args[0], id.Mention())
+		return
+	case "level_messages":
+		in := LevelMessages(strings.ToUpper(ctx.Args[1]))
+
+		if in != AllDM && in != RewardsDM && in != AllChannel && in != RewardsChannel && in != NoMessages {
+			_, err = ctx.Sendf("``%v`` isn't a valid setting for level messages.\nValid options: `ALL_DM`, `REWARDS_DM`, `ALL_CHANNEL`, `REWARDS_CHANNEL`, `NONE`.", bcr.EscapeBackticks(string(in)))
+			return
+		}
+
+		_, err = bot.DB.Pool.Exec(context.Background(), "update server_levels set level_messages = $1 where id = $2", in, ctx.Message.GuildID)
+		if err != nil {
+			return bot.Report(ctx, err)
+		}
+
+		_, err = ctx.Reply("Set level messages to `%v`!", in)
 		return
 	}
 

@@ -8,6 +8,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -80,6 +81,13 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		return
 	}
 
+	if sc.LevelMessages == AllChannel || sc.LevelMessages == AllDM {
+		err = bot.sendLevelMessage(s, m, sc, newLvl)
+		if err != nil {
+			bot.Sugar.Errorf("Error sending reward message: %v", err)
+		}
+	}
+
 	reward := bot.getReward(m.GuildID, newLvl)
 	if reward == nil {
 		return
@@ -102,20 +110,6 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		return
 	}
 
-	if sc.RewardText != "" {
-		var msgsDisabled bool
-		bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", m.Author.ID).Scan(&msgsDisabled)
-
-		if !msgsDisabled {
-			txt := strings.NewReplacer("{lvl}", fmt.Sprint(newLvl)).Replace(sc.RewardText)
-
-			ch, err := s.CreatePrivateChannel(m.Author.ID)
-			if err == nil {
-				s.SendMessage(ch.ID, txt)
-			}
-		}
-	}
-
 	if sc.RewardLog.IsValid() {
 		e := discord.Embed{
 			Title:       "Level reward given",
@@ -135,4 +129,69 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 
 		s.SendEmbeds(sc.RewardLog, e)
 	}
+
+	if sc.LevelMessages == RewardsChannel {
+		err = bot.sendLevelMessage(s, m, sc, newLvl)
+		if err != nil {
+			bot.Sugar.Errorf("Error sending reward message: %v", err)
+		}
+		return
+	}
+
+	if sc.LevelMessages != NoMessages && sc.RewardText != "" {
+		var msgsDisabled bool
+		bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", m.Author.ID).Scan(&msgsDisabled)
+
+		if !msgsDisabled {
+			txt := strings.NewReplacer("{lvl}", fmt.Sprint(newLvl)).Replace(sc.RewardText)
+
+			ch, err := s.CreatePrivateChannel(m.Author.ID)
+			if err == nil {
+				s.SendMessage(ch.ID, txt)
+			}
+		}
+	}
+}
+
+// this is only called if the level message setting isn't set to RewardsDM or NoMessages
+func (bot *Bot) sendLevelMessage(s *state.State, m *gateway.MessageCreateEvent, sc Server, lvl int64) (err error) {
+	if sc.LevelMessages == AllDM {
+		var msgsDisabled bool
+		bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", m.Author.ID).Scan(&msgsDisabled)
+		if msgsDisabled {
+			return
+		}
+	}
+
+	e := discord.Embed{
+		Thumbnail: &discord.EmbedThumbnail{
+			URL: m.Author.AvatarURLWithType(discord.PNGImage) + "?size=256",
+		},
+		Title:       "Level up!",
+		Description: fmt.Sprintf("%v has reached level %v!", m.Author.Mention(), lvl),
+		Color:       bcr.ColourOrange,
+		Footer: &discord.EmbedFooter{
+			Text: m.Author.Tag(),
+		},
+		Timestamp: discord.NowTimestamp(),
+	}
+
+	chID := sc.LevelChannel
+	if sc.LevelMessages == AllDM {
+		ch, err := s.CreatePrivateChannel(m.Author.ID)
+		// couldn't create a channel
+		if err != nil {
+			return nil
+		}
+		chID = ch.ID
+
+		e.Description = fmt.Sprintf("Congratulations, you reached level %v!", lvl)
+	}
+
+	if !chID.IsValid() {
+		return
+	}
+
+	_, err = s.SendEmbeds(chID, e)
+	return
 }

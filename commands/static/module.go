@@ -146,19 +146,42 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		}},
 	}))
 
-	list = append(list, b.Router.AddCommand(&bcr.Command{
+	pride := b.Router.AddCommand(&bcr.Command{
 		Name:    "pride",
 		Summary: "Add a pride flag circle to your profile picture!",
 		Usage:   "<flag>",
 
 		SlashCommand: b.pride,
-		Options: &[]discord.CommandOption{{
-			Name:        "flag",
-			Description: "Which flag to use.",
-			Type:        discord.StringOption,
-			Required:    false,
-		}},
-	}))
+		Options: &[]discord.CommandOption{
+			{
+				Name:        "flag",
+				Description: "Which flag to use.",
+				Type:        discord.StringOption,
+				Required:    false,
+			},
+			{
+				Name:        "user",
+				Description: "Which user's avatar to add a pride flag to.",
+				Type:        discord.UserOption,
+				Required:    false,
+			},
+			{
+				Name:        "pk-member",
+				Description: "Which PluralKit member's avatar to add a pride flag to.",
+				Type:        discord.StringOption,
+				Required:    false,
+			},
+		},
+	})
+
+	if len(possibleFlags) <= 25 {
+		for _, flag := range possibleFlags {
+			(*pride.Options)[0].Choices = append((*pride.Options)[0].Choices, discord.CommandOptionChoice{
+				Name:  flag,
+				Value: flag,
+			})
+		}
+	}
 
 	bot.Router.AddHandler(b.sampaReaction)
 
@@ -172,5 +195,5 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		bot.Sugar.Errorf("Deleted %v command response(s)!", ct.RowsAffected())
 	}
 
-	return s, list
+	return s, append(list, pride)
 }

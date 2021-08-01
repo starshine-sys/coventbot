@@ -9,6 +9,18 @@ import (
 	"github.com/georgysavva/scany/pgxscan"
 )
 
+// LevelMessages ...
+type LevelMessages string
+
+// ...
+const (
+	AllDM          LevelMessages = "ALL_DM"
+	RewardsDM      LevelMessages = "REWARDS_DM"
+	AllChannel     LevelMessages = "ALL_CHANNEL"
+	RewardsChannel LevelMessages = "REWARDS_CHANNEL"
+	NoMessages     LevelMessages = "NONE"
+)
+
 // Server ...
 type Server struct {
 	ID discord.GuildID
@@ -27,6 +39,9 @@ type Server struct {
 	LevelsEnabled      bool
 	LeaderboardModOnly bool
 	ShowNextReward     bool
+
+	LevelMessages LevelMessages
+	LevelChannel  discord.ChannelID
 }
 
 // Levels ...
