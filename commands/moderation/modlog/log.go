@@ -23,6 +23,9 @@ type Entry struct {
 	Reason     string     `json:"reason,omitempty"`
 
 	Time time.Time `json:"timestamp"`
+
+	ChannelID discord.ChannelID `json:"-"`
+	MessageID discord.MessageID `json:"-"`
 }
 
 func (bot *ModLog) logChannelFor(guildID discord.GuildID) (logChannel discord.ChannelID) {
@@ -98,7 +101,12 @@ func (bot *ModLog) Channelban(state *state.State, guildID discord.GuildID, chann
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, channel.Mention(), entry.ID, user.Username, user.Discriminator, entry.UserID, reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = state.SendMessage(ch, text)
+	msg, err := state.SendMessage(ch, text)
+	if err != nil {
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
 	return
 }
 
@@ -136,7 +144,12 @@ func (bot *ModLog) Unchannelban(state *state.State, guildID discord.GuildID, cha
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, channel.Mention(), entry.ID, user.Username, user.Discriminator, entry.UserID, reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = state.SendMessage(ch, text)
+	msg, err := state.SendMessage(ch, text)
+	if err != nil {
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
 	return
 }
 
@@ -170,7 +183,12 @@ func (bot *ModLog) Warn(state *state.State, guildID discord.GuildID, userID, mod
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = state.SendMessage(ch, text)
+	msg, err := state.SendMessage(ch, text)
+	if err != nil {
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
 	return
 }
 
@@ -204,7 +222,12 @@ func (bot *ModLog) Ban(state *state.State, guildID discord.GuildID, userID, modI
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = state.SendMessage(ch, text)
+	msg, err := state.SendMessage(ch, text)
+	if err != nil {
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
 	return
 }
 
@@ -238,7 +261,12 @@ func (bot *ModLog) Unban(state *state.State, guildID discord.GuildID, userID, mo
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = state.SendMessage(ch, text)
+	msg, err := state.SendMessage(ch, text)
+	if err != nil {
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
 	return
 }
 
@@ -268,7 +296,7 @@ func (bot *ModLog) Mute(state *state.State, guildID discord.GuildID, userID, mod
 	}
 
 	time := "indefinite"
-	if duration == 0 {
+	if duration != 0 {
 		time = bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, duration)
 	}
 
@@ -278,7 +306,12 @@ func (bot *ModLog) Mute(state *state.State, guildID discord.GuildID, userID, mod
 **Duration:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, time, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = state.SendMessage(ch, text)
+	msg, err := state.SendMessage(ch, text)
+	if err != nil {
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
 	return
 }
 
@@ -308,7 +341,7 @@ func (bot *ModLog) Pause(state *state.State, guildID discord.GuildID, userID, mo
 	}
 
 	time := "indefinite"
-	if duration == 0 {
+	if duration != 0 {
 		time = bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, duration)
 	}
 
@@ -318,7 +351,12 @@ func (bot *ModLog) Pause(state *state.State, guildID discord.GuildID, userID, mo
 **Duration:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, time, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = state.SendMessage(ch, text)
+	msg, err := state.SendMessage(ch, text)
+	if err != nil {
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
 	return
 }
 
@@ -352,7 +390,12 @@ func (bot *ModLog) Unmute(state *state.State, guildID discord.GuildID, userID, m
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = state.SendMessage(ch, text)
+	msg, err := state.SendMessage(ch, text)
+	if err != nil {
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
 	return
 }
 
@@ -386,6 +429,11 @@ func (bot *ModLog) Unpause(state *state.State, guildID discord.GuildID, userID, 
 **Reason:** %v
 **Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
 
-	_, err = state.SendMessage(ch, text)
+	msg, err := state.SendMessage(ch, text)
+	if err != nil {
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
 	return
 }

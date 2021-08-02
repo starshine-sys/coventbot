@@ -19,7 +19,7 @@ func (bot *ModLog) modlog(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = pgxscan.Select(context.Background(), bot.DB.Pool, &entries, "select * from mod_log where user_id = $1 and server_id = $2 order by id desc", u.ID, ctx.Message.GuildID)
+	err = pgxscan.Select(context.Background(), bot.DB.Pool, &entries, "select * from mod_log where user_id = $1 and server_id = $2 order by time desc", u.ID, ctx.Message.GuildID)
 	if err != nil {
 		bot.Sugar.Error(err)
 		return bot.Report(ctx, err)

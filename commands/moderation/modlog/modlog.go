@@ -12,7 +12,7 @@ type ModLog struct {
 
 // InitCommands ...
 func InitCommands(bot *bot.Bot) (s string, list []*bcr.Command) {
-	b := &ModLog{Bot: bot}
+	b := New(bot)
 
 	s = "Moderation logging"
 
@@ -53,6 +53,16 @@ func InitCommands(bot *bot.Bot) (s string, list []*bcr.Command) {
 		CustomPermissions: bot.ModRole,
 		Command:           b.cmdImport,
 	})
+
+	list = append(list, bot.Router.AddCommand(&bcr.Command{
+		Name:    "reason",
+		Summary: "Set or update the reason for a mod log entry.",
+		Usage:   "<id|latest> <reason>",
+		Args:    bcr.MinArgs(2),
+
+		CustomPermissions: bot.ModRole,
+		Command:           b.reason,
+	}))
 
 	return s, append(list, cfg)
 }
