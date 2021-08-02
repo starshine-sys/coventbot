@@ -19,15 +19,15 @@ require (
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/kataras/hcaptcha v0.0.0-20200711031247-2927d4faf32f
-	github.com/lib/pq v1.10.0 // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
 	github.com/spf13/pflag v1.0.5
 	github.com/starshine-sys/bcr v0.19.2-0.20210723182454-ca4f479c3734
 	github.com/starshine-sys/pkgo v1.0.0
 	github.com/starshine-sys/snowflake/v2 v2.1.0
 	github.com/zachomedia/go-bdf v0.0.0-20210522061406-1a147053be95 // indirect
+	github.com/ziutek/mymysql v1.5.4 // indirect
 	go.uber.org/zap v1.17.0
 	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )
