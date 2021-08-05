@@ -178,6 +178,9 @@ func (bot *Bot) doReminders() {
 			data := api.SendMessageData{
 				Content: r.UserID.Mention(),
 				Embeds:  e,
+				AllowedMentions: &api.AllowedMentions{
+					Parse: []api.AllowedMentionType{api.AllowUserMention},
+				},
 			}
 
 			if embedless {
