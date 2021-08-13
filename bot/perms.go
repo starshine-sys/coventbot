@@ -21,17 +21,17 @@ func (bot *AdminRole) String() string {
 }
 
 // Check ...
-func (bot *AdminRole) Check(ctx *bcr.Context) (bool, error) {
-	if ctx.Member == nil || ctx.Guild == nil {
+func (bot *AdminRole) Check(ctx bcr.Contexter) (bool, error) {
+	if ctx.GetMember() == nil || ctx.GetGuild() == nil {
 		return false, nil
 	}
 
-	if ctx.Author.ID == ctx.Guild.OwnerID {
+	if ctx.User().ID == ctx.GetGuild().OwnerID {
 		return true, nil
 	}
 
-	for _, id := range ctx.Member.RoleIDs {
-		for _, r := range ctx.Guild.Roles {
+	for _, id := range ctx.GetMember().RoleIDs {
+		for _, r := range ctx.GetGuild().Roles {
 			if r.ID == id {
 				if r.Permissions.Has(discord.PermissionAdministrator) {
 					return true, nil
@@ -41,13 +41,13 @@ func (bot *AdminRole) Check(ctx *bcr.Context) (bool, error) {
 	}
 
 	var roles []uint64
-	err := bot.DB.Pool.QueryRow(context.Background(), "select admin_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
+	err := bot.DB.Pool.QueryRow(context.Background(), "select admin_roles from servers where id = $1", ctx.GetGuild().ID).Scan(&roles)
 	if err != nil {
 		return false, err
 	}
 
 	for _, r := range roles {
-		for _, id := range ctx.Member.RoleIDs {
+		for _, id := range ctx.GetMember().RoleIDs {
 			if r == uint64(id) {
 				return true, nil
 			}
@@ -67,17 +67,17 @@ func (bot *ModRole) String() string {
 }
 
 // Check ...
-func (bot *ModRole) Check(ctx *bcr.Context) (bool, error) {
-	if ctx.Member == nil || ctx.Guild == nil {
+func (bot *ModRole) Check(ctx bcr.Contexter) (bool, error) {
+	if ctx.GetMember() == nil || ctx.GetGuild() == nil {
 		return false, nil
 	}
 
-	if ctx.Author.ID == ctx.Guild.OwnerID {
+	if ctx.User().ID == ctx.GetGuild().OwnerID {
 		return true, nil
 	}
 
-	for _, id := range ctx.Member.RoleIDs {
-		for _, r := range ctx.Guild.Roles {
+	for _, id := range ctx.GetMember().RoleIDs {
+		for _, r := range ctx.GetGuild().Roles {
 			if r.ID == id {
 				if r.Permissions.Has(discord.PermissionManageGuild) {
 					return true, nil
@@ -87,13 +87,13 @@ func (bot *ModRole) Check(ctx *bcr.Context) (bool, error) {
 	}
 
 	var roles []uint64
-	err := bot.DB.Pool.QueryRow(context.Background(), "select mod_roles || admin_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
+	err := bot.DB.Pool.QueryRow(context.Background(), "select mod_roles || admin_roles from servers where id = $1", ctx.GetGuild().ID).Scan(&roles)
 	if err != nil {
 		return false, err
 	}
 
 	for _, r := range roles {
-		for _, id := range ctx.Member.RoleIDs {
+		for _, id := range ctx.GetMember().RoleIDs {
 			if r == uint64(id) {
 				return true, nil
 			}
@@ -113,17 +113,17 @@ func (bot *HelperRole) String() string {
 }
 
 // Check ...
-func (bot *HelperRole) Check(ctx *bcr.Context) (bool, error) {
-	if ctx.Member == nil || ctx.Guild == nil {
+func (bot *HelperRole) Check(ctx bcr.Contexter) (bool, error) {
+	if ctx.GetMember() == nil || ctx.GetGuild() == nil {
 		return false, nil
 	}
 
-	if ctx.Author.ID == ctx.Guild.OwnerID {
+	if ctx.User().ID == ctx.GetGuild().OwnerID {
 		return true, nil
 	}
 
-	for _, id := range ctx.Member.RoleIDs {
-		for _, r := range ctx.Guild.Roles {
+	for _, id := range ctx.GetMember().RoleIDs {
+		for _, r := range ctx.GetGuild().Roles {
 			if r.ID == id {
 				if r.Permissions.Has(discord.PermissionManageMessages) {
 					return true, nil
@@ -133,13 +133,13 @@ func (bot *HelperRole) Check(ctx *bcr.Context) (bool, error) {
 	}
 
 	var roles []uint64
-	err := bot.DB.Pool.QueryRow(context.Background(), "select helper_roles || mod_roles || admin_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
+	err := bot.DB.Pool.QueryRow(context.Background(), "select helper_roles || mod_roles || admin_roles from servers where id = $1", ctx.GetGuild().ID).Scan(&roles)
 	if err != nil {
 		return false, err
 	}
 
 	for _, r := range roles {
-		for _, id := range ctx.Member.RoleIDs {
+		for _, id := range ctx.GetMember().RoleIDs {
 			if r == uint64(id) {
 				return true, nil
 			}

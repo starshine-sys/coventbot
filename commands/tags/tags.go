@@ -18,9 +18,9 @@ func (Bot) String() string {
 }
 
 // Check ...
-func (bot *Bot) Check(ctx *bcr.Context) (b bool, err error) {
+func (bot *Bot) Check(ctx bcr.Contexter) (b bool, err error) {
 	var id discord.RoleID
-	err = bot.DB.Pool.QueryRow(context.Background(), "select tag_mod_role from servers where id = $1", ctx.Message.GuildID).Scan(&id)
+	err = bot.DB.Pool.QueryRow(context.Background(), "select tag_mod_role from servers where id = $1", ctx.GetGuild().ID).Scan(&id)
 	if err != nil {
 		return false, err
 	}
@@ -29,11 +29,11 @@ func (bot *Bot) Check(ctx *bcr.Context) (b bool, err error) {
 		return true, nil
 	}
 
-	if ctx.Member == nil {
+	if ctx.GetMember() == nil {
 		return false, nil
 	}
 
-	for _, r := range ctx.Member.RoleIDs {
+	for _, r := range ctx.GetMember().RoleIDs {
 		if r == id {
 			return true, nil
 		}

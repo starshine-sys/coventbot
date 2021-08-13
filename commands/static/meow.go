@@ -32,7 +32,7 @@ func (bot *Bot) meow(ctx bcr.Contexter) (err error) {
 	}
 	resp, err := http.Get(url)
 	if err != nil {
-		return err
+		return bot.Report(ctx, err)
 	}
 	defer resp.Body.Close()
 

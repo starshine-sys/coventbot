@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/diamondburned/arikawa/v3/discord"
-	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/gateway/shard"
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/starshine-sys/bcr"
@@ -34,7 +33,7 @@ Available values are:
 		return
 	}
 
-	s.Status = gateway.Status(status)
+	s.Status = discord.Status(status)
 
 	err = bot.SetSettings(s)
 	if err != nil {

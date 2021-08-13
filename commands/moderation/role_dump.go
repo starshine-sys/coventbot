@@ -115,19 +115,19 @@ var (
 	}
 
 	majorPerms = map[discord.Permissions]string{
-		discord.PermissionManageNicknames: "Manage Nicknames",
-		discord.PermissionManageRoles:     "Manage Roles",
-		discord.PermissionManageWebhooks:  "Manage Webhooks",
-		discord.PermissionManageEmojis:    "Manage Emojis",
-		discord.PermissionMentionEveryone: "Mention Everyone",
-		discord.PermissionMuteMembers:     "Mute Members",
-		discord.PermissionDeafenMembers:   "Deafen Members",
-		discord.PermissionMoveMembers:     "Move Members",
-		discord.PermissionManageMessages:  "Manage Messages",
-		discord.PermissionKickMembers:     "Kick Members",
-		discord.PermissionBanMembers:      "Ban Members",
-		discord.PermissionAdministrator:   "Administrator",
-		discord.PermissionManageChannels:  "Manage Channels",
-		discord.PermissionManageGuild:     "Manage Server",
+		discord.PermissionManageNicknames:         "Manage Nicknames",
+		discord.PermissionManageRoles:             "Manage Roles",
+		discord.PermissionManageWebhooks:          "Manage Webhooks",
+		discord.PermissionManageEmojisAndStickers: "Manage Emojis and Stickers",
+		discord.PermissionMentionEveryone:         "Mention Everyone",
+		discord.PermissionMuteMembers:             "Mute Members",
+		discord.PermissionDeafenMembers:           "Deafen Members",
+		discord.PermissionMoveMembers:             "Move Members",
+		discord.PermissionManageMessages:          "Manage Messages",
+		discord.PermissionKickMembers:             "Kick Members",
+		discord.PermissionBanMembers:              "Ban Members",
+		discord.PermissionAdministrator:           "Administrator",
+		discord.PermissionManageChannels:          "Manage Channels",
+		discord.PermissionManageGuild:             "Manage Server",
 	}
 )

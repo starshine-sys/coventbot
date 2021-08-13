@@ -51,7 +51,7 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	}
 	if ch, err := s.Channel(m.ChannelID); err == nil {
 		for _, blocked := range sc.BlockedCategories {
-			if ch.CategoryID == discord.ChannelID(blocked) {
+			if ch.ParentID == discord.ChannelID(blocked) {
 				return
 			}
 		}

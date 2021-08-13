@@ -87,37 +87,30 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 	return err
 }
 
-func (bot *Bot) remindmeSlash(v bcr.Contexter) (err error) {
-	ctx := v.(*bcr.SlashContext)
-
+func (bot *Bot) remindmeSlash(ctx bcr.Contexter) (err error) {
 	var t time.Time
-	rm := "N/A"
+	rm := ctx.GetStringFlag("text")
+	if rm == "" {
+		rm = "N/A"
+	}
 
-	for _, o := range ctx.CommandOptions {
-		switch o.Name {
-		case "when":
-			args, err := shellwords.Parse(o.Value)
-			if err != nil {
-				args = strings.Fields(o.Value)
-			}
-			t, _, err = ParseTime(args)
-			if err != nil {
-				dur, err := durationparser.Parse(o.Value)
-				if err != nil {
-					return ctx.SendEphemeral("I couldn't parse your input as a valid time or duration.")
-				}
-				t = time.Now().UTC().Add(dur)
-			}
-		case "text":
-			if o.Value != "" {
-				rm = o.Value
-			}
+	when := ctx.GetStringFlag("when")
+	args, err := shellwords.Parse(when)
+	if err != nil {
+		args = strings.Fields(when)
+	}
+	t, _, err = ParseTime(args)
+	if err != nil {
+		dur, err := durationparser.Parse(when)
+		if err != nil {
+			return ctx.SendEphemeral("I couldn't parse your input as a valid time or duration.")
 		}
+		t = time.Now().UTC().Add(dur)
 	}
 
 	guildID := discord.GuildID(0)
-	if ctx.Guild != nil {
-		guildID = ctx.Guild.ID
+	if ctx.GetGuild() != nil {
+		guildID = ctx.GetGuild().ID
 	}
 	// as there isn't a message associated with a slash command, we just use an approximate message ID
 	// it'll still link to the correct(ish) time
@@ -127,9 +120,9 @@ func (bot *Bot) remindmeSlash(v bcr.Contexter) (err error) {
 	err = bot.DB.Pool.QueryRow(context.Background(), `insert into reminders
 	(user_id, message_id, channel_id, server_id, reminder, expires)
 	values
-	($1, $2, $3, $4, $5, $6) returning id`, ctx.Author.ID, msgID, ctx.Event.ChannelID, guildID, rm, t).Scan(&id)
+	($1, $2, $3, $4, $5, $6) returning id`, ctx.User().ID, msgID, ctx.GetChannel().ID, guildID, rm, t).Scan(&id)
 	if err != nil {
-		return bot.ReportSlash(ctx, err)
+		return bot.Report(ctx, err)
 	}
 
 	if len(rm) > 128 {
@@ -141,12 +134,17 @@ func (bot *Bot) remindmeSlash(v bcr.Contexter) (err error) {
 		rm = "**" + rm + "**"
 	}
 
-	err = ctx.SendfX("Okay, I'll remind you about %v %v. (#%v)", rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), id)
-	if err != nil {
-		return err
+	name := ctx.User().Username
+	if v, ok := ctx.(*bcr.SlashContext); ok {
+		if v.Member != nil && v.Member.Nick != "" {
+			name = v.Member.Nick
+		}
 	}
 
-	msg, err := ctx.Original()
+	msg, err := ctx.Send(fmt.Sprintf("Okay %v, I'll remind you about %v %v. (#%v)", name, rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), id), discord.Embed{
+		Description: t.Format("2006-01-02 15:04:05") + " UTC",
+		Color:       bcr.ColourGreen,
+	})
 	if err != nil {
 		return err
 	}

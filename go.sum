@@ -85,6 +85,10 @@ github.com/dgryski/go-farm v0.0.0-20190423205320-6a90982ecee2/go.mod h1:SqUrOPUn
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
 github.com/diamondburned/arikawa/v3 v3.0.0-20210711175618-29a3094a7523 h1:9iZEmRQ05Au8J1UacKC8TFYK/HdvuXsw3iqA64W5Y1c=
 github.com/diamondburned/arikawa/v3 v3.0.0-20210711175618-29a3094a7523/go.mod h1:sNqM/iGXuH87wEH1rpQBEY1PR0AAkRKJuUhJGOdo7To=
+github.com/diamondburned/arikawa/v3 v3.0.0-20210803160709-127c6776ac38 h1:+MDoT8cRdxhGfthiPbBVe4RlJpe2LN/REe3/hZJm210=
+github.com/diamondburned/arikawa/v3 v3.0.0-20210803160709-127c6776ac38/go.mod h1:sNqM/iGXuH87wEH1rpQBEY1PR0AAkRKJuUhJGOdo7To=
+github.com/diamondburned/arikawa/v3 v3.0.0-20210810210230-f7880b91ee2f h1:ZLAeMqaBsrSKeGcYl7CDlCXxRsYwH+w60vxIg4+IaIA=
+github.com/diamondburned/arikawa/v3 v3.0.0-20210810210230-f7880b91ee2f/go.mod h1:sNqM/iGXuH87wEH1rpQBEY1PR0AAkRKJuUhJGOdo7To=
 github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1ei82L+c=
 github.com/disintegration/imaging v1.6.2/go.mod h1:44/5580QXChDfwIclfc/PCwrr44amcmDAg8hxG0Ewe4=
 github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
@@ -499,6 +503,12 @@ github.com/spf13/viper v1.3.2/go.mod h1:ZiWeW+zYFKm7srdB9IoDzzZXaJaI5eL9QjNiN/DM
 github.com/spf13/viper v1.4.0/go.mod h1:PTJ7Z/lr49W6bUbkmS1V3by4uWynFiR9p7+dSq/yZzE=
 github.com/starshine-sys/bcr v0.19.2-0.20210723182454-ca4f479c3734 h1:CZrj0s6E3l9fcLpjASbLmIplLKyOERdcNfINc6YHbX4=
 github.com/starshine-sys/bcr v0.19.2-0.20210723182454-ca4f479c3734/go.mod h1:e5COE8lPQAhvvWE7lg9k1AQlP40vpxazeQvS6SIiAcs=
+github.com/starshine-sys/bcr v0.19.2-0.20210803185343-8a8de1a86c14 h1:q/tQFyi6ERrnXxdwuWXEp6sKYs8Scf1+EnugERDZHIY=
+github.com/starshine-sys/bcr v0.19.2-0.20210803185343-8a8de1a86c14/go.mod h1:9hs/A5pCq5MxiFELNIDy90wqyOUwRDxftavo9AipVOg=
+github.com/starshine-sys/bcr v0.19.2-0.20210805173153-17f62beef9d5 h1:8FtaJlw4tQOl4Zz6KCW3BF9OguruYQnLV8kpa833izU=
+github.com/starshine-sys/bcr v0.19.2-0.20210805173153-17f62beef9d5/go.mod h1:9hs/A5pCq5MxiFELNIDy90wqyOUwRDxftavo9AipVOg=
+github.com/starshine-sys/bcr v0.20.1-0.20210811141110-a116c8041fef h1:MYxXvl05QVk2G3OmIijqYRe7Ez37ZDOfWLyTtNVQ/R8=
+github.com/starshine-sys/bcr v0.20.1-0.20210811141110-a116c8041fef/go.mod h1:BxtsmXRNiT2nbSWWzZpVtYmDpGKu0lkcAW8Eklfc8ME=
 github.com/starshine-sys/pkgo v1.0.0 h1:NQ+g6LgY+tkQdxXGZ2oTH5Hp2n5/57Vo+RFcHbwkeHs=
 github.com/starshine-sys/pkgo v1.0.0/go.mod h1:w1ObBZa7/lOvCqOx9690uPM5uuaovH8nCZXpt84cAu4=
 github.com/starshine-sys/snowflake/v2 v2.0.0/go.mod h1:6E5AYqTPb9DL7bp24tcbTLx0/thTcAmyLgscZIP7tzw=

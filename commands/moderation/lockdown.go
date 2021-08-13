@@ -41,7 +41,7 @@ func (bot *Bot) lockdown(ctx *bcr.Context) (err error) {
 	}
 
 	var allow, deny discord.Permissions
-	for _, p := range ch.Permissions {
+	for _, p := range ch.Overwrites {
 		if p.ID == discord.Snowflake(ch.GuildID) {
 			allow = p.Allow
 			deny = p.Deny

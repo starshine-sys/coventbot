@@ -47,7 +47,7 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 		case discord.GuildText, discord.GuildNews:
 			total++
 			textCount++
-			for _, p := range ch.Permissions {
+			for _, p := range ch.Overwrites {
 				if p.ID == discord.Snowflake(ch.GuildID) && p.Deny.Has(discord.PermissionViewChannel) {
 					textLocked++
 				}
@@ -55,7 +55,7 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 		case discord.GuildVoice:
 			total++
 			voiceCount++
-			for _, p := range ch.Permissions {
+			for _, p := range ch.Overwrites {
 				if p.ID == discord.Snowflake(ch.GuildID) && p.Deny.Has(discord.PermissionViewChannel) {
 					voiceLocked++
 				}

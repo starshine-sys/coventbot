@@ -181,12 +181,7 @@ func (bot *Bot) sampa(ctx *bcr.Context) (err error) {
 func (bot *Bot) sampaSlash(v bcr.Contexter) (err error) {
 	ctx := v.(*bcr.SlashContext)
 
-	var text string
-	for _, o := range ctx.Event.Data.Options {
-		if o.Value != "" {
-			text = o.Value
-		}
-	}
+	text := v.GetStringFlag("text")
 
 	err = ctx.State.RespondInteraction(ctx.InteractionID, ctx.InteractionToken, api.InteractionResponse{
 		Type: api.MessageInteractionWithSource,

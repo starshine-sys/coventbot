@@ -50,31 +50,16 @@ func (bot *Bot) pride(ctx bcr.Contexter) (err error) {
 	flagName := ""
 	if v, ok := ctx.(*bcr.Context); ok {
 		flagName = strings.ToLower(v.RawArgs)
-	} else if sv, ok := ctx.(*bcr.SlashContext); ok {
-		for _, o := range sv.CommandOptions {
-			switch o.Name {
-			case "flag":
-				flagName = strings.ToLower(o.Value)
-			case "user":
-				sf, _ := discord.ParseSnowflake(o.Value)
-				u, err := ctx.Session().User(discord.UserID(sf))
-				if err != nil {
-					return bot.Report(ctx, err)
-				}
-				url = u.AvatarURLWithType(discord.PNGImage) + "?size=1024"
-			case "pk-member":
-				if len(o.Value) != 5 {
-					return ctx.SendfX("``%v`` isn't a valid PluralKit member ID.", bcr.EscapeBackticks(o.Value))
-				}
+	} else if _, ok := ctx.(*bcr.SlashContext); ok {
+		flagName = strings.ToLower(ctx.GetStringFlag("flag"))
+		u, err := ctx.GetUserFlag("user")
+		if err == nil {
+			url = u.AvatarURLWithType(discord.PNGImage) + "?size=1024"
+		}
 
-				m, err := bot.PK.Member(strings.ToLower(o.Value))
-				if err != nil {
-					return ctx.SendX("Couldn't find a PluralKit member with that ID.")
-				}
-				if m.AvatarURL == "" {
-					return ctx.SendfX("%v doesn't have an avatar set.", m.Name)
-				}
-
+		if id := ctx.GetStringFlag("pk-member"); id != "" {
+			m, err := bot.PK.Member(strings.ToLower(id))
+			if err == nil && m.AvatarURL != "" {
 				url = m.AvatarURL
 			}
 		}

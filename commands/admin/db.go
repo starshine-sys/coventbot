@@ -3,14 +3,14 @@ package admin
 import (
 	"context"
 
-	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
 )
 
 // Settings ...
 type Settings struct {
 	ID     int
-	Status gateway.Status
+	Status discord.Status
 
 	ActivityType string
 	Activity     string

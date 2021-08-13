@@ -34,7 +34,7 @@ Source can be either a link to an emote, an existing emote, or a link to a messa
 If a message link is given as input, and the message has multiple emotes in it, a menu will pop up allowing you to choose the specific emote.`,
 		Usage: "<source> [name]",
 
-		Permissions: discord.PermissionManageEmojis,
+		Permissions: discord.PermissionManageEmojisAndStickers,
 		Command:     b.addEmoji,
 	}))
 
@@ -44,19 +44,56 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Summary: "Export this server's emotes to a zip file.",
 
 		CustomPermissions: bot.ModRole,
-		Permissions:       discord.PermissionManageEmojis,
+		Permissions:       discord.PermissionManageEmojisAndStickers,
 		Command:           b.exportEmotes,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "bubble",
 		Summary: "Bubble wrap!",
-		Usage:   "[-prepop] [-size 1-13]",
-
-		Command: b.bubble,
 
 		SlashCommand: b.bubbleSlash,
-		Options:      &[]discord.CommandOption{},
+		Options: &[]discord.CommandOption{
+			{
+				Name:        "size",
+				Description: "Size of the bubble wrap (default 10).",
+				Type:        discord.IntegerOption,
+			},
+			{
+				Name:        "prepop",
+				Description: "Whether to pre-pop some bubbles.",
+				Type:        discord.BooleanOption,
+			},
+			{
+				Name:        "ephemeral",
+				Description: "Whether to send the bubble wrap as a message only visible to you.",
+				Type:        discord.BooleanOption,
+			},
+		},
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "linkto",
+		Aliases: []string{"moveto"},
+		Summary: "Move a conversation to another channel.",
+		Usage:   "<channel> [topic]",
+		Args:    bcr.MinArgs(1),
+
+		SlashCommand: b.linkto,
+		Options: &[]discord.CommandOption{
+			{
+				Name:        "channel",
+				Type:        discord.ChannelOption,
+				Required:    true,
+				Description: "The channel to link to.",
+			},
+			{
+				Name:        "topic",
+				Type:        discord.StringOption,
+				Required:    false,
+				Description: "The topic.",
+			},
+		},
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{

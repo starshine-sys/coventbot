@@ -54,21 +54,21 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	bot.UserExpirationMu.Unlock()
 
 	for _, id := range guildConf.Blocked {
-		if id == uint64(ch.ID) || id == uint64(ch.CategoryID) {
+		if id == uint64(ch.ID) || id == uint64(ch.ParentID) {
 			return
 		}
 	}
 
 	var parent *discord.Channel
 	if ch.Type == discord.GuildNewsThread || ch.Type == discord.GuildPrivateThread || ch.Type == discord.GuildPublicThread {
-		parent, err = s.Channel(ch.CategoryID)
+		parent, err = s.Channel(ch.ParentID)
 		if err != nil {
 			bot.Sugar.Errorf("Error getting channel: %v", err)
 			return
 		}
 
 		for _, id := range guildConf.Blocked {
-			if id == uint64(parent.CategoryID) {
+			if id == uint64(parent.ParentID) {
 				return
 			}
 		}
@@ -115,12 +115,12 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		}
 
 		for _, id := range hl.Blocked {
-			if id == uint64(ch.ID) || id == uint64(ch.CategoryID) || id == uint64(m.Author.ID) {
+			if id == uint64(ch.ID) || id == uint64(ch.ParentID) || id == uint64(m.Author.ID) {
 				continue
 			}
 
 			if parent != nil {
-				if id == uint64(parent.CategoryID) {
+				if id == uint64(parent.ParentID) {
 					continue
 				}
 			}

@@ -15,7 +15,7 @@ func (bot *Bot) invite(ctx *bcr.Context) (err error) {
 		discord.PermissionCreateInstantInvite |
 		discord.PermissionUseExternalEmojis |
 		discord.PermissionEmbedLinks |
-		discord.PermissionManageEmojis |
+		discord.PermissionManageEmojisAndStickers |
 		discord.PermissionManageMessages |
 		discord.PermissionManageRoles |
 		discord.PermissionSendMessages |

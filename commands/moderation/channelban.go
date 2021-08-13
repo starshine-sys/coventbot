@@ -72,7 +72,7 @@ func (bot *Bot) channelban(ctx *bcr.Context) (err error) {
 	}
 
 	var allow, deny discord.Permissions
-	for _, p := range channel.Permissions {
+	for _, p := range channel.Overwrites {
 		if p.ID == discord.Snowflake(member.User.ID) {
 			allow = p.Allow
 			deny = p.Deny
@@ -166,7 +166,7 @@ func (bot *Bot) unchannelban(ctx *bcr.Context) (err error) {
 	}
 
 	var allow, deny discord.Permissions
-	for _, p := range channel.Permissions {
+	for _, p := range channel.Overwrites {
 		if p.ID == discord.Snowflake(member.User.ID) {
 			allow = p.Allow
 			deny = p.Deny

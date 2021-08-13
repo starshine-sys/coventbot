@@ -46,7 +46,7 @@ func (bot *Bot) modBlockHl(ctx *bcr.Context) (err error) {
 			_, err = ctx.Replyc(bcr.ColourRed, "That channel is already blocked.")
 			return
 		}
-		if discord.ChannelID(id) == ch.CategoryID {
+		if discord.ChannelID(id) == ch.ParentID {
 			_, err = ctx.Replyc(bcr.ColourRed, "That channel is technically already blocked (in blocked category <#%v>).", id)
 			return
 		}
