@@ -129,5 +129,18 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.inviteInfo,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:      "message",
+		Aliases:   []string{"msg", "m"},
+		Summary:   "Quote a message across channels.",
+		Usage:     "<message ID|link>",
+		Args:      bcr.MinArgs(1),
+		GuildOnly: true,
+
+		Command: b.message,
+	}))
+
+	b.Router.AddHandler(b.messageCreate)
+
 	return
 }
