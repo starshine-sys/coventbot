@@ -1,18 +1,31 @@
 package moderation
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/sendpart"
 	"github.com/starshine-sys/bcr"
 )
+
+type jsonOut struct {
+	PackVersion int       `json:"packVersion"`
+	Date        time.Time `json:"timestamp"`
+
+	Messages []discord.Message `json:"messages"`
+	Channel  *discord.Channel  `json:"channel"`
+}
 
 func (bot *Bot) transcript(ctx *bcr.Context) (err error) {
 	out, _ := ctx.Flags.GetString("out")
 	limit, _ := ctx.Flags.GetUint("limit")
+	outputJSON, _ := ctx.Flags.GetBool("json")
 	if limit > 2000 || limit == 0 {
 		isOwner := false
 		for _, o := range bot.Config.Owners {
@@ -23,7 +36,7 @@ func (bot *Bot) transcript(ctx *bcr.Context) (err error) {
 		}
 
 		if !isOwner {
-			_, err = ctx.Reply(":x: You can only make a transcript of a maximum of 2000 messages.")
+			_, err = ctx.Replyc(bcr.ColourRed, ":x: You can only make a transcript of a maximum of 2000 messages.")
 			return
 		}
 	}
@@ -32,14 +45,19 @@ func (bot *Bot) transcript(ctx *bcr.Context) (err error) {
 	if out != "" {
 		outCh, err = ctx.ParseChannel(out)
 		if err != nil {
-			_, err = ctx.Reply("Couldn't find a channel named `%v`", out)
+			_, err = ctx.Replyc(bcr.ColourRed, "Couldn't find a channel named `%v`", out)
 			return
 		}
 	}
 
 	ch, err := ctx.ParseChannel(ctx.Args[0])
 	if err != nil || ch.GuildID != ctx.Message.GuildID || (ch.Type != discord.GuildText && ch.Type != discord.GuildNews) {
-		_, err = ctx.Reply("Channel `%v` not found.", ctx.Args[0])
+		_, err = ctx.Replyc(bcr.ColourRed, "Channel `%v` not found.", ctx.Args[0])
+		return
+	}
+
+	err = ctx.SendfX("Archiving channel %v (#%v)...", ch.Mention(), ch.Name)
+	if err != nil {
 		return
 	}
 
@@ -47,6 +65,10 @@ func (bot *Bot) transcript(ctx *bcr.Context) (err error) {
 	if err != nil {
 		_, err = ctx.Send("I couldn't fetch all messages in this channel, aborting.")
 		return
+	}
+
+	if outputJSON {
+		return bot.transcriptJSON(ctx, outCh.ID, ch, msgs)
 	}
 
 	sort.Slice(msgs, func(i, j int) bool {
@@ -157,5 +179,31 @@ Messages: %v
 	}
 
 	_, err = ctx.Reply("Transcript complete!")
+	return
+}
+
+func (bot *Bot) transcriptJSON(ctx *bcr.Context, out discord.ChannelID, ch *discord.Channel, msgs []discord.Message) (err error) {
+	sort.Slice(msgs, func(i, j int) bool {
+		return msgs[i].ID > msgs[j].ID
+	})
+
+	data := jsonOut{
+		PackVersion: 3,
+		Date:        time.Now().UTC(),
+		Messages:    msgs,
+		Channel:     ch,
+	}
+
+	b, err := json.Marshal(data)
+
+	s := fmt.Sprintf("Archived channel %v (#%v, %v) with %v messages.", ch.Mention(), ch.Name, ch.ID, len(msgs))
+
+	_, err = ctx.State.SendMessageComplex(out, api.SendMessageData{
+		Content: s,
+		Files: []sendpart.File{{
+			Name:   fmt.Sprintf("darchive-%v-%v-%v.json", ch.Name, ch.ID, time.Now().UTC().Format("2006-01-02-1504")),
+			Reader: bytes.NewReader(b),
+		}},
+	})
 	return
 }

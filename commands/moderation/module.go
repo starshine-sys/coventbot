@@ -154,6 +154,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
 			fs.StringP("out", "o", "", "Channel to output the transcript to")
 			fs.UintP("limit", "l", 500, "Number of messages to make a transcript of (maximum 2000)")
+			fs.BoolP("json", "j", false, "Output as a JSON file")
 			return fs
 		},
 
