@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
@@ -139,7 +140,9 @@ Messages: %v
 
 	time.Sleep(5 * time.Second)
 
-	ctx.State.DeleteChannel(ctx.Channel.ID)
+	ctx.State.DeleteChannel(ctx.Channel.ID, api.AuditLogReason(
+		"Deleting ticket channel owned by "+owner.Tag(),
+	))
 
 	_, err = bot.DB.Pool.Exec(context.Background(), "delete from tickets where channel_id = $1", ctx.Channel.ID)
 	return err

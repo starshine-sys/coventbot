@@ -17,7 +17,7 @@ func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {
 	s, _ := bot.Router.StateFromGuildID(ev.GuildID)
 
 	if ev.Emoji.Name == "❌" && ev.UserID == msgInfo.UserID {
-		err = s.DeleteMessage(ev.ChannelID, ev.MessageID)
+		err = s.DeleteMessage(ev.ChannelID, ev.MessageID, "")
 		if err != nil {
 			bot.Sugar.Errorf("Error deleting message: %v", err)
 		}

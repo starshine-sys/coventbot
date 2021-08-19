@@ -192,7 +192,7 @@ func (bot *Bot) deleteQueue(s *state.State) {
 				bot.Sugar.Errorf("Error removing message from db: %v", err)
 			}
 
-			err = s.DeleteMessage(m.ChannelID, m.MessageID)
+			err = s.DeleteMessage(m.ChannelID, m.MessageID, "")
 			if err != nil {
 				bot.Sugar.Errorf("Error deleting message: %v", err)
 			}

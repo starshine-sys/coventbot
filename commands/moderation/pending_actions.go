@@ -7,6 +7,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/state"
@@ -73,7 +74,7 @@ func (bot *Bot) doPendingActions(s *state.State) {
 		for _, pa := range actions {
 			switch pa.Type {
 			case PendingUnban:
-				err = s.Unban(pa.GuildID, pa.UserID)
+				err = s.Unban(pa.GuildID, pa.UserID, api.AuditLogReason(pa.Reason))
 				if err != nil {
 					bot.Sugar.Errorf("Error unbanning user: %v", err)
 					bot.deleteAction(pa.ID)
@@ -100,7 +101,7 @@ func (bot *Bot) doPendingActions(s *state.State) {
 						continue
 					}
 
-					err = s.RemoveRole(pa.GuildID, pa.UserID, roles.MuteRole)
+					err = s.RemoveRole(pa.GuildID, pa.UserID, roles.MuteRole, api.AuditLogReason(pa.Reason))
 					if err != nil {
 						bot.Sugar.Errorf("Error unmuting user: %v", err)
 						bot.deleteAction(pa.ID)
@@ -119,7 +120,7 @@ func (bot *Bot) doPendingActions(s *state.State) {
 						continue
 					}
 
-					err = s.RemoveRole(pa.GuildID, pa.UserID, roles.PauseRole)
+					err = s.RemoveRole(pa.GuildID, pa.UserID, roles.PauseRole, api.AuditLogReason(pa.Reason))
 					if err != nil {
 						bot.Sugar.Errorf("Error unpausing user: %v", err)
 						bot.deleteAction(pa.ID)
@@ -169,13 +170,17 @@ func (bot *Bot) muteOnJoin(ev *gateway.GuildMemberAddEvent) {
 				continue
 			}
 
-			s.AddRole(ev.GuildID, ev.User.ID, roles.MuteRole)
+			s.AddRole(ev.GuildID, ev.User.ID, roles.MuteRole, api.AddRoleData{
+				AuditLogReason: "Member was previously muted",
+			})
 		case PendingUnpause:
 			if !roles.PauseRole.IsValid() {
 				continue
 			}
 
-			s.AddRole(ev.GuildID, ev.User.ID, roles.PauseRole)
+			s.AddRole(ev.GuildID, ev.User.ID, roles.PauseRole, api.AddRoleData{
+				AuditLogReason: "Member was previously paused",
+			})
 		}
 	}
 }

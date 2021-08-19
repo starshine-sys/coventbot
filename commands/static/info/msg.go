@@ -32,7 +32,7 @@ func (bot *Bot) message(ctx *bcr.Context) (err error) {
 				return err
 			}
 			time.AfterFunc(5*time.Second, func() {
-				ctx.State.DeleteMessage(ctx.Channel.ID, m.ID)
+				ctx.State.DeleteMessage(ctx.Channel.ID, m.ID, "")
 			})
 			return err
 		}
@@ -46,7 +46,7 @@ func (bot *Bot) message(ctx *bcr.Context) (err error) {
 			return err
 		}
 		time.AfterFunc(5*time.Second, func() {
-			ctx.State.DeleteMessage(ctx.Channel.ID, m.ID)
+			ctx.State.DeleteMessage(ctx.Channel.ID, m.ID, "")
 		})
 		return err
 	}
@@ -57,7 +57,7 @@ func (bot *Bot) message(ctx *bcr.Context) (err error) {
 			return err
 		}
 		time.AfterFunc(5*time.Second, func() {
-			ctx.State.DeleteMessage(ctx.Channel.ID, m.ID)
+			ctx.State.DeleteMessage(ctx.Channel.ID, m.ID, "")
 		})
 		return err
 	}
@@ -69,7 +69,7 @@ func (bot *Bot) message(ctx *bcr.Context) (err error) {
 			return err
 		}
 		time.AfterFunc(5*time.Second, func() {
-			ctx.State.DeleteMessage(ctx.Channel.ID, m.ID)
+			ctx.State.DeleteMessage(ctx.Channel.ID, m.ID, "")
 		})
 		return err
 	}

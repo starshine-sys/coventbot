@@ -89,6 +89,8 @@ github.com/diamondburned/arikawa/v3 v3.0.0-20210803160709-127c6776ac38 h1:+MDoT8
 github.com/diamondburned/arikawa/v3 v3.0.0-20210803160709-127c6776ac38/go.mod h1:sNqM/iGXuH87wEH1rpQBEY1PR0AAkRKJuUhJGOdo7To=
 github.com/diamondburned/arikawa/v3 v3.0.0-20210810210230-f7880b91ee2f h1:ZLAeMqaBsrSKeGcYl7CDlCXxRsYwH+w60vxIg4+IaIA=
 github.com/diamondburned/arikawa/v3 v3.0.0-20210810210230-f7880b91ee2f/go.mod h1:sNqM/iGXuH87wEH1rpQBEY1PR0AAkRKJuUhJGOdo7To=
+github.com/diamondburned/arikawa/v3 v3.0.0-20210817064836-eece98903ab1 h1:G9lzJO+/R/r8Hj4h6n6eCkLe73EM39OCCEmLv5lDgSk=
+github.com/diamondburned/arikawa/v3 v3.0.0-20210817064836-eece98903ab1/go.mod h1:sNqM/iGXuH87wEH1rpQBEY1PR0AAkRKJuUhJGOdo7To=
 github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1ei82L+c=
 github.com/disintegration/imaging v1.6.2/go.mod h1:44/5580QXChDfwIclfc/PCwrr44amcmDAg8hxG0Ewe4=
 github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
@@ -509,6 +511,8 @@ github.com/starshine-sys/bcr v0.19.2-0.20210805173153-17f62beef9d5 h1:8FtaJlw4tQ
 github.com/starshine-sys/bcr v0.19.2-0.20210805173153-17f62beef9d5/go.mod h1:9hs/A5pCq5MxiFELNIDy90wqyOUwRDxftavo9AipVOg=
 github.com/starshine-sys/bcr v0.20.1-0.20210811141110-a116c8041fef h1:MYxXvl05QVk2G3OmIijqYRe7Ez37ZDOfWLyTtNVQ/R8=
 github.com/starshine-sys/bcr v0.20.1-0.20210811141110-a116c8041fef/go.mod h1:BxtsmXRNiT2nbSWWzZpVtYmDpGKu0lkcAW8Eklfc8ME=
+github.com/starshine-sys/bcr v0.20.1-0.20210817114844-7b7c8d432770 h1:ilFk77yIWioxeZdOcm7haLIYYuoo8hju9JpzAMLfF50=
+github.com/starshine-sys/bcr v0.20.1-0.20210817114844-7b7c8d432770/go.mod h1:wCt2GyNZfKfFFfPxVN+C+z9BqE1pWJWACYAgQcO/WdA=
 github.com/starshine-sys/pkgo v1.0.0 h1:NQ+g6LgY+tkQdxXGZ2oTH5Hp2n5/57Vo+RFcHbwkeHs=
 github.com/starshine-sys/pkgo v1.0.0/go.mod h1:w1ObBZa7/lOvCqOx9690uPM5uuaovH8nCZXpt84cAu4=
 github.com/starshine-sys/snowflake/v2 v2.0.0/go.mod h1:6E5AYqTPb9DL7bp24tcbTLx0/thTcAmyLgscZIP7tzw=

@@ -14,7 +14,10 @@ import (
 func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	if !m.GuildID.IsValid() || m.Author.Bot {
 		if m.WebhookID.IsValid() {
-			bot.pkMessage(m)
+			err := bot.pkMessage(m)
+			if err != nil {
+				bot.Sugar.Errorf("Error handling PK message: %v", err)
+			}
 		}
 
 		return
@@ -119,22 +122,25 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	}
 }
 
-func (bot *Bot) pkMessage(m *gateway.MessageCreateEvent) {
+func (bot *Bot) pkMessage(m *gateway.MessageCreateEvent) (err error) {
 	mirror, err := bot.mirrorFor(m.ChannelID)
 	if err != nil {
-		return
+		return nil
 	}
 
 	pkMsg, err := bot.PK.Message(pkgo.Snowflake(m.ID))
 	if err != nil {
-		return
+		return nil
 	}
 
 	orig, err := bot.message(discord.MessageID(pkMsg.Original))
 	if err == nil {
 		s, _ := bot.Router.StateFromGuildID(m.GuildID)
 
-		s.DeleteMessage(orig.ChannelID, orig.MessageID)
+		err = s.DeleteMessage(orig.ChannelID, orig.MessageID, "")
+		if err != nil {
+			return
+		}
 	}
 
 	client := webhook.New(mirror.WebhookID, mirror.Token)
@@ -182,8 +188,8 @@ func (bot *Bot) pkMessage(m *gateway.MessageCreateEvent) {
 	})
 	if err != nil {
 		bot.Sugar.Errorf("Error inserting message: %v", err)
-		return
 	}
+	return
 }
 
 func hasAnySuffix(s string, suffixes ...string) bool {

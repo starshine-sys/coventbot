@@ -223,7 +223,7 @@ func (bot *Bot) sampaReaction(ev *gateway.MessageReactionAddEvent) {
 
 	s, _ := bot.Router.StateFromGuildID(ev.GuildID)
 
-	err = s.DeleteMessage(ev.ChannelID, ev.MessageID)
+	err = s.DeleteMessage(ev.ChannelID, ev.MessageID, "")
 	if err != nil {
 		bot.Sugar.Errorf("Error deleting message: %v", err)
 		return

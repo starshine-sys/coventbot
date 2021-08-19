@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
@@ -111,7 +112,9 @@ func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request, _ httprouter.
 
 	state, _ := bot.Router.StateFromGuildID(u.ServerID)
 
-	err = state.AddRole(u.ServerID, u.UserID, s.MemberRole)
+	err = state.AddRole(u.ServerID, u.UserID, s.MemberRole, api.AddRoleData{
+		AuditLogReason: "Gatekeeper: add member role",
+	})
 	if err != nil {
 		fmt.Fprintln(w, "There was an error adding your member role. Please contact a server administrator for help.")
 		bot.Sugar.Errorf("Error adding role for %v in %v: %v", u.UserID, u.ServerID, err)

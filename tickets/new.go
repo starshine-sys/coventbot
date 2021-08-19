@@ -58,9 +58,10 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 	}
 
 	ch, err := ctx.State.CreateChannel(ctx.Message.GuildID, api.CreateChannelData{
-		Name:       fmt.Sprintf("%v-%04d", cat.Name, cat.Count+1),
-		Type:       discord.GuildText,
-		CategoryID: cat.CategoryID,
+		Name:           fmt.Sprintf("%v-%04d", cat.Name, cat.Count+1),
+		Type:           discord.GuildText,
+		CategoryID:     cat.CategoryID,
+		AuditLogReason: api.AuditLogReason("Creating ticket channel in category " + cat.Name),
 	})
 	if err != nil {
 		bot.Sugar.Errorf("Error creating channel: %v", err)
@@ -120,13 +121,13 @@ func (bot *Bot) new(ctx *bcr.Context) (err error) {
 		return err
 	}
 
-	err = ctx.State.PinMessage(m.ChannelID, m.ID)
+	err = ctx.State.PinMessage(m.ChannelID, m.ID, "")
 	if err == nil {
 		msgs, err := ctx.State.Messages(ch.ID, 100)
 		if err == nil {
 			for _, m := range msgs {
 				if m.Author.ID == ctx.Bot.ID && m.Content == "" && len(m.Embeds) == 0 {
-					ctx.State.DeleteMessage(m.ChannelID, m.ID)
+					ctx.State.DeleteMessage(m.ChannelID, m.ID, "")
 					break
 				}
 			}

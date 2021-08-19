@@ -13,7 +13,7 @@ import (
 
 func (bot *Bot) deleteMessage(
 	state *state.State, channelID discord.ChannelID, messageID discord.MessageID, settings db.StarboardSettings, s *db.StarboardMessage) {
-	err := state.DeleteMessage(settings.StarboardChannel, s.StarboardMessageID)
+	err := state.DeleteMessage(settings.StarboardChannel, s.StarboardMessageID, "")
 	if err != nil {
 		bot.Sugar.Errorf("Error deleting starboard message: %v", err)
 	}
@@ -47,7 +47,7 @@ func (bot *Bot) starboardMessage(state *state.State, m discord.Message, settings
 		}
 	} else {
 		// otherwise, edit the existing message
-		_, err := state.EditMessage(settings.StarboardChannel, s.StarboardMessageID, msgContent, &embed, false)
+		_, err := state.EditMessage(settings.StarboardChannel, s.StarboardMessageID, msgContent, embed)
 		if err != nil {
 			bot.Sugar.Errorf("Error editing starboard message: %v", err)
 			return

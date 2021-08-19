@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"codeberg.org/eviedelta/detctime/durationparser"
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -45,7 +46,13 @@ func (bot *Bot) muteme(ctx *bcr.Context) (err error) {
 		"{action}", "mute",
 	).Replace(msg)
 
-	err = ctx.State.AddRole(ctx.Guild.ID, ctx.Author.ID, roles.MuteRole)
+	err = ctx.State.AddRole(ctx.Guild.ID, ctx.Author.ID, roles.MuteRole, api.AddRoleData{
+		AuditLogReason: api.AuditLogReason(
+			fmt.Sprintf("Self-mute by %v for %v",
+				ctx.Author.Tag(),
+				bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, dur),
+			)),
+	})
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourRed, "I couldn't mute you. Contact the mods for help.")
 		return
@@ -102,7 +109,13 @@ func (bot *Bot) pauseme(ctx *bcr.Context) (err error) {
 		"{action}", "pause",
 	).Replace(msg)
 
-	err = ctx.State.AddRole(ctx.Guild.ID, ctx.Author.ID, roles.PauseRole)
+	err = ctx.State.AddRole(ctx.Guild.ID, ctx.Author.ID, roles.PauseRole, api.AddRoleData{
+		AuditLogReason: api.AuditLogReason(
+			fmt.Sprintf("Self-pause by %v for %v",
+				ctx.Author.Tag(),
+				bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, dur),
+			)),
+	})
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourRed, "I couldn't pause you. Contact the mods for help.")
 		return

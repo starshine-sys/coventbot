@@ -77,7 +77,10 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 
 	colour := discord.MemberColor(*ctx.Guild, *m)
 	if colour == 0 {
-		colour = ctx.Router.EmbedColor
+		colour = m.User.Accent
+		if colour == 0 {
+			colour = ctx.Router.EmbedColor
+		}
 	}
 
 	e := discord.Embed{
@@ -149,6 +152,14 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 		Timestamp: discord.NowTimestamp(),
 	}
 
+	fmt.Println(m.User.Banner, "\n", ctx.Author.Banner)
+
+	if m.User.Banner != "" {
+		e.Image = &discord.EmbedImage{
+			URL: m.User.BannerURL(),
+		}
+	}
+
 	_, err = ctx.Send("", e)
 	return
 }
@@ -199,6 +210,16 @@ func (bot *Bot) userInfo(ctx *bcr.Context) (err error) {
 			Text: fmt.Sprintf("ID: %v", u.ID),
 		},
 		Timestamp: discord.NowTimestamp(),
+	}
+
+	if u.Accent != 0 {
+		e.Color = u.Accent
+	}
+
+	if u.Banner != "" {
+		e.Image = &discord.EmbedImage{
+			URL: u.BannerURL(),
+		}
 	}
 
 	_, err = ctx.Send("", e)

@@ -3,6 +3,7 @@ package approval
 import (
 	"strings"
 
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
@@ -25,13 +26,15 @@ func (bot *Bot) approve(ctx *bcr.Context) (err error) {
 	}
 
 	for _, r := range s.ApproveAddRoles {
-		err = ctx.State.AddRole(ctx.Message.GuildID, m.User.ID, discord.RoleID(r))
+		err = ctx.State.AddRole(ctx.Message.GuildID, m.User.ID, discord.RoleID(r), api.AddRoleData{
+			AuditLogReason: "Gatekeeper: approve member",
+		})
 		if err != nil {
 			return bot.Report(ctx, err)
 		}
 	}
 	for _, r := range s.ApproveRemoveRoles {
-		err = ctx.State.RemoveRole(ctx.Message.GuildID, m.User.ID, discord.RoleID(r))
+		err = ctx.State.RemoveRole(ctx.Message.GuildID, m.User.ID, discord.RoleID(r), "Gatekeeper: approve member")
 		if err != nil {
 			return bot.Report(ctx, err)
 		}

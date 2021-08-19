@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/state"
@@ -104,7 +105,9 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 		}
 	}
 
-	err = s.AddRole(m.GuildID, m.Author.ID, reward.RoleReward)
+	err = s.AddRole(m.GuildID, m.Author.ID, reward.RoleReward, api.AddRoleData{
+		AuditLogReason: api.AuditLogReason(fmt.Sprintf("Level reward for reaching level %v", newLvl)),
+	})
 	if err != nil {
 		bot.Sugar.Errorf("Error adding role to user: %v", err)
 		return

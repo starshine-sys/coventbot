@@ -28,7 +28,7 @@ func (bot *Bot) slowmodeMessage(m *gateway.MessageCreateEvent) {
 	if delete {
 		s, _ := bot.Router.StateFromGuildID(m.GuildID)
 
-		err := s.DeleteMessage(m.ChannelID, m.ID)
+		err := s.DeleteMessage(m.ChannelID, m.ID, "")
 		if err != nil {
 			bot.Sugar.Errorf("Error deleting message: %v", err)
 			return

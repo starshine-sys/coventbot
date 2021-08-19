@@ -43,6 +43,10 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 		reason = strings.TrimSpace(strings.TrimPrefix(ctx.RawArgs, ctx.Args[0]))
 	}
 
+	if len(reason) > 450 {
+		return ctx.SendfX("Reason too long, maximum 450 characters (%v > 450).", len(reason))
+	}
+
 	if isMember {
 		_, err = ctx.NewDM(target.ID).Content(fmt.Sprintf("You were banned from %v.\nReason: %v", ctx.Guild.Name, reason)).Send()
 		if err != nil {
@@ -51,9 +55,8 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 	}
 
 	err = ctx.State.Ban(ctx.Message.GuildID, target.ID, api.BanData{
-		DeleteDays: option.NewUint(0),
-		Reason: option.NewString(
-			fmt.Sprintf("%v#%v: %v", ctx.Author.Username, ctx.Author.Discriminator, reason)),
+		DeleteDays:     option.NewUint(0),
+		AuditLogReason: api.AuditLogReason(fmt.Sprintf("%v#%v: %v", ctx.Author.Username, ctx.Author.Discriminator, reason)),
 	})
 	if err != nil {
 		_, err = ctx.Send("I could not ban that user.")
@@ -87,6 +90,10 @@ func (bot *Bot) unban(ctx *bcr.Context) (err error) {
 		reason = strings.TrimSpace(strings.TrimPrefix(ctx.RawArgs, ctx.Args[0]))
 	}
 
+	if len(reason) > 450 {
+		return ctx.SendfX("Reason too long, maximum 450 characters (%v > 450).", len(reason))
+	}
+
 	bans, err := ctx.State.Bans(ctx.Message.GuildID)
 	if err != nil {
 		return bot.Report(ctx, err)
@@ -105,7 +112,7 @@ func (bot *Bot) unban(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = ctx.State.Unban(ctx.Message.GuildID, u.ID)
+	err = ctx.State.Unban(ctx.Message.GuildID, u.ID, api.AuditLogReason(ctx.Author.Tag()+": "+reason))
 	if err != nil {
 		_, err = ctx.Sendf("I was unable to unban %v#%v.", u.Username, u.Discriminator)
 		return

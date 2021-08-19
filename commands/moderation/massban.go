@@ -66,7 +66,7 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 	for _, u := range users {
 		err = ctx.State.Ban(ctx.Message.GuildID, u.ID, api.BanData{
 			DeleteDays: option.NewUint(0),
-			Reason: option.NewString(
+			AuditLogReason: api.AuditLogReason(
 				fmt.Sprintf("%v#%v: %v", ctx.Author.Username, ctx.Author.Discriminator, reason)),
 		})
 		if err != nil {

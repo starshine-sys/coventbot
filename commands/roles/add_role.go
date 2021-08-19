@@ -2,6 +2,7 @@ package roles
 
 import (
 	"emperror.dev/errors"
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/jackc/pgx/v4"
 	"github.com/starshine-sys/bcr"
 )
@@ -48,7 +49,9 @@ func (bot *Bot) addRole(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	err = ctx.State.AddRole(ctx.Guild.ID, ctx.Author.ID, r.ID)
+	err = ctx.State.AddRole(ctx.Guild.ID, ctx.Author.ID, r.ID, api.AddRoleData{
+		AuditLogReason: "Self-assigned role",
+	})
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourRed, "I couldn't assign that role to you.")
 		return
@@ -105,7 +108,7 @@ func (bot *Bot) removeRole(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	err = ctx.State.RemoveRole(ctx.Guild.ID, ctx.Author.ID, r.ID)
+	err = ctx.State.RemoveRole(ctx.Guild.ID, ctx.Author.ID, r.ID, "Self-assigned role")
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourRed, "I couldn't remove that role from you.")
 		return
