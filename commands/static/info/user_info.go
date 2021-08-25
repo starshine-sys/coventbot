@@ -152,11 +152,11 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 		Timestamp: discord.NowTimestamp(),
 	}
 
-	fmt.Println(m.User.Banner, "\n", ctx.Author.Banner)
-
-	if m.User.Banner != "" {
-		e.Image = &discord.EmbedImage{
-			URL: m.User.BannerURL(),
+	if u, err := ctx.State.User(m.User.ID); err == nil {
+		if u.Banner != "" {
+			e.Image = &discord.EmbedImage{
+				URL: u.BannerURL() + "?size=1024",
+			}
 		}
 	}
 
@@ -218,7 +218,7 @@ func (bot *Bot) userInfo(ctx *bcr.Context) (err error) {
 
 	if u.Banner != "" {
 		e.Image = &discord.EmbedImage{
-			URL: u.BannerURL(),
+			URL: u.BannerURL() + "?size=1024",
 		}
 	}
 

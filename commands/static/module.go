@@ -220,7 +220,7 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		bot.Sugar.Errorf("Error cleaning command responses: %v", err)
 	}
 	if ct.RowsAffected() != 0 {
-		bot.Sugar.Errorf("Deleted %v command response(s)!", ct.RowsAffected())
+		bot.Sugar.Infof("Deleted %v command response(s)!", ct.RowsAffected())
 	}
 
 	return s, append(list, pride)
