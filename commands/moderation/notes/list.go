@@ -30,7 +30,7 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 	for _, n := range notes {
 		fields = append(fields, discord.EmbedField{
 			Name:  fmt.Sprintf("Note #%v", n.ID),
-			Value: fmt.Sprintf("From %v at %v:\n%v", n.Moderator.Mention(), n.Created.Format("2006-01-02 15:04:05"), n.Note),
+			Value: fmt.Sprintf("From %v at <t:%v>:\n%v", n.Moderator.Mention(), n.Created.Unix(), n.Note),
 		})
 	}
 

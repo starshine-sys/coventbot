@@ -64,7 +64,7 @@ func (bot *Bot) about(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Uptime",
-				Value:  fmt.Sprintf("%v (since %v)", etc.HumanizeDuration(etc.DurationPrecisionSeconds, time.Since(bot.start)), bot.start.Format("Jan _2 2006, 15:04:05 MST")),
+				Value:  fmt.Sprintf("%v (since <t:%v>)", etc.HumanizeDuration(etc.DurationPrecisionSeconds, time.Since(bot.start)), bot.start.Unix()),
 				Inline: false,
 			},
 			{

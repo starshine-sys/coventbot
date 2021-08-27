@@ -31,9 +31,9 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 		}
 
 		slice = append(slice, fmt.Sprintf(`**#%v**: %v
-%v UTC ([link](https://discord.com/channels/%v/%v/%v), [original](https://discord.com/channels/%v/%v/%v))
+<t:%v> ([link](https://discord.com/channels/%v/%v/%v), [original](https://discord.com/channels/%v/%v/%v))
 
-`, todo.ID, text, todo.Created.Format("2006-01-02 | 15:04"), todo.ServerID, todo.ChannelID, todo.MID, todo.OrigServerID, todo.OrigChannelID, todo.OrigMID))
+`, todo.ID, text, todo.Created.Unix(), todo.ServerID, todo.ChannelID, todo.MID, todo.OrigServerID, todo.OrigChannelID, todo.OrigMID))
 	}
 
 	_, err = bot.PagedEmbed(ctx, bcr.StringPaginator(fmt.Sprintf("Todos (%v)", len(todos)), bcr.ColourBlurple, slice, 5), 10*time.Minute)

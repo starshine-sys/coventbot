@@ -58,7 +58,7 @@ func (bot *Bot) roleInfo(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Created",
-				Value:  fmt.Sprintf("%v\n(%v)", r.ID.Time().UTC().Format("Jan 02 2006, 15:05:05 UTC"), etc.HumanizeTime(etc.DurationPrecisionMinutes, r.ID.Time().UTC())),
+				Value:  fmt.Sprintf("<t:%v>\n(%v)", r.ID.Time().Unix(), etc.HumanizeTime(etc.DurationPrecisionMinutes, r.ID.Time().UTC())),
 				Inline: false,
 			},
 			{

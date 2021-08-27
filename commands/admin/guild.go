@@ -111,7 +111,7 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Created",
-				Value:  fmt.Sprintf("%v\n(%v)", g.ID.Time().Format("Jan 02 2006, 15:04:05 MST"), etc.HumanizeTime(etc.DurationPrecisionHours, g.ID.Time())),
+				Value:  fmt.Sprintf("<t:%v>\n(%v)", g.ID.Time().Unix(), etc.HumanizeTime(etc.DurationPrecisionHours, g.ID.Time())),
 				Inline: true,
 			},
 		},

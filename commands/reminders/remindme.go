@@ -68,11 +68,11 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 			rm = "**" + rm + "**"
 		}
 
-		content = fmt.Sprintf("Okay %v, I'll remind you about %v %v. (#%v)", ctx.DisplayName(), rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), id)
+		content = fmt.Sprintf("Okay %v, I'll remind you about %v %v. (<t:%v>, #%v)", ctx.DisplayName(), rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), t.Unix(), id)
 	} else {
 		e = []discord.Embed{{
 			Color:       bcr.ColourGreen,
-			Description: fmt.Sprintf("Reminder #%v set for %v from now.\n(%v UTC)", id, bcr.HumanizeDuration(bcr.DurationPrecisionSeconds, t.Sub(time.Now())+time.Second), t.Format("2006-01-02 15:04:05")),
+			Description: fmt.Sprintf("Reminder #%v set for %v from now.\n(<t:%v>)", id, bcr.HumanizeDuration(bcr.DurationPrecisionSeconds, t.Sub(time.Now())+time.Second), t.Unix()),
 		}}
 
 		// only show this "ad" every few reminders

@@ -29,7 +29,7 @@ func (bot *Bot) nolevelsList(ctx *bcr.Context) (err error) {
 	for i, l := range list {
 		buf := fmt.Sprintf("%v. %v: ", i+1, l.UserID.Mention())
 		if l.Expires {
-			buf += fmt.Sprintf("expires %v UTC\n", l.Expiry.Format("2006-01-02 15:04:05"))
+			buf += fmt.Sprintf("expires <t:%v>\n", l.Expiry.Unix())
 		} else {
 			buf += "does not expire\n"
 		}

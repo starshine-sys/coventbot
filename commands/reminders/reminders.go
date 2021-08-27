@@ -68,9 +68,9 @@ func (bot *Bot) reminders(ctx bcr.Contexter) (err error) {
 		}
 
 		slice = append(slice, fmt.Sprintf(`**#%v**: %v
-%v UTC ([link](https://discord.com/channels/%v/%v/%v))
+<t:%v> ([link](https://discord.com/channels/%v/%v/%v))
 
-`, r.ID, text, r.Expires.Format("2006-01-02 | 15:04"), linkServer, r.ChannelID, r.MessageID))
+`, r.ID, text, r.Expires.Unix(), linkServer, r.ChannelID, r.MessageID))
 	}
 
 	embeds := bcr.StringPaginator(fmt.Sprintf("%v (%v)", title, len(rms)), bcr.ColourBlurple, slice, 5)

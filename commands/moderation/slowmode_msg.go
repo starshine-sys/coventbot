@@ -41,7 +41,7 @@ func (bot *Bot) slowmodeMessage(m *gateway.MessageCreateEvent) {
 			return
 		}
 
-		msg := fmt.Sprintf("You can send your next message in %v at %v.", m.ChannelID.Mention(), expiry.UTC().Format("15:04:05 UTC, January 02 2006"))
+		msg := fmt.Sprintf("You can send your next message in %v at <t:%v>.", m.ChannelID.Mention(), expiry.Unix())
 
 		ch, err := s.CreatePrivateChannel(m.Author.ID)
 		if err != nil {
