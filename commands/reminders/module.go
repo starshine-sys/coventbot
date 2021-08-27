@@ -160,6 +160,26 @@ func (bot *Bot) doReminders() {
 
 			shouldDM = shouldDM || !r.ServerID.IsValid()
 
+			if r.ServerID.IsValid() {
+				shouldDM = true
+
+				// this is Ugly™ but it should work
+				// basically we need to get All of them to check perms
+				m, err := bot.Member(r.ServerID, r.UserID)
+				if err == nil {
+					g, err := state.Guild(r.ServerID)
+					if err == nil {
+						ch, err := state.Channel(r.ChannelID)
+						if err == nil {
+							perms := discord.CalcOverwrites(*g, *ch, m)
+							if perms.Has(discord.PermissionSendMessages | discord.PermissionViewChannel) {
+								shouldDM = false
+							}
+						}
+					}
+				}
+			}
+
 			bot.Sugar.Debugf("Executing reminder #%v, should DM: %v, embedless: %v", r.ID, shouldDM, embedless)
 
 			e := []discord.Embed{{

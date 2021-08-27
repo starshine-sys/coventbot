@@ -75,7 +75,7 @@ func (bot *Bot) message(ctx *bcr.Context) (err error) {
 	}
 
 	clr := discord.Color(bcr.ColourBlurple)
-	name := ctx.Author.Username
+	name := msg.Author.Username
 	if !msg.WebhookID.IsValid() {
 		member, err := bot.Member(msg.GuildID, msg.Author.ID)
 		if err == nil {
