@@ -14,7 +14,9 @@ import (
 )
 
 func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
-	t, i, err := ParseTime(ctx.Args, bot.userTime(ctx.Author.ID))
+	loc := bot.userTime(ctx.Author.ID)
+
+	t, i, err := ParseTime(ctx.Args, loc)
 	if err != nil {
 		dur, err := durationparser.Parse(ctx.Args[0])
 		if err != nil {
@@ -22,10 +24,10 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 			return err
 		}
 		i = 0
-		t = time.Now().UTC().Add(dur)
+		t = time.Now().In(loc).Add(dur)
 	}
 
-	if t.Before(time.Now().UTC()) {
+	if t.Before(time.Now().In(loc)) {
 		_, err = ctx.Replyc(bcr.ColourRed, "That time is in the past.")
 		return
 	}
@@ -47,7 +49,7 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 	err = bot.DB.Pool.QueryRow(context.Background(), `insert into reminders
 	(user_id, message_id, channel_id, server_id, reminder, expires)
 	values
-	($1, $2, $3, $4, $5, $6) returning id`, ctx.Author.ID, ctx.Message.ID, ctx.Channel.ID, ctx.Message.GuildID, rm, t).Scan(&id)
+	($1, $2, $3, $4, $5, $6) returning id`, ctx.Author.ID, ctx.Message.ID, ctx.Channel.ID, ctx.Message.GuildID, rm, t.UTC()).Scan(&id)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -99,13 +101,15 @@ func (bot *Bot) remindmeSlash(ctx bcr.Contexter) (err error) {
 	if err != nil {
 		args = strings.Fields(when)
 	}
+
+	loc := bot.userTime(ctx.User().ID)
 	t, _, err = ParseTime(args, bot.userTime(ctx.User().ID))
 	if err != nil {
 		dur, err := durationparser.Parse(when)
 		if err != nil {
 			return ctx.SendEphemeral("I couldn't parse your input as a valid time or duration.")
 		}
-		t = time.Now().UTC().Add(dur)
+		t = time.Now().In(loc).Add(dur)
 	}
 
 	guildID := discord.GuildID(0)
@@ -120,7 +124,7 @@ func (bot *Bot) remindmeSlash(ctx bcr.Contexter) (err error) {
 	err = bot.DB.Pool.QueryRow(context.Background(), `insert into reminders
 	(user_id, message_id, channel_id, server_id, reminder, expires)
 	values
-	($1, $2, $3, $4, $5, $6) returning id`, ctx.User().ID, msgID, ctx.GetChannel().ID, guildID, rm, t).Scan(&id)
+	($1, $2, $3, $4, $5, $6) returning id`, ctx.User().ID, msgID, ctx.GetChannel().ID, guildID, rm, t.UTC()).Scan(&id)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
