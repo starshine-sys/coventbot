@@ -146,6 +146,7 @@ gotEmoji:
 			ContentType: imageFileType(e.url),
 			Content:     b,
 		},
+		AuditLogReason: api.AuditLogReason(fmt.Sprintf("%vaddemoji by %v (%v)", bot.Config.Prefixes[0], ctx.Author.Tag(), ctx.Author.ID)),
 	}
 
 	emoji, err := ctx.State.CreateEmoji(ctx.Message.GuildID, ced)

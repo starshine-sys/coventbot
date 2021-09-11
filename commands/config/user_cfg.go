@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/georgysavva/scany/pgxscan"
@@ -18,6 +19,8 @@ type UserConfig struct {
 	DisableLevelupMessages bool
 	RemindersInDM          bool
 	UsernamesOptOut        bool
+
+	Timezone string
 }
 
 func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
@@ -46,6 +49,10 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 					Name:  "`reaction_pages`",
 					Value: "Makes paginated messages use reactions instead of buttons.",
 				},
+				{
+					Name:  "`timezone`",
+					Value: "Set your time zone, used in `remindme`.",
+				},
 			},
 			Color: ctx.Router.EmbedColor,
 		})
@@ -57,9 +64,14 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 
 		pgxscan.Get(context.Background(), bot.DB.Pool, &uc, "select * from user_config where user_id = $1", ctx.Author.ID)
 
+		tz := uc.Timezone
+		if tz == "" {
+			tz = "UTC"
+		}
+
 		_, err = ctx.Send("", discord.Embed{
 			Title:       "User configuration",
-			Description: fmt.Sprintf("`disable_levelup_messages`: %v\n`reminders_in_dm`: %v\n`usernames_opt_out`: %v", uc.DisableLevelupMessages, uc.RemindersInDM, uc.UsernamesOptOut),
+			Description: fmt.Sprintf("`disable_levelup_messages`: %v\n`reminders_in_dm`: %v\n`usernames_opt_out`: %v\n`timezone`: %v", uc.DisableLevelupMessages, uc.RemindersInDM, uc.UsernamesOptOut, tz),
 			Color:       ctx.Router.EmbedColor,
 		})
 		return
@@ -84,6 +96,18 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 		}
 
 		_, err = ctx.Sendf("Set `%v` to `%v`!", ctx.Args[0], b)
+	case "timezone":
+		loc, err := time.LoadLocation(ctx.Args[1])
+		if err != nil {
+			_, err = ctx.Replyc(bcr.ColourRed, "I couldn't find a timezone named ``%v``.\nTimezone should be in `Continent/City` format; to find your timezone, use a tool such as <https://xske.github.io/tz/>.", bcr.EscapeBackticks(ctx.Args[1]))
+			return err
+		}
+		_, err = bot.DB.Pool.Exec(context.Background(), "insert into user_config (user_id, timezone) values ($1, $2) on conflict (user_id) do update set timezone = $2", ctx.Author.ID, loc.String())
+		if err != nil {
+			return bot.Report(ctx, err)
+		}
+
+		_, err = ctx.Replyc(bcr.ColourGreen, "Set your timezone to %v.", loc.String())
 	default:
 		_, err = ctx.Send("I don't recognise that config key.")
 	}

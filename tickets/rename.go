@@ -2,6 +2,7 @@ package tickets
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
@@ -25,7 +26,8 @@ func (bot *Bot) rename(ctx *bcr.Context) (err error) {
 	}
 
 	err = ctx.State.ModifyChannel(ctx.Channel.ID, api.ModifyChannelData{
-		Name: ctx.RawArgs,
+		Name:           ctx.RawArgs,
+		AuditLogReason: api.AuditLogReason(fmt.Sprintf("Ticket renamed by %v (%v)", ctx.Author.Tag(), ctx.Author.ID)),
 	})
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourRed, "I couldn't update the channel name.")

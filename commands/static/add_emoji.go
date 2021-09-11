@@ -116,8 +116,9 @@ url:
 	}
 
 	ced := api.CreateEmojiData{
-		Name:  name,
-		Image: img,
+		Name:           name,
+		Image:          img,
+		AuditLogReason: api.AuditLogReason(fmt.Sprintf("%vaddemoji by %v (%v)", bot.Config.Prefixes[0], ctx.Author.Tag(), ctx.Author.ID)),
 	}
 
 	emoji, err := ctx.State.CreateEmoji(ctx.Message.GuildID, ced)

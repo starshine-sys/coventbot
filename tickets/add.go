@@ -47,8 +47,9 @@ func (bot *Bot) add(ctx *bcr.Context) (err error) {
 	}
 
 	err = ctx.State.EditChannelPermission(ctx.Channel.ID, discord.Snowflake(u.User.ID), api.EditChannelPermissionData{
-		Type:  discord.OverwriteMember,
-		Allow: discord.PermissionViewChannel | discord.PermissionSendMessages | discord.PermissionReadMessageHistory | discord.PermissionAddReactions,
+		Type:           discord.OverwriteMember,
+		Allow:          discord.PermissionViewChannel | discord.PermissionSendMessages | discord.PermissionReadMessageHistory | discord.PermissionAddReactions,
+		AuditLogReason: api.AuditLogReason(fmt.Sprintf("User added by %v (%v)", ctx.Author.Tag(), ctx.Author.ID)),
 	})
 	if err != nil {
 		return bot.Report(ctx, err)
@@ -89,8 +90,9 @@ func (bot *Bot) remove(ctx *bcr.Context) (err error) {
 	}
 
 	err = ctx.State.EditChannelPermission(ctx.Channel.ID, discord.Snowflake(u.User.ID), api.EditChannelPermissionData{
-		Type: discord.OverwriteMember,
-		Deny: discord.PermissionViewChannel | discord.PermissionSendMessages | discord.PermissionReadMessageHistory | discord.PermissionAddReactions,
+		Type:           discord.OverwriteMember,
+		Deny:           discord.PermissionViewChannel | discord.PermissionSendMessages | discord.PermissionReadMessageHistory | discord.PermissionAddReactions,
+		AuditLogReason: api.AuditLogReason(fmt.Sprintf("User removed by %v (%v)", ctx.Author.Tag(), ctx.Author.ID)),
 	})
 	if err != nil {
 		return bot.Report(ctx, err)
@@ -146,8 +148,9 @@ func (bot *Bot) guildMemberAdd(ev *gateway.GuildMemberAddEvent) {
 		}
 
 		err = s.EditChannelPermission(discord.ChannelID(ch), discord.Snowflake(ev.User.ID), api.EditChannelPermissionData{
-			Type:  discord.OverwriteMember,
-			Allow: discord.PermissionViewChannel | discord.PermissionSendMessages | discord.PermissionReadMessageHistory | discord.PermissionAddReactions,
+			Type:           discord.OverwriteMember,
+			Allow:          discord.PermissionViewChannel | discord.PermissionSendMessages | discord.PermissionReadMessageHistory | discord.PermissionAddReactions,
+			AuditLogReason: "User added to ticket after rejoin",
 		})
 		if err != nil {
 			bot.Sugar.Errorf("Error updating overwrites for %v: %v", ch, err)

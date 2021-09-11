@@ -141,7 +141,7 @@ Messages: %v
 	time.Sleep(5 * time.Second)
 
 	ctx.State.DeleteChannel(ctx.Channel.ID, api.AuditLogReason(
-		"Deleting ticket channel owned by "+owner.Tag(),
+		fmt.Sprintf("Deleting ticket channel owned by %v (%v)", owner.Tag(), owner.ID),
 	))
 
 	_, err = bot.DB.Pool.Exec(context.Background(), "delete from tickets where channel_id = $1", ctx.Channel.ID)

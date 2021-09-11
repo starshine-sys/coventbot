@@ -14,7 +14,7 @@ import (
 )
 
 func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
-	t, i, err := ParseTime(ctx.Args)
+	t, i, err := ParseTime(ctx.Args, bot.userTime(ctx.Author.ID))
 	if err != nil {
 		dur, err := durationparser.Parse(ctx.Args[0])
 		if err != nil {
@@ -99,7 +99,7 @@ func (bot *Bot) remindmeSlash(ctx bcr.Contexter) (err error) {
 	if err != nil {
 		args = strings.Fields(when)
 	}
-	t, _, err = ParseTime(args)
+	t, _, err = ParseTime(args, bot.userTime(ctx.User().ID))
 	if err != nil {
 		dur, err := durationparser.Parse(when)
 		if err != nil {

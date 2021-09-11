@@ -1,9 +1,14 @@
 package reminders
 
 import (
+	"context"
 	"strings"
 	"time"
 	"unicode/utf8"
+
+	"emperror.dev/errors"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/jackc/pgx/v4"
 )
 
 var formats = []string{
@@ -73,14 +78,14 @@ var formats = []string{
 }
 
 // ParseTime parses a timestamp in a number of formats
-func ParseTime(args []string) (t time.Time, i int, err error) {
-	t, i, err = parseTime(args)
+func ParseTime(args []string, loc *time.Location) (t time.Time, i int, err error) {
+	t, i, err = parseTime(args, loc)
 	if err != nil {
 		return
 	}
 
 	if t.Year() == 0 {
-		now := time.Now().UTC()
+		now := time.Now().In(loc)
 
 		year := now.Year()
 
@@ -94,23 +99,23 @@ func ParseTime(args []string) (t time.Time, i int, err error) {
 			}
 		}
 
-		t = time.Date(year, month, day, t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), time.UTC)
+		t = time.Date(year, month, day, t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), loc)
 	}
 
 	if t.Hour() == 0 && t.Minute() == 0 && t.Second() == 0 {
-		now := time.Now().UTC()
+		now := time.Now().In(loc)
 
-		t = time.Date(t.Year(), t.Month(), t.Day(), now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), time.UTC)
+		t = time.Date(t.Year(), t.Month(), t.Day(), now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), loc)
 	}
 
-	if t.Before(time.Now().UTC()) {
+	if t.Before(time.Now().In(loc)) {
 		t = t.Add(24 * time.Hour)
 	}
 
 	return
 }
 
-func parseTime(args []string) (t time.Time, i int, err error) {
+func parseTime(args []string, loc *time.Location) (t time.Time, i int, err error) {
 	for i := len(args); i > 0; i-- {
 		input := strings.Join(args[:i], " ")
 		input = string(input[0]) + strings.ToLower(input[1:])
@@ -123,11 +128,28 @@ func parseTime(args []string) (t time.Time, i int, err error) {
 		}
 
 		for _, f := range formats {
-			t, err = time.ParseInLocation(f, input, time.UTC)
+			t, err = time.ParseInLocation(f, input, loc)
 			if err == nil {
 				return t, i - 1, nil
 			}
 		}
 	}
 	return t, -1, err
+}
+
+func (bot *Bot) userTime(userID discord.UserID) *time.Location {
+	var name string
+	err := bot.DB.Pool.QueryRow(context.Background(), "select timezone from user_config where user_id = $1", userID).Scan(&name)
+	if err != nil && errors.Cause(err) != pgx.ErrNoRows {
+		bot.Sugar.Errorf("Error getting user timezone: %v", err)
+	}
+	if name == "" {
+		name = "UTC"
+	}
+
+	loc, err := time.LoadLocation(name)
+	if err != nil {
+		return time.UTC
+	}
+	return loc
 }
