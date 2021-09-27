@@ -339,6 +339,15 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:   b.pauseme,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "purge",
+		Summary: "Bulk delete the given number of messages in the current channel. Ignores pinned messages.",
+		Usage:   "[number, default 100]",
+
+		Permissions: discord.PermissionManageMessages,
+		Command:     b.purge,
+	}))
+
 	bot.Router.AddHandler(b.channelbanOnJoin)
 	bot.Router.AddHandler(b.muteRoleDelete)
 	bot.Router.AddHandler(b.muteOnJoin)
