@@ -149,7 +149,7 @@ func (bot *Bot) handleTagCommand(ctx *bcr.Context) (err error) {
 }
 
 func (bot *Bot) interactionCreate(ic *gateway.InteractionCreateEvent) {
-	if ic.Type != gateway.CommandInteraction {
+	if ic.Type != discord.CommandInteraction {
 		return
 	}
 

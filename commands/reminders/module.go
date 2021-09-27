@@ -210,9 +210,9 @@ func (bot *Bot) doReminders() {
 					data.Content = s
 					data.Embeds = nil
 					data.Components = []discord.Component{
-						discord.ActionRowComponent{
+						&discord.ActionRowComponent{
 							Components: []discord.Component{
-								discord.ButtonComponent{
+								&discord.ButtonComponent{
 									Label: "Jump to message",
 									Style: discord.LinkButton,
 									URL:   fmt.Sprintf("https://discord.com/channels/%v/%v/%v", linkServer, r.ChannelID, r.MessageID),

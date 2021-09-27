@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"codeberg.org/eviedelta/detctime/durationparser"
-	"github.com/diamondburned/arikawa/v3/bot/extras/shellwords"
 	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/bot/extras/shellwords"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -85,8 +85,13 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.Send(content, e...)
-	return err
+	msg, err := ctx.Send(content, e...)
+	if err != nil {
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update reminders set message_id = $1 where id = $2", msg.ID, id)
+	return
 }
 
 func (bot *Bot) remindmeSlash(ctx bcr.Contexter) (err error) {
@@ -139,16 +144,11 @@ func (bot *Bot) remindmeSlash(ctx bcr.Contexter) (err error) {
 	}
 
 	name := ctx.User().Username
-	if v, ok := ctx.(*bcr.SlashContext); ok {
-		if v.Member != nil && v.Member.Nick != "" {
-			name = v.Member.Nick
-		}
+	if ctx.GetMember() != nil && ctx.GetMember().Nick != "" {
+		name = ctx.GetMember().Nick
 	}
 
-	msg, err := ctx.Send(fmt.Sprintf("Okay %v, I'll remind you about %v %v. (#%v)", name, rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), id), discord.Embed{
-		Description: t.Format("2006-01-02 15:04:05") + " UTC",
-		Color:       bcr.ColourGreen,
-	})
+	msg, err := ctx.Send(fmt.Sprintf("Okay %v, I'll remind you about %v %v. (<t:%v>, #%v)", name, rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), t.Unix(), id))
 	if err != nil {
 		return err
 	}
