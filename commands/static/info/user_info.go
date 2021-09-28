@@ -83,13 +83,18 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 		}
 	}
 
+	avatarURL := m.User.AvatarURL()
+	if m.Avatar != "" {
+		avatarURL = m.AvatarURL(ctx.Guild.ID)
+	}
+
 	e := discord.Embed{
 		Author: &discord.EmbedAuthor{
 			Name: m.User.Username + "#" + m.User.Discriminator,
 			Icon: m.User.AvatarURL(),
 		},
 		Thumbnail: &discord.EmbedThumbnail{
-			URL: m.User.AvatarURL(),
+			URL: avatarURL,
 		},
 		Description: m.User.ID.String(),
 		Color:       colour,
@@ -116,34 +121,6 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 					etc.HumanizeTime(etc.DurationPrecisionMinutes, m.User.ID.Time().UTC()),
 				),
 			},
-			{
-				Name:   "Nickname",
-				Value:  fmt.Sprintf("%v", If(m.Nick != "", m.Nick, m.User.Username)),
-				Inline: true,
-			},
-			{
-				Name:   "Highest role",
-				Value:  highestRole,
-				Inline: true,
-			},
-			{
-				Name: "Joined at",
-				Value: fmt.Sprintf("<t:%v:D> <t:%v:T>\n(%v)\n%v days after the server was created",
-					m.Joined.Time().Unix(), m.Joined.Time().Unix(),
-					etc.HumanizeTime(etc.DurationPrecisionMinutes, m.Joined.Time().UTC()),
-					int(
-						m.Joined.Time().Sub(ctx.Message.GuildID.Time()).Hours()/24,
-					),
-				),
-			},
-			{
-				Name:  fmt.Sprintf("Roles (%v)", len(rls)),
-				Value: b.String(),
-			},
-			{
-				Name:  "Key permissions",
-				Value: permString,
-			},
 		},
 
 		Footer: &discord.EmbedFooter{
@@ -151,6 +128,45 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 		},
 		Timestamp: discord.NowTimestamp(),
 	}
+
+	if m.Avatar != "" {
+		e.Fields = append(e.Fields, discord.EmbedField{
+			Name:   "Server avatar",
+			Value:  fmt.Sprintf("[Link](%v?size=1024)", m.AvatarURL(ctx.Guild.ID)),
+			Inline: true,
+		})
+	}
+
+	e.Fields = append(e.Fields, []discord.EmbedField{
+		{
+			Name:   "Nickname",
+			Value:  fmt.Sprintf("%v", If(m.Nick != "", m.Nick, m.User.Username)),
+			Inline: true,
+		},
+		{
+			Name:   "Highest role",
+			Value:  highestRole,
+			Inline: true,
+		},
+		{
+			Name: "Joined at",
+			Value: fmt.Sprintf("<t:%v:D> <t:%v:T>\n(%v)\n%v days after the server was created",
+				m.Joined.Time().Unix(), m.Joined.Time().Unix(),
+				etc.HumanizeTime(etc.DurationPrecisionMinutes, m.Joined.Time().UTC()),
+				int(
+					m.Joined.Time().Sub(ctx.Message.GuildID.Time()).Hours()/24,
+				),
+			),
+		},
+		{
+			Name:  fmt.Sprintf("Roles (%v)", len(rls)),
+			Value: b.String(),
+		},
+		{
+			Name:  "Key permissions",
+			Value: permString,
+		},
+	}...)
 
 	if u, err := ctx.State.User(m.User.ID); err == nil {
 		if u.Banner != "" {
