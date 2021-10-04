@@ -82,10 +82,11 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		SlashCommand: b.linkto,
 		Options: &[]discord.CommandOption{
 			{
-				Name:        "channel",
-				Type:        discord.ChannelOption,
-				Required:    true,
-				Description: "The channel to link to.",
+				Name:         "channel",
+				Type:         discord.ChannelOption,
+				ChannelTypes: []discord.ChannelType{discord.GuildText, discord.GuildNews, discord.GuildPublicThread, discord.GuildPrivateThread, discord.GuildNewsThread},
+				Required:     true,
+				Description:  "The channel to link to.",
 			},
 			{
 				Name:        "topic",

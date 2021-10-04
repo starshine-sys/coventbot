@@ -8,7 +8,7 @@ require (
 	github.com/AndreKR/multiface v0.0.0-20190725194701-b414aa6424a8
 	github.com/ReneKroon/ttlcache/v2 v2.7.0
 	github.com/caneroj1/stemmer v0.0.0-20170128035808-c9f2ce1504d5
-	github.com/diamondburned/arikawa/v3 v3.0.0-rc.2.0.20210928184636-ca70e0cca94c
+	github.com/diamondburned/arikawa/v3 v3.0.0-rc.2.0.20211003203148-bfb644c12460
 	github.com/disintegration/imaging v1.6.2
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fogleman/gg v1.3.0
@@ -22,7 +22,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
 	github.com/spf13/pflag v1.0.5
-	github.com/starshine-sys/bcr v0.21.1-0.20210922181023-63b1fda440f2
+	github.com/starshine-sys/bcr v0.21.1-0.20210929173146-1f0a766ade82
 	github.com/starshine-sys/pkgo v1.0.0
 	github.com/starshine-sys/snowflake/v2 v2.1.0
 	github.com/zachomedia/go-bdf v0.0.0-20210522061406-1a147053be95 // indirect
