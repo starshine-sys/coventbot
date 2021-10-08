@@ -123,12 +123,20 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	// get user colour
+	// get user colour + avatar URL
 	clr := uc.Colour
+	avatarURL := u.AvatarURLWithType(discord.PNGImage) + "?size=256"
+	username := u.Username
 	if clr == 0 && ctx.Guild != nil {
 		m, err := bot.Member(ctx.Guild.ID, u.ID)
 		if err == nil {
 			clr = discord.MemberColor(*ctx.Guild, m)
+			if m.Avatar != "" {
+				avatarURL = m.AvatarURLWithType(discord.PNGImage, ctx.Message.GuildID) + "?size=256"
+			}
+			if m.Nick != "" {
+				username = m.Nick
+			}
 		}
 	}
 
@@ -162,7 +170,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	img.DrawRoundedRectangle(50, 50, 1100, 300, 20)
 	img.Fill()
 
-	resp, err := http.Get(u.AvatarURLWithType(discord.PNGImage) + "?size=256")
+	resp, err := http.Get(avatarURL)
 	if err != nil {
 		return bot.lvlEmbed(ctx, u, sc, uc, lvl, xpForNext, xpForPrev, rank, clr)
 	}
@@ -249,14 +257,6 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	img.SetFontFace(boldFont)
 
 	name := ""
-	username := u.Username
-	m, err := bot.Member(ctx.Message.GuildID, u.ID)
-	if err == nil {
-		if m.Nick != "" {
-			username = m.Nick
-		}
-	}
-
 	for i, r := range username {
 		if i > 16 {
 			name += "..."
