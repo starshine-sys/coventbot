@@ -89,7 +89,7 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Members",
-				Value:  fmt.Sprintf("%v\nHumans: %v\nBots: %v", humanize.Comma(int64(g.ApproximateMembers)), humanize.Comma(humans), humanize.Comma(bots)),
+				Value:  fmt.Sprintf("Total: %v\nHumans: %v\nBots: %v", humanize.Comma(int64(g.ApproximateMembers)), humanize.Comma(humans), humanize.Comma(bots)),
 				Inline: true,
 			},
 			{
@@ -100,11 +100,6 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 			{
 				Name:   "Emoji",
 				Value:  fmt.Sprintf("%v total\n%v static\n%v animated", len(g.Emojis), staticEmoji, animatedEmoji),
-				Inline: true,
-			},
-			{
-				Name:   "Features",
-				Value:  strings.Join(guildFeaturesToString(g.Features), "\n"),
 				Inline: true,
 			},
 			{
@@ -123,6 +118,11 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 				Name:   "Created",
 				Value:  fmt.Sprintf("<t:%v>\n(%v)", g.ID.Time().Unix(), etc.HumanizeTime(etc.DurationPrecisionHours, g.ID.Time())),
 				Inline: true,
+			},
+			{
+				Name:   "Features",
+				Value:  strings.Join(guildFeaturesToString(g.Features), ", "),
+				Inline: false,
 			},
 		},
 
@@ -165,6 +165,14 @@ func guildFeaturesToString(g []discord.GuildFeature) (s []string) {
 			s = append(s, "Animated Icon")
 		case discord.Banner:
 			s = append(s, "Banner")
+		case "COMMUNITY":
+			s = append(s, "Community")
+		case "NEW_THREAD_PERMISSIONS":
+			s = append(s, "New Thread Permissions")
+		case "THREADS_ENABLED":
+			s = append(s, "Threads Enabled")
+		default:
+			s = append(s, string(f))
 		}
 	}
 	if len(s) == 0 {
