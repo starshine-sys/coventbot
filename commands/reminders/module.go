@@ -110,6 +110,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		})
 	})
 
+	bot.Router.AddHandler(b.messageCreate)
+
 	return s, append(list, rm)
 }
 
