@@ -47,7 +47,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	rm := bot.Router.AddCommand(&bcr.Command{
 		Name:    "remindme",
-		Aliases: []string{"remind", "reminder"},
+		Aliases: []string{"remind", "reminder", "rm"},
 
 		Summary: "Set a reminder for yourself.",
 		Usage:   "<time or duration> [reason]",

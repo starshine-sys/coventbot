@@ -89,7 +89,7 @@ func (bot *Bot) set(ctx *bcr.Context) (err error) {
 		Name: fmt.Sprintf("Channel mirror for #%v", name),
 	})
 	if err != nil {
-		_, err = ctx.Replyc(bcr.ColourRed, "I couldn't create a webhook in %v. Please make sure I have the Manage Webhooks permission in that channel, and the channel hasn't hit the maximum number of webhooks.")
+		_, err = ctx.Replyc(bcr.ColourRed, "I couldn't create a webhook in %v. Please make sure I have the Manage Webhooks permission in that channel, and the channel hasn't hit the maximum number of webhooks.", dest.Mention())
 		return
 	}
 

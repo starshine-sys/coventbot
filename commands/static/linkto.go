@@ -111,7 +111,7 @@ func (bot *Bot) linkto(ctx bcr.Contexter) (err error) {
 
 	msg2, err := ctx.Session().SendMessage(ch.ID, fmt.Sprintf("<https://discord.com/channels/%v/%v/%v>", ctx.GetGuild().ID, ctx.GetChannel().ID, msg1.ID), discord.Embed{
 		Color:       bcr.ColourBlurple,
-		Description: fmt.Sprintf("Conversation moved from %v by %v%v", ch.Mention(), ctx.User().Mention(), desc),
+		Description: fmt.Sprintf("Conversation moved from %v by %v%v", ctx.GetChannel().Mention(), ctx.User().Mention(), desc),
 		Footer: &discord.EmbedFooter{
 			Icon: ctx.User().AvatarURLWithType(discord.PNGImage),
 			Text: ctx.User().Tag(),

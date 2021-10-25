@@ -19,7 +19,7 @@ func (bot *ModLog) reason(ctx *bcr.Context) (err error) {
 		err = bot.DB.Pool.QueryRow(context.Background(), "select id from mod_log where server_id = $1 order by id desc limit 1", ctx.Guild.ID).Scan(&id)
 		if err != nil {
 			if errors.Cause(err) == pgx.ErrNoRows {
-				ctx.Replyc(bcr.ColourRed, "This server has no mod log entries.", nil)
+				ctx.Replyc(bcr.ColourRed, "This server has no mod log entries.")
 				return
 			}
 			return bot.Report(ctx, err)
