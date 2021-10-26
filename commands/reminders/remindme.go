@@ -3,11 +3,11 @@ package reminders
 import (
 	"context"
 	"fmt"
-	"math/rand"
 	"strings"
 	"time"
 
 	"codeberg.org/eviedelta/detctime/durationparser"
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/utils/bot/extras/shellwords"
 	"github.com/starshine-sys/bcr"
@@ -76,16 +76,15 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 			Color:       bcr.ColourGreen,
 			Description: fmt.Sprintf("Reminder #%v set for %v from now.\n(<t:%v>)", id, bcr.HumanizeDuration(bcr.DurationPrecisionSeconds, t.Sub(time.Now())+time.Second), t.Unix()),
 		}}
-
-		// only show this "ad" every few reminders
-		if rand.Intn(2) == 1 {
-			e[0].Footer = &discord.EmbedFooter{
-				Text: "Did you know? You can use `" + ctx.Prefix + "usercfg` to make reminders more compact!",
-			}
-		}
 	}
 
-	msg, err := ctx.Send(content, e...)
+	msg, err := ctx.State.SendMessageComplex(ctx.Message.ChannelID, api.SendMessageData{
+		Content: content,
+		Embeds:  e,
+		AllowedMentions: &api.AllowedMentions{
+			Parse: []api.AllowedMentionType{},
+		},
+	})
 	if err != nil {
 		return
 	}
