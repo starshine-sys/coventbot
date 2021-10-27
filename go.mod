@@ -23,7 +23,7 @@ require (
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
 	github.com/spf13/pflag v1.0.5
 	github.com/starshine-sys/bcr v0.21.1-0.20210929173146-1f0a766ade82
-	github.com/starshine-sys/dischtml v0.0.0-20211027164136-ebfb20ca6df7
+	github.com/starshine-sys/dischtml v0.0.0-20211027170332-ec78dbcfa1bd
 	github.com/starshine-sys/pkgo v1.0.0
 	github.com/starshine-sys/snowflake/v2 v2.1.0
 	github.com/zachomedia/go-bdf v0.0.0-20210522061406-1a147053be95 // indirect
