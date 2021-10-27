@@ -155,6 +155,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			fs.StringP("out", "o", "", "Channel to output the transcript to")
 			fs.UintP("limit", "l", 500, "Number of messages to make a transcript of (maximum 2000)")
 			fs.BoolP("json", "j", false, "Output as a JSON file")
+			fs.BoolP("html", "h", false, "Output as a HTML file")
 			return fs
 		},
 

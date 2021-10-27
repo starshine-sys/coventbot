@@ -12,6 +12,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/utils/sendpart"
 	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/dischtml"
 )
 
 type jsonOut struct {
@@ -26,6 +27,7 @@ func (bot *Bot) transcript(ctx *bcr.Context) (err error) {
 	out, _ := ctx.Flags.GetString("out")
 	limit, _ := ctx.Flags.GetUint("limit")
 	outputJSON, _ := ctx.Flags.GetBool("json")
+	outputHTML, _ := ctx.Flags.GetBool("html")
 	if limit > 2000 || limit == 0 {
 		isOwner := false
 		for _, o := range bot.Config.Owners {
@@ -69,6 +71,10 @@ func (bot *Bot) transcript(ctx *bcr.Context) (err error) {
 
 	if outputJSON {
 		return bot.transcriptJSON(ctx, outCh.ID, ch, msgs)
+	}
+
+	if outputHTML {
+		return bot.transcriptHTML(ctx, outCh.ID, ch, msgs)
 	}
 
 	sort.Slice(msgs, func(i, j int) bool {
@@ -203,6 +209,33 @@ func (bot *Bot) transcriptJSON(ctx *bcr.Context, out discord.ChannelID, ch *disc
 		Files: []sendpart.File{{
 			Name:   fmt.Sprintf("darchive-%v-%v-%v.json", ch.Name, ch.ID, time.Now().UTC().Format("2006-01-02-1504")),
 			Reader: bytes.NewReader(b),
+		}},
+	})
+	return
+}
+
+func (bot *Bot) transcriptHTML(ctx *bcr.Context, outCh discord.ChannelID, ch *discord.Channel, msgs []discord.Message) (err error) {
+	c := dischtml.Converter{
+		Guild: *ctx.Guild,
+	}
+
+	html, err := c.ConvertHTML(msgs)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	out, err := dischtml.Wrap(*ctx.Guild, *ch, html, len(msgs))
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	s := fmt.Sprintf("Archived channel %v (#%v, %v) with %v messages.", ch.Mention(), ch.Name, ch.ID, len(msgs))
+
+	_, err = ctx.State.SendMessageComplex(outCh, api.SendMessageData{
+		Content: s,
+		Files: []sendpart.File{{
+			Name:   fmt.Sprintf("%v-%v-%v.html", ch.Name, ch.ID, time.Now().UTC().Format("2006-01-02-1504")),
+			Reader: strings.NewReader(out),
 		}},
 	})
 	return
