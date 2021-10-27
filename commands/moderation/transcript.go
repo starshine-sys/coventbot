@@ -63,7 +63,7 @@ func (bot *Bot) transcript(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	msgs, err := ctx.State.MessagesAfter(ch.ID, 0, limit)
+	msgs, err := ctx.State.Messages(ch.ID, limit)
 	if err != nil {
 		_, err = ctx.Send("I couldn't fetch all messages in this channel, aborting.")
 		return
@@ -215,8 +215,25 @@ func (bot *Bot) transcriptJSON(ctx *bcr.Context, out discord.ChannelID, ch *disc
 }
 
 func (bot *Bot) transcriptHTML(ctx *bcr.Context, outCh discord.ChannelID, ch *discord.Channel, msgs []discord.Message) (err error) {
+	channels, err := ctx.State.Channels(ctx.Guild.ID)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	var users []discord.User
+
+	for _, m := range msgs {
+		for _, mention := range m.Mentions {
+			users = append(users, mention.User)
+		}
+	}
+
 	c := dischtml.Converter{
-		Guild: *ctx.Guild,
+		Guild:    *ctx.Guild,
+		Channels: channels,
+		Roles:    ctx.Guild.Roles,
+		Members:  bot.Members(ctx.Guild.ID),
+		Users:    users,
 	}
 
 	html, err := c.ConvertHTML(msgs)
