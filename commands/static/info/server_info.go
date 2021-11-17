@@ -141,38 +141,17 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 func guildFeaturesToString(g []discord.GuildFeature) (s []string) {
 	for _, f := range g {
 		switch f {
-		case discord.InviteSplash:
-			s = append(s, "Invite Splash")
 		case discord.VIPRegions:
 			s = append(s, "384kbps Voice")
 		case discord.VanityURL:
 			s = append(s, "Vanity URL")
-		case discord.Verified:
-			s = append(s, "Verified")
-		case discord.Partnered:
-			s = append(s, "Partnered")
-		case discord.Public:
-			s = append(s, "Public")
-		case discord.Commerce:
-			s = append(s, "Commerce")
 		case discord.News:
 			s = append(s, "News Channels")
-		case discord.Discoverable:
-			s = append(s, "Discoverable")
-		case discord.Featurable:
-			s = append(s, "Featurable")
-		case discord.AnimatedIcon:
-			s = append(s, "Animated Icon")
-		case discord.Banner:
-			s = append(s, "Banner")
-		case "COMMUNITY":
-			s = append(s, "Community")
-		case "NEW_THREAD_PERMISSIONS":
-			s = append(s, "New Thread Permissions")
-		case "THREADS_ENABLED":
-			s = append(s, "Threads Enabled")
 		default:
-			s = append(s, string(f))
+			s = append(s,
+				strings.Title(strings.ToLower(
+					strings.ReplaceAll(
+						string(f), "_", " "))))
 		}
 	}
 	if len(s) == 0 {
