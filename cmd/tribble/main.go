@@ -36,6 +36,7 @@ import (
 	"github.com/starshine-sys/tribble/quotes"
 	"github.com/starshine-sys/tribble/reactroles"
 	"github.com/starshine-sys/tribble/starboard"
+	"github.com/starshine-sys/tribble/termora"
 	"github.com/starshine-sys/tribble/tickets"
 	"github.com/starshine-sys/tribble/todos"
 )
@@ -119,6 +120,7 @@ func main() {
 	keyroles.Init(bot)
 	quotes.Init(bot)
 	highlights.Init(bot)
+	termora.Init(bot)
 
 	// connect to discord
 	if err := bot.Start(context.Background()); err != nil {
@@ -153,7 +155,7 @@ func main() {
 	}
 
 	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
 
 	sugar.Infof("Interrupt signal received. Shutting down...")

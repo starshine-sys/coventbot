@@ -40,6 +40,11 @@ type BotConfig struct {
 
 		BlockedUsers []discord.UserID `yaml:"blocked_users"`
 	} `yaml:"dms"`
+
+	Termora struct {
+		Guild       discord.GuildID   `yaml:"guild"`
+		TermChannel discord.ChannelID `yaml:"term_channel"`
+	} `yaml:"termora"`
 }
 
 // Webhook is a single webhook config
