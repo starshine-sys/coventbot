@@ -122,6 +122,12 @@ func main() {
 	highlights.Init(bot)
 	termora.Init(bot)
 
+	s, _ := bot.Router.StateFromGuildID(0)
+
+	botUser, _ := s.Me()
+	sugar.Infof("User: %v#%v (%v)", botUser.Username, botUser.Discriminator, botUser.ID)
+	bot.Router.Bot = botUser
+
 	// connect to discord
 	if err := bot.Start(context.Background()); err != nil {
 		sugar.Fatal("Failed to connect:", err)
@@ -136,12 +142,6 @@ func main() {
 	}()
 
 	sugar.Info("Connected to Discord. Press Ctrl-C or send an interrupt signal to stop.")
-
-	s, _ := bot.Router.StateFromGuildID(0)
-
-	botUser, _ := s.Me()
-	sugar.Infof("User: %v#%v (%v)", botUser.Username, botUser.Discriminator, botUser.ID)
-	bot.Router.Bot = botUser
 
 	// sync slash commands
 	err = bot.Router.SyncCommands(c.SyncCommandsIn...)

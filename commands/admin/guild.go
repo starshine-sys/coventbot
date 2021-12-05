@@ -13,6 +13,7 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 	sf, err := discord.ParseSnowflake(ctx.RawArgs)
 	if err != nil {
 		_, err = ctx.Send("Couldn't parse your input as a snowflake.")
+		return
 	}
 
 	g, err := ctx.State.GuildWithCount(discord.GuildID(sf))

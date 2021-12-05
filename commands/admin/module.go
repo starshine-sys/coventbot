@@ -1,6 +1,8 @@
 package admin
 
 import (
+	"context"
+
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/gateway/shard"
 	"github.com/diamondburned/arikawa/v3/state"
@@ -11,6 +13,8 @@ import (
 // Bot ...
 type Bot struct {
 	*bot.Bot
+
+	loadedAllowedGuilds bool
 }
 
 // Init ...
@@ -18,6 +22,38 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	s = "Bot owner commands"
 
 	b := &Bot{Bot: bot}
+
+	if b.Config.Branding.Private {
+		var guildCount int
+		err := b.DB.Pool.QueryRow(context.Background(), "select count(*) from allowed_guilds").Scan(&guildCount)
+		if err != nil {
+			b.Sugar.Fatalf("Error getting allowed guild count: %v", err)
+		}
+
+		b.loadedAllowedGuilds = guildCount != 0
+
+		if !b.loadedAllowedGuilds {
+			b.Sugar.Info("No allowed guilds found, will *not* leave any guilds this session.")
+		}
+	}
+
+	allowList := b.Router.AddCommand(&bcr.Command{
+		Name:      "allowlist",
+		Summary:   "Show a list of guilds the bot is allowed to join.",
+		Hidden:    true,
+		OwnerOnly: true,
+		Command:   b.listAllowedGuilds,
+	})
+
+	allowList.AddSubcommand(&bcr.Command{
+		Name:      "add",
+		Summary:   "Add a guild to the allowlist",
+		Hidden:    true,
+		OwnerOnly: true,
+		Command:   b.addAllowedGuild,
+	})
+
+	list = append(list, allowList)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "guild",
@@ -67,6 +103,10 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		state.AddHandler(func(_ *gateway.ReadyEvent) {
 			b.updateStatus(state)
 		})
+
+		if b.Config.Branding.Private {
+			state.AddHandler(b.guildCreate)
+		}
 	})
 
 	return
