@@ -55,6 +55,7 @@ Supported options:
 - %id: user ID
 - %u: username
 - %d: discriminator
+- %t: tag
 - %n: nickname
 - %m: mention
 - %cd: creation date
@@ -250,10 +251,11 @@ Supported values:
 				"%id", m.User.ID.String(),
 				"%u", m.User.Username,
 				"%d", m.User.Discriminator,
+				"%t", m.User.Tag(),
 				"%n", nick,
 				"%m", m.Mention(),
-				"%cd", m.User.ID.Time().UTC().Format(time.RFC1123),
-				"%jd", m.Joined.Time().UTC().Format(time.RFC1123),
+				"%cd", fmt.Sprintf("<t:%v>", m.User.ID.Time().Unix()),
+				"%jd", fmt.Sprintf("<t:%v>", m.Joined.Time().Unix()),
 			).Replace(format+"\n"))
 		} else {
 			s := fmt.Sprintf("%v. %v#%v (%v)\n", i+1, m.User.Username, m.User.Discriminator, m.User.ID)
