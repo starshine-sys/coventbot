@@ -2,24 +2,27 @@ package admin
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 	"strings"
-	"time"
 
+	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/utils/sendpart"
 	"github.com/starshine-sys/bcr"
 )
 
-const restTimeout = 10 * time.Second
-
 func (bot *Bot) rest(ctx *bcr.Context) (err error) {
+	url := ctx.RawArgs
+	if strings.HasPrefix(ctx.RawArgs, "/") {
+		url = api.Endpoint + strings.TrimPrefix(ctx.RawArgs, "/")
+	}
+
+	bot.Sugar.Warnf("User %v (%v) is making GET request to %v", ctx.Author.Tag(), ctx.Author.ID, url)
+
 	respond := func(warning bool, v ...interface{}) error {
-		url := ctx.RawArgs
+		url := url
 		if len(url) > 128 {
 			url = url[:128] + "..."
 		}
@@ -50,21 +53,13 @@ func (bot *Bot) rest(ctx *bcr.Context) (err error) {
 		return err
 	}
 
-	rctx, cancel := context.WithTimeout(context.Background(), restTimeout)
-	defer cancel()
-
-	req, err := http.NewRequestWithContext(rctx, "GET", ctx.RawArgs, nil)
+	resp, err := ctx.State.Client.Request("GET", url)
 	if err != nil {
 		return respond(true, err)
 	}
+	defer resp.GetBody().Close()
 
-	resp, err := bot.Client.Do(req)
-	if err != nil {
-		return respond(true, err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.GetBody())
 	if err != nil {
 		return respond(true, err)
 	}
