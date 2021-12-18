@@ -2,6 +2,7 @@ package admin
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/gateway/shard"
@@ -15,13 +16,15 @@ type Bot struct {
 	*bot.Bot
 
 	loadedAllowedGuilds bool
+
+	Client *http.Client
 }
 
 // Init ...
 func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	s = "Bot owner commands"
 
-	b := &Bot{Bot: bot}
+	b := &Bot{Bot: bot, Client: &http.Client{}}
 
 	if b.Config.Branding.Private {
 		var guildCount int
@@ -95,6 +98,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Hidden:    true,
 		OwnerOnly: true,
 		Command:   b.dm,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "rest",
+		Summary: "Call a REST API and print the returned JSON.",
+		Usage:   "<url>",
+
+		Hidden:    true,
+		OwnerOnly: true,
+		Command:   b.rest,
 	}))
 
 	b.Router.ShardManager.ForEach(func(s shard.Shard) {
