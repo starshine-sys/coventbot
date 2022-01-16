@@ -24,7 +24,7 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 			return bot.Report(ctx, err)
 		}
 
-		e.Description = fmt.Sprintf("`levels_enabled`: %v\n`leaderboard_mod_only`: %v\n`show_next_reward`: %v\n`between_xp`: %v", sc.LevelsEnabled, sc.LeaderboardModOnly, sc.ShowNextReward, sc.BetweenXP)
+		e.Description = fmt.Sprintf("`levels_enabled`: %v\n`voice`: %v\n`leaderboard_mod_only`: %v\n`show_next_reward`: %v\n`between_xp`: %v", sc.LevelsEnabled, sc.Voice, sc.LeaderboardModOnly, sc.ShowNextReward, sc.BetweenXP)
 
 		if sc.RewardLog.IsValid() {
 			e.Description += "\n`reward_log`: " + sc.RewardLog.Mention()
@@ -75,7 +75,7 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 	}
 
 	switch strings.ToLower(ctx.Args[0]) {
-	case "levels_enabled", "leaderboard_mod_only", "show_next_reward":
+	case "levels_enabled", "leaderboard_mod_only", "show_next_reward", "voice":
 		b, err := strconv.ParseBool(ctx.Args[1])
 		if err != nil {
 			_, err = ctx.Send("You must give either `true` or `false` for the new value.")

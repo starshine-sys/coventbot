@@ -273,6 +273,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	state.AddHandler(func(_ *gateway.ReadyEvent) {
 		o.Do(func() {
 			go b.nolevelLoop()
+			go b.voiceLevelsLoop()
 		})
 	})
 

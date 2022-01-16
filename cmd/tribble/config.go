@@ -12,6 +12,9 @@ func getConfig() (config *types.BotConfig) {
 	config = &types.BotConfig{}
 
 	configFile, err := os.ReadFile("data/config.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
 	err = yaml.Unmarshal(configFile, &config)
 	if err != nil {
 		log.Fatal(err)

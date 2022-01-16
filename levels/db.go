@@ -39,6 +39,7 @@ type Server struct {
 	LevelsEnabled      bool
 	LeaderboardModOnly bool
 	ShowNextReward     bool
+	Voice              bool
 
 	LevelMessages LevelMessages
 	LevelChannel  discord.ChannelID
