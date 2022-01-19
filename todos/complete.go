@@ -15,6 +15,7 @@ func (bot *Bot) cmdComplete(ctx *bcr.Context) (err error) {
 	id, err := strconv.ParseInt(ctx.RawArgs, 0, 0)
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourRed, "You didn't give a valid ID.")
+		return
 	}
 
 	t, err := bot.getTodo(id, ctx.Author.ID)
@@ -75,7 +76,7 @@ func (bot *Bot) complete(s *state.State, t *Todo) (err error) {
 
 		e.Fields = append(e.Fields, discord.EmbedField{
 			Name:  "Completed at",
-			Value: time.Now().UTC().Format("2006-01-02 15:04") + " UTC",
+			Value: fmt.Sprintf("<t:%v>", time.Now().Unix()),
 		})
 	} else {
 		jumpLink := "https://discord.com/channels/"

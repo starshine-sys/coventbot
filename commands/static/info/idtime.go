@@ -16,7 +16,7 @@ func (bot *Bot) idtime(ctx *bcr.Context) (err error) {
 
 	_, err = ctx.Send("", discord.Embed{
 		Title:       fmt.Sprintf("Timestamp for `%v`", sf),
-		Description: sf.Time().UTC().Format("January 02 2006, 15:04:05.000 MST"),
+		Description: fmt.Sprintf("<t:%v>\n%v", sf.Time().Unix(), bcr.HumanizeTime(bcr.DurationPrecisionSeconds, sf.Time().UTC())),
 		Color:       ctx.Router.EmbedColor,
 	})
 	return

@@ -40,7 +40,7 @@ func (bot *ModLog) modlog(ctx *bcr.Context) (err error) {
 		}
 
 		fields = append(fields, discord.EmbedField{
-			Name: fmt.Sprintf("#%v | %v | %v", entry.ID, entry.ActionType, entry.Time.Format("2006-01-02")),
+			Name: fmt.Sprintf("#%v | %v | <t:%v>", entry.ID, entry.ActionType, entry.Time.Unix()),
 			Value: fmt.Sprintf(`Responsible moderator: %v#%v
 Reason: %v`, mod.Username, mod.Discriminator, entry.Reason),
 		})

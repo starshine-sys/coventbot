@@ -68,7 +68,7 @@ func (bot *Bot) nolevelsAdd(ctx *bcr.Context) (err error) {
 
 	text := fmt.Sprintf("Noleveled %v ", u.Mention())
 	if expires {
-		text += fmt.Sprintf("until %v.", expiry.Format("2006-01-02 15:04:05"))
+		text += fmt.Sprintf("until <t:%v>.", expiry.Unix())
 	} else {
 		text += "indefinitely."
 	}
