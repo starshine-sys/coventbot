@@ -79,7 +79,7 @@ func (bot *Bot) addAllowedGuild(ctx *bcr.Context) (err error) {
 
 	yes, _ := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
 		Embeds: []discord.Embed{{
-			Description: fmt.Sprintf("Are you sure you want to allow %v to join the guild %v?\n**For:** %v (%v)\n**Reason:** %v", bot.Router.Bot.ID, sf, u.Tag(), u.ID, reason),
+			Description: fmt.Sprintf("Are you sure you want to allow %v to join the guild %v?\n**For:** %v (%v)\n**Reason:** %v", bot.Router.Bot.Username, sf, u.Tag(), u.ID, reason),
 			Color:       bcr.ColourBlurple,
 		}},
 		YesPrompt: "Allow this guild",
