@@ -108,6 +108,7 @@ func (bot *Bot) messageDelete(m *gateway.MessageDeleteEvent) {
 
 	_, err = webhook.New(wh.ID, wh.Token).ExecuteAndWait(webhook.ExecuteData{
 		AvatarURL: bot.Router.Bot.AvatarURL(),
+		Content:   "⚠️ **PluralKit logging is deprecated, and will be removed soon.**\n[Catalogger](<https://catalogger.starshines.xyz/>) is more feature-complete and is up to date.",
 		Embeds:    []discord.Embed{e},
 	})
 	if err == nil {

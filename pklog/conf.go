@@ -33,7 +33,7 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 	if id == 0 {
 		_, err = ctx.Send("PluralKit message logging disabled.")
 	} else {
-		_, err = ctx.Sendf("PluralKit messages are now being logged to %v.", id.Mention())
+		_, err = ctx.Sendf("PluralKit messages are now being logged to %v.\n\n⚠️ **PluralKit logging is deprecated, and will be removed soon.**\nCatalogger (<https://catalogger.starshines.xyz/>) is more feature-complete and is up to date.", id.Mention())
 	}
 	return
 }

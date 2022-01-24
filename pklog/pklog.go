@@ -39,7 +39,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	c := b.Router.AddCommand(&bcr.Command{
 		Name:    "pk-log",
 		Aliases: []string{"pklog"},
-		Summary: "Set the PluralKit logging channel.",
+		Summary: "**(⚠️ Deprecated)** Set the PluralKit logging channel.",
 		Args:    bcr.MinArgs(1),
 
 		CustomPermissions: bot.ModRole,
