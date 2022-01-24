@@ -78,7 +78,7 @@ func main() {
 	sugar.Info("Connected to database.")
 
 	// create a new bot
-	r, err := bcr.NewWithIntents(c.Token, c.Owners, c.Prefixes, bcr.RequiredIntents|gateway.IntentGuildMembers|gateway.IntentGuildVoiceStates)
+	r, err := bcr.NewWithIntents(c.Token, c.Owners, c.Prefixes, bcr.RequiredIntents|gateway.IntentGuildMembers|gateway.IntentGuildVoiceStates|gateway.IntentGuildPresences)
 	if err != nil {
 		sugar.Fatal("Error creating bot:", err)
 	}

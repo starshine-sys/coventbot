@@ -11,10 +11,28 @@ import (
 func (bot *Bot) requestGuildMembers(g *gateway.GuildCreateEvent) {
 	s, _ := bot.Router.StateFromGuildID(g.ID)
 
-	s.Gateway.RequestGuildMembers(gateway.RequestGuildMembersData{
-		GuildIDs: []discord.GuildID{g.ID},
-		Limit:    0,
-	})
+	bot.membersMu.Lock()
+	for _, m := range g.Members {
+		bot.members[memberKey{
+			GuildID: g.ID,
+			UserID:  m.User.ID,
+		}] = member{m, g.ID}
+	}
+	defer bot.membersMu.Unlock()
+
+	if g.MemberCount != uint64(len(g.Members)) {
+		bot.Sugar.Debugf("Did not get all members for %v (%v) in guild create, chunking", g.ID, g.Name)
+
+		err := s.Gateway.RequestGuildMembers(gateway.RequestGuildMembersData{
+			GuildIDs: []discord.GuildID{g.ID},
+			Limit:    0,
+		})
+		if err != nil {
+			bot.Sugar.Errorf("Error requesting guild members for %v (%v): %v", g.ID, g.Name, err)
+		}
+	} else {
+		bot.Sugar.Debugf("Got all members for %v (%v) in guild create! Not chunking", g.ID, g.Name)
+	}
 }
 
 func (bot *Bot) guildMemberChunk(g *gateway.GuildMembersChunkEvent) {
