@@ -21,5 +21,13 @@ func getConfig() (config *types.BotConfig) {
 	}
 	log.Println("Loaded configuration file.")
 
+	// override some values with env variables
+	if s := os.Getenv("DATABASE_URL"); s != "" {
+		config.DatabaseURL = s
+	}
+	if s := os.Getenv("VERIFY_LISTEN"); s != "" {
+		config.VerifyListen = s
+	}
+
 	return config
 }

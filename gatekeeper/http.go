@@ -27,7 +27,7 @@ type gatekeeperData struct {
 	Config *types.BotConfig
 }
 
-var gatekeeperTmpl = template.Must(template.ParseFiles("../../gatekeeper/tmpl.html"))
+var gatekeeperTmpl = template.Must(template.New("").Parse(tmpl))
 
 // GatekeeperGET ...
 func (bot *Bot) GatekeeperGET(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -59,7 +59,6 @@ func (bot *Bot) GatekeeperGET(w http.ResponseWriter, r *http.Request, ps httprou
 		bot.Sugar.Errorf("Error rending template: %v", err)
 		return
 	}
-	return
 }
 
 // VerifyPOST ...

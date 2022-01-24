@@ -2,6 +2,7 @@ package info
 
 import (
 	"fmt"
+	"log"
 	"os/exec"
 	"runtime"
 	"time"
@@ -12,17 +13,18 @@ import (
 	"github.com/starshine-sys/tribble/etc"
 )
 
-const botVersion = 5
-
-var gitVer string
+var GitVer string
 
 func init() {
-	git := exec.Command("git", "rev-parse", "--short", "HEAD")
-	// ignoring errors *should* be fine? if there's no output we just fall back to "unknown"
-	b, _ := git.Output()
-	gitVer = string(b)
-	if gitVer == "" {
-		gitVer = "unknown"
+	if GitVer == "" {
+		log.Println("Warning: GitVer is empty, falling back to checking at runtime.")
+		git := exec.Command("git", "rev-parse", "--short", "HEAD")
+		// ignoring errors *should* be fine? if there's no output we just fall back to "unknown"
+		b, _ := git.Output()
+		GitVer = string(b)
+		if GitVer == "" {
+			GitVer = "unknown"
+		}
 	}
 }
 
@@ -49,7 +51,7 @@ func (bot *Bot) about(ctx *bcr.Context) (err error) {
 		Fields: []discord.EmbedField{
 			{
 				Name:   "Version",
-				Value:  fmt.Sprintf("v%d-%v (bcr v%s)", botVersion, gitVer, bcr.Version()),
+				Value:  fmt.Sprintf("%v (bcr v%s)", GitVer, bcr.Version()),
 				Inline: true,
 			},
 			{

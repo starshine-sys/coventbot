@@ -1,6 +1,7 @@
 package gatekeeper
 
 import (
+	"embed"
 	"net/http"
 	"time"
 
@@ -15,11 +16,14 @@ type Bot struct {
 	*bot.Bot
 
 	httpRouter *httprouter.Router
-
-	pending map[string]PendingUser
-
-	HCaptcha *hcaptcha.Client
+	HCaptcha   *hcaptcha.Client
 }
+
+//go:embed style/*
+var styles embed.FS
+
+//go:embed tmpl.html
+var tmpl string
 
 // Init ...
 func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
@@ -31,8 +35,11 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		HCaptcha:   hcaptcha.New(bot.Config.HCaptchaSecret),
 	}
 
-	b.httpRouter.ServeFiles("/style/*filepath", http.Dir("../../gatekeeper/style"))
+	b.httpRouter.ServeFiles("/static/*filepath", http.FS(styles))
 	b.httpRouter.GET("/gatekeeper/:uuid", b.GatekeeperGET)
+	b.httpRouter.GET("/", func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		http.Redirect(rw, r, "https://github.com/starshine-sys/tribble", http.StatusTemporaryRedirect)
+	})
 	b.httpRouter.POST("/verify", b.VerifyPOST)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
