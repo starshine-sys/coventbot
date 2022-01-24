@@ -92,12 +92,15 @@ func (bot *Bot) getReward(guildID discord.GuildID, lvl int64) *Reward {
 	r := Reward{}
 
 	var exists bool
-	bot.DB.Pool.QueryRow(context.Background(), "select exists(select * from level_rewards where server_id = $1 and lvl = $2)", guildID, lvl).Scan(&exists)
+	err := bot.DB.Pool.QueryRow(context.Background(), "select exists(select * from level_rewards where server_id = $1 and lvl = $2)", guildID, lvl).Scan(&exists)
+	if err != nil {
+		bot.Sugar.Errorf("Error checking if guild exists in db: %v", err)
+	}
 	if !exists {
 		return nil
 	}
 
-	err := pgxscan.Get(context.Background(), bot.DB.Pool, &r, "select * from level_rewards where server_id = $1 and lvl = $2", guildID, lvl)
+	err = pgxscan.Get(context.Background(), bot.DB.Pool, &r, "select * from level_rewards where server_id = $1 and lvl = $2", guildID, lvl)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting reward: %v", err)
 		return nil
@@ -110,12 +113,15 @@ func (bot *Bot) getNextReward(guildID discord.GuildID, lvl int64) *Reward {
 	r := Reward{}
 
 	var exists bool
-	bot.DB.Pool.QueryRow(context.Background(), "select exists(select * from level_rewards where server_id = $1 and lvl > $2)", guildID, lvl).Scan(&exists)
+	err := bot.DB.Pool.QueryRow(context.Background(), "select exists(select * from level_rewards where server_id = $1 and lvl > $2)", guildID, lvl).Scan(&exists)
+	if err != nil {
+		bot.Sugar.Errorf("Error checking if guild exists in db: %v", err)
+	}
 	if !exists {
 		return nil
 	}
 
-	err := pgxscan.Get(context.Background(), bot.DB.Pool, &r, "select * from level_rewards where server_id = $1 and lvl > $2 order by lvl asc limit 1", guildID, lvl)
+	err = pgxscan.Get(context.Background(), bot.DB.Pool, &r, "select * from level_rewards where server_id = $1 and lvl > $2 order by lvl asc limit 1", guildID, lvl)
 	if err != nil {
 		bot.Sugar.Errorf("Error getting reward: %v", err)
 		return nil
@@ -180,6 +186,9 @@ func (bot *Bot) guildNolevels(guildID discord.GuildID) (list []Nolevels, err err
 }
 
 func (bot *Bot) isBlacklisted(guildID discord.GuildID, userID discord.UserID) (blacklisted bool) {
-	bot.DB.Pool.QueryRow(context.Background(), "select exists(select user_id from nolevels where server_id = $1 and user_id = $2)", guildID, userID).Scan(&blacklisted)
+	err := bot.DB.Pool.QueryRow(context.Background(), "select exists(select user_id from nolevels where server_id = $1 and user_id = $2)", guildID, userID).Scan(&blacklisted)
+	if err != nil {
+		bot.Sugar.Errorf("Error checking if user is blacklisted: %v", err)
+	}
 	return blacklisted
 }
