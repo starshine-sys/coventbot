@@ -41,7 +41,7 @@ func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 			i+1,
 			l.UserID.Mention(),
 			humanize.Comma(l.XP),
-			currentLevel(l.XP),
+			sc.CalculateLevel(l.XP),
 		))
 	}
 

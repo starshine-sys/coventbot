@@ -106,9 +106,9 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	lvl := currentLevel(uc.XP)
-	xpForNext := expForNextLevel(lvl)
-	xpForPrev := expForNextLevel(lvl - 1)
+	lvl := sc.CalculateLevel(uc.XP)
+	xpForNext := sc.CalculateExp(lvl + 1)
+	xpForPrev := sc.CalculateExp(lvl)
 
 	// get leaderboard (for rank)
 	// filter the leaderboard to match the `leaderboard` command

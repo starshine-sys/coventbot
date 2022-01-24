@@ -9,12 +9,13 @@ import (
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/state/store"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) voiceLevelsLoop() {
-	t := time.NewTicker(time.Minute)
+	t := time.NewTicker(5 * time.Minute)
 
 	for {
 		<-t.C
@@ -37,6 +38,9 @@ func (bot *Bot) voiceLevels() {
 
 		vcs, err := s.VoiceStates(gc.ID)
 		if err != nil {
+			if err == store.ErrNotFound {
+				continue
+			}
 			bot.Sugar.Errorf("Error getting voice states for %v: %v", gc.ID, err)
 			continue
 		}
@@ -106,15 +110,15 @@ func (bot *Bot) checkVoiceState(s *state.State, gc Server, vc discord.VoiceState
 
 	// increment the user's xp!
 	bot.Sugar.Debugf("Incrementing voice XP for user %v", vc.UserID)
-	newXP, err := bot.incrementXP(gc.ID, vc.UserID)
+	newXP, err := bot.incrementXP(gc.ID, vc.UserID, gc.CarlineCompatible)
 	if err != nil {
 		bot.Sugar.Errorf("Error updating XP for user: %v", err)
 		return
 	}
 
 	// only check for rewards on level up
-	oldLvl := currentLevel(uc.XP)
-	newLvl := currentLevel(newXP)
+	oldLvl := gc.CalculateLevel(uc.XP)
+	newLvl := gc.CalculateLevel(newXP)
 
 	if oldLvl >= newLvl {
 		return

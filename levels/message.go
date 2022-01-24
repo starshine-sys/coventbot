@@ -68,15 +68,15 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	}
 
 	// increment the user's xp!
-	newXP, err := bot.incrementXP(m.GuildID, m.Author.ID)
+	newXP, err := bot.incrementXP(m.GuildID, m.Author.ID, sc.CarlineCompatible)
 	if err != nil {
 		bot.Sugar.Errorf("Error updating XP for user: %v", err)
 		return
 	}
 
 	// only check for rewards on level up
-	oldLvl := currentLevel(uc.XP)
-	newLvl := currentLevel(newXP)
+	oldLvl := sc.CalculateLevel(uc.XP)
+	newLvl := sc.CalculateLevel(newXP)
 
 	if oldLvl >= newLvl {
 		return

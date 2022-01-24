@@ -7,7 +7,6 @@ require (
 	emperror.dev/errors v0.8.0
 	github.com/AndreKR/multiface v0.0.0-20190725194701-b414aa6424a8
 	github.com/ReneKroon/ttlcache/v2 v2.7.0
-	github.com/caneroj1/stemmer v0.0.0-20170128035808-c9f2ce1504d5
 	github.com/diamondburned/arikawa/v3 v3.0.0-rc.2.0.20211005062227-918cce64e985
 	github.com/disintegration/imaging v1.6.2
 	github.com/dustin/go-humanize v1.0.0
