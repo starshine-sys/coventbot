@@ -125,7 +125,7 @@ func (bot *Bot) nolevelsRemove(ctx *bcr.Context) (err error) {
 
 func (bot *Bot) nolevelLoop() {
 	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
 	for {
 		select {
@@ -153,11 +153,14 @@ func (bot *Bot) nolevelLoop() {
 			s, _ := bot.Router.StateFromGuildID(n.ServerID)
 
 			if n.LogChannel.IsValid() {
-				s.SendEmbeds(n.LogChannel, discord.Embed{
+				_, err = s.SendEmbeds(n.LogChannel, discord.Embed{
 					Title:       "User nolevel expired",
 					Description: fmt.Sprintf("The blacklist of %v expired.", n.UserID.Mention()),
 					Color:       bcr.ColourBlurple,
 				})
+				if err != nil {
+					bot.Sugar.Errorf("Error sending nolevels log: %v", err)
+				}
 			}
 		}
 

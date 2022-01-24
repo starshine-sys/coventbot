@@ -10,6 +10,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/state"
+	"github.com/jackc/pgx/v4"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -130,7 +131,10 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 			Color: bcr.ColourBlurple,
 		}
 
-		s.SendEmbeds(sc.RewardLog, e)
+		_, err = s.SendEmbeds(sc.RewardLog, e)
+		if err != nil {
+			bot.Sugar.Errorf("Error sending message: %v", err)
+		}
 	}
 
 	if sc.LevelMessages == RewardsChannel {
@@ -143,14 +147,20 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 
 	if sc.LevelMessages != NoMessages && sc.RewardText != "" {
 		var msgsDisabled bool
-		bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", m.Author.ID).Scan(&msgsDisabled)
+		err = bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", m.Author.ID).Scan(&msgsDisabled)
+		if err != nil && err != pgx.ErrNoRows {
+			bot.Sugar.Errorf("Error checking if user has disabled level messages: %v", err)
+		}
 
 		if !msgsDisabled {
 			txt := strings.NewReplacer("{lvl}", fmt.Sprint(newLvl)).Replace(sc.RewardText)
 
 			ch, err := s.CreatePrivateChannel(m.Author.ID)
 			if err == nil {
-				s.SendMessage(ch.ID, txt)
+				_, err = s.SendMessage(ch.ID, txt)
+				if err != nil {
+					bot.Sugar.Errorf("Error sending level up message: %v", err)
+				}
 			}
 		}
 	}
@@ -160,7 +170,11 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 func (bot *Bot) sendLevelMessage(s *state.State, m *gateway.MessageCreateEvent, sc Server, lvl int64) (err error) {
 	if sc.LevelMessages == AllDM {
 		var msgsDisabled bool
-		bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", m.Author.ID).Scan(&msgsDisabled)
+		err = bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", m.Author.ID).Scan(&msgsDisabled)
+		if err != nil && err != pgx.ErrNoRows {
+			bot.Sugar.Errorf("Error checking if user has disabled level messages: %v", err)
+		}
+
 		if msgsDisabled {
 			return
 		}

@@ -11,6 +11,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/state/store"
 	"github.com/georgysavva/scany/pgxscan"
+	"github.com/jackc/pgx/v4"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -173,7 +174,10 @@ func (bot *Bot) checkVoiceState(s *state.State, gc Server, vc discord.VoiceState
 
 	if gc.LevelMessages != NoMessages && gc.RewardText != "" {
 		var msgsDisabled bool
-		bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", vc.UserID).Scan(&msgsDisabled)
+		err = bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", vc.UserID).Scan(&msgsDisabled)
+		if err != nil && err != pgx.ErrNoRows {
+			bot.Sugar.Errorf("Error checking if user has disabled level messages: %v", err)
+		}
 
 		if !msgsDisabled {
 			txt := strings.NewReplacer("{lvl}", fmt.Sprint(newLvl)).Replace(gc.RewardText)
