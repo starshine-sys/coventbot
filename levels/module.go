@@ -120,107 +120,32 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	bl := cfg.AddSubcommand(&bcr.Command{
 		Name:    "blacklist",
 		Aliases: []string{"bl"},
-		Summary: "Configure this server's blacklists.",
+		Summary: "Configure this server's blacklist.",
 
 		CustomPermissions: bot.ModRole,
-		Command:           func(ctx *bcr.Context) error { return nil },
+		Command:           func(ctx *bcr.Context) error { return ctx.Help([]string{"lvl", "config", "blacklist"}) },
 	})
 
-	channels := bl.AddSubcommand(&bcr.Command{
-		Name:    "channels",
-		Aliases: []string{"channel", "ch"},
-		Summary: "Show the channel blacklist.",
-
-		CustomPermissions: bot.ModRole,
-		Command:           b.blacklistChannels,
-	})
-
-	channels.AddSubcommand(&bcr.Command{
+	bl.AddSubcommand(&bcr.Command{
 		Name:    "add",
-		Summary: "Add a channel to the blacklist.",
-		Usage:   "<channel>",
+		Aliases: []string{"+", "block"},
+		Summary: "Add a category, channel, or role to the blacklist.",
+		Usage:   "<channel|role>",
 		Args:    bcr.MinArgs(1),
 
 		CustomPermissions: bot.ModRole,
-		Command:           b.blacklistChannelAdd,
+		Command:           b.blacklistAdd,
 	})
 
-	channels.AddSubcommand(&bcr.Command{
+	bl.AddSubcommand(&bcr.Command{
 		Name:    "remove",
-		Summary: "Remove a channel from the blacklist.",
-		Usage:   "<channel>",
+		Aliases: []string{"rm", "-", "unblock"},
+		Summary: "Remove a category, channel, or role from the blacklist.",
+		Usage:   "<channel|role>",
 		Args:    bcr.MinArgs(1),
 
 		CustomPermissions: bot.ModRole,
-		Command:           b.blacklistChannelRemove,
-	})
-
-	roles := bl.AddSubcommand(&bcr.Command{
-		Name:    "roles",
-		Aliases: []string{"role"},
-		Summary: "Show the role blacklist.",
-
-		CustomPermissions: bot.ModRole,
-		Command:           b.blacklistRoles,
-	})
-
-	roles.AddSubcommand(&bcr.Command{
-		Name:    "add",
-		Summary: "Add a role to the blacklist.",
-		Usage:   "<role>",
-		Args:    bcr.MinArgs(1),
-
-		CustomPermissions: bot.ModRole,
-		Command:           b.blacklistRoleAdd,
-	})
-
-	roles.AddSubcommand(&bcr.Command{
-		Name:    "remove",
-		Summary: "Remove a role from the blacklist.",
-		Usage:   "<role>",
-		Args:    bcr.MinArgs(1),
-
-		CustomPermissions: bot.ModRole,
-		Command:           b.blacklistRoleRemove,
-	})
-
-	cfg.AddSubcommand(&bcr.Command{
-		Name:    "block-categories",
-		Aliases: []string{"blockcategories"},
-		Summary: "Block the given category(s) from levels. Leave clear to unblock all categories.",
-		Usage:   "[categories...]",
-
-		CustomPermissions: bot.ModRole,
-		Command:           b.blacklistCategories,
-	})
-
-	categories := bl.AddSubcommand(&bcr.Command{
-		Name:    "categories",
-		Aliases: []string{"category", "cat"},
-		Summary: "Show the category blacklist.",
-
-		CustomPermissions: bot.ModRole,
-		Command:           b.blacklistCategories,
-	})
-
-	categories.AddSubcommand(&bcr.Command{
-		Name:    "add",
-		Summary: "Add a category to the blacklist.",
-		Usage:   "<category>",
-		Args:    bcr.MinArgs(1),
-
-		CustomPermissions: bot.ModRole,
-		Command:           b.blacklistCategoryAdd,
-	})
-
-	categories.AddSubcommand(&bcr.Command{
-		Name:    "remove",
-		Summary: "Remove a category from the blacklist.",
-		Usage:   "<category>",
-		Args:    bcr.MinArgs(1),
-
-		CustomPermissions: bot.ModRole,
-		Command:           b.blacklistCategoryRemove,
+		Command:           b.blacklistRemove,
 	})
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{
@@ -242,6 +167,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "nolevels",
 		Aliases: []string{"nolevel"},
 		Summary: "Manage the user blacklist for levels.",
+		Usage:   "[user [time]]",
 
 		CustomPermissions: bot.ModRole,
 		Command:           b.nolevelsList,
@@ -277,5 +203,5 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		})
 	})
 
-	return s, append(list, lvl, nolevels)
+	return s, append(list, lvl, bl, nolevels)
 }

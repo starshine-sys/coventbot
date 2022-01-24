@@ -46,6 +46,45 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 			e.Description += "\n`levelup_channel`: None"
 		}
 
+		f := discord.EmbedField{
+			Name:   "Blacklisted channels",
+			Inline: true,
+		}
+		if len(sc.BlockedChannels) == 0 {
+			f.Value = "None"
+		} else {
+			for _, ch := range sc.BlockedChannels {
+				f.Value += discord.ChannelID(ch).Mention() + "\n"
+			}
+		}
+		e.Fields = append(e.Fields, f)
+
+		f = discord.EmbedField{
+			Name:   "Blacklisted categories",
+			Inline: true,
+		}
+		if len(sc.BlockedCategories) == 0 {
+			f.Value = "None"
+		} else {
+			for _, ch := range sc.BlockedCategories {
+				f.Value += discord.ChannelID(ch).Mention() + "\n"
+			}
+		}
+		e.Fields = append(e.Fields, f)
+
+		f = discord.EmbedField{
+			Name:   "Blacklisted roles",
+			Inline: true,
+		}
+		if len(sc.BlockedRoles) == 0 {
+			f.Value = "None"
+		} else {
+			for _, ch := range sc.BlockedRoles {
+				f.Value += discord.RoleID(ch).Mention() + "\n"
+			}
+		}
+		e.Fields = append(e.Fields, f)
+
 		rewards, err := bot.getAllRewards(ctx.Message.GuildID)
 		if err == nil && len(rewards) > 0 {
 			var buf string

@@ -15,6 +15,10 @@ import (
 )
 
 func (bot *Bot) nolevelsList(ctx *bcr.Context) (err error) {
+	if len(ctx.Args) > 0 {
+		return bot.nolevelsAdd(ctx)
+	}
+
 	list, err := bot.guildNolevels(ctx.Message.GuildID)
 	if err != nil {
 		return bot.Report(ctx, err)
