@@ -8,7 +8,12 @@ import (
 )
 
 func (bot *Bot) todo(ctx *bcr.Context) (err error) {
-	todoCh := bot.getChannel(ctx.Author.ID)
+	id, err := bot.DB.UserIntGet(ctx.Author.ID, "todo_channel")
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	todoCh := discord.ChannelID(id)
 	if !todoCh.IsValid() {
 		_, err = ctx.Replyc(bcr.ColourRed, "You don't have a todo channel set! Set one with `%vtodo channel`.", ctx.Prefix)
 		return

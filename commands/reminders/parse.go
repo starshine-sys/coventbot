@@ -1,7 +1,6 @@
 package reminders
 
 import (
-	"context"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -138,8 +137,7 @@ func parseTime(args []string, loc *time.Location) (t time.Time, i int, err error
 }
 
 func (bot *Bot) userTime(userID discord.UserID) *time.Location {
-	var name string
-	err := bot.DB.Pool.QueryRow(context.Background(), "select timezone from user_config where user_id = $1", userID).Scan(&name)
+	name, err := bot.DB.UserStringGet(userID, "timezone")
 	if err != nil && errors.Cause(err) != pgx.ErrNoRows {
 		bot.Sugar.Errorf("Error getting user timezone: %v", err)
 	}

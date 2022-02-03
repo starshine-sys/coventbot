@@ -1,7 +1,6 @@
 package levels
 
 import (
-	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -146,8 +145,7 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	}
 
 	if sc.LevelMessages != NoMessages && sc.RewardText != "" {
-		var msgsDisabled bool
-		err = bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", m.Author.ID).Scan(&msgsDisabled)
+		msgsDisabled, err := bot.DB.UserBoolGet(m.Author.ID, "disable_levelup_messages")
 		if err != nil && err != pgx.ErrNoRows {
 			bot.Sugar.Errorf("Error checking if user has disabled level messages: %v", err)
 		}
@@ -169,14 +167,13 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 // this is only called if the level message setting isn't set to RewardsDM or NoMessages
 func (bot *Bot) sendLevelMessage(s *state.State, m *gateway.MessageCreateEvent, sc Server, lvl int64) (err error) {
 	if sc.LevelMessages == AllDM {
-		var msgsDisabled bool
-		err = bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", m.Author.ID).Scan(&msgsDisabled)
+		msgsDisabled, err := bot.DB.UserBoolGet(m.Author.ID, "disable_levelup_messages")
 		if err != nil && err != pgx.ErrNoRows {
 			bot.Sugar.Errorf("Error checking if user has disabled level messages: %v", err)
 		}
 
 		if msgsDisabled {
-			return
+			return err
 		}
 	}
 

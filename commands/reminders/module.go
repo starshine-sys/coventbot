@@ -120,7 +120,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 // at which point we have bigger problems tbh
 func (bot *Bot) doReminders() {
 	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
 	for {
 		select {
@@ -156,9 +156,11 @@ func (bot *Bot) doReminders() {
 				desc = desc[:2040] + "..."
 			}
 
-			var shouldDM, embedless bool
-
-			bot.DB.Pool.QueryRow(context.Background(), "select reminders_in_dm, embedless_reminders from user_config where user_id = $1", r.UserID).Scan(&shouldDM, &embedless)
+			shouldDM, _ := bot.DB.UserBoolGet(r.UserID, "reminders_in_dm")
+			embedless, err := bot.DB.UserBoolGet(r.UserID, "embedless_reminders")
+			if err != nil {
+				bot.Sugar.Errorf("error getting user config for %v: %v", r.UserID, err)
+			}
 
 			shouldDM = shouldDM || !r.ServerID.IsValid()
 

@@ -35,14 +35,18 @@ func (bot *Bot) nicknameChange(m *gateway.GuildMemberUpdateEvent) {
 func (bot *Bot) usernameChange(m *gateway.GuildMemberUpdateEvent) {
 	user := m.User.Username + "#" + m.User.Discriminator
 
-	var optedOut bool
-	bot.DB.Pool.QueryRow(context.Background(), "select usernames_opt_out from user_config where user_id = $1", m.User.ID).Scan(&optedOut)
+	optedOut, err := bot.DB.UserBoolGet(m.User.ID, "usernames_opt_out")
+	if err != nil {
+		bot.Sugar.Errorf("error getting username log preference for user %v: %v", m.User.ID, err)
+		return
+	}
+
 	if optedOut {
 		return
 	}
 
 	var oldUser string
-	err := bot.DB.Pool.QueryRow(context.Background(), "select name from usernames where user_id = $1 order by time desc limit 1", m.User.ID).Scan(&oldUser)
+	err = bot.DB.Pool.QueryRow(context.Background(), "select name from usernames where user_id = $1 order by time desc limit 1", m.User.ID).Scan(&oldUser)
 	if err != nil && err != pgx.ErrNoRows {
 		bot.Sugar.Errorf("Error getting old nickname: %v", err)
 		return

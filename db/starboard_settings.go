@@ -35,7 +35,7 @@ func (db *DB) SetStarboard(id discord.GuildID, s StarboardSettings) (err error) 
 
 // IsBlacklisted returns true if a channel is blacklisted
 func (db *DB) IsBlacklisted(guildID discord.GuildID, channelID discord.ChannelID) (b bool) {
-	db.Pool.QueryRow(context.Background(), "select $1 = any(starboard_blacklist) from (select * from servers where id = $2) as server", channelID, guildID).Scan(&b)
+	_ = db.Pool.QueryRow(context.Background(), "select $1 = any(starboard_blacklist) from (select * from servers where id = $2) as server", channelID, guildID).Scan(&b)
 	return b
 }
 

@@ -1,33 +1,20 @@
 package config
 
 import (
-	"context"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
-	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 )
-
-// UserConfig ...
-type UserConfig struct {
-	UserID discord.UserID
-
-	DisableLevelupMessages bool
-	RemindersInDM          bool
-	UsernamesOptOut        bool
-
-	Timezone string
-}
 
 func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 	if len(ctx.Args) == 0 {
 		_, err = ctx.Send("", discord.Embed{
 			Title:       "User configuration",
-			Description: fmt.Sprintf("To enable any of these, use `%vusercfg` with the name and `true`; for example: `%vusercfg embedless_reminders true`. To disable them, run the same command but with `false` instead of `true`.", ctx.Prefix, ctx.Prefix),
+			Description: fmt.Sprintf("To enable any of these, use `%vusercfg` with the name and `true`; for example: `%vusercfg embedless_reminders true`. To disable them, run the same command but with `false` instead of `true`.\n\nTo show your current configuration, use `%vusercfg show`", ctx.Prefix, ctx.Prefix, ctx.Prefix),
 			Fields: []discord.EmbedField{
 				{
 					Name:  "`disable_levelup_messages`",
@@ -60,21 +47,36 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 	}
 
 	if strings.EqualFold(ctx.RawArgs, "show") {
-		uc := UserConfig{}
+		lvlMsg, err := bot.DB.UserBoolGet(ctx.Author.ID, "disable_levelup_messages")
+		if err != nil {
+			return bot.Report(ctx, err)
+		}
 
-		pgxscan.Get(context.Background(), bot.DB.Pool, &uc, "select * from user_config where user_id = $1", ctx.Author.ID)
+		dmReminders, err := bot.DB.UserBoolGet(ctx.Author.ID, "reminders_in_dm")
+		if err != nil {
+			return bot.Report(ctx, err)
+		}
 
-		tz := uc.Timezone
-		if tz == "" {
-			tz = "UTC"
+		usernameOptOut, err := bot.DB.UserBoolGet(ctx.Author.ID, "usernames_opt_out")
+		if err != nil {
+			return bot.Report(ctx, err)
+		}
+
+		timezone, err := bot.DB.UserStringGet(ctx.Author.ID, "timezone")
+		if err != nil {
+			return bot.Report(ctx, err)
+		}
+
+		if timezone == "" {
+			timezone = "UTC"
 		}
 
 		_, err = ctx.Send("", discord.Embed{
 			Title:       "User configuration",
-			Description: fmt.Sprintf("`disable_levelup_messages`: %v\n`reminders_in_dm`: %v\n`usernames_opt_out`: %v\n`timezone`: %v", uc.DisableLevelupMessages, uc.RemindersInDM, uc.UsernamesOptOut, tz),
+			Description: fmt.Sprintf("`disable_levelup_messages`: %v\n`reminders_in_dm`: %v\n`usernames_opt_out`: %v\n`timezone`: %v", lvlMsg, dmReminders, usernameOptOut, timezone),
 			Color:       ctx.Router.EmbedColor,
 		})
-		return
+		return err
 	}
 
 	if len(ctx.Args) != 2 {
@@ -90,26 +92,29 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 			return err
 		}
 
-		_, err = bot.DB.Pool.Exec(context.Background(), "insert into user_config (user_id, "+ctx.Args[0]+") values ($1, $2) on conflict (user_id) do update set "+ctx.Args[0]+" = $2", ctx.Author.ID, b)
+		err = bot.DB.UserBoolSet(ctx.Author.ID, strings.ToLower(ctx.Args[0]), b)
 		if err != nil {
 			return bot.Report(ctx, err)
 		}
 
 		_, err = ctx.Sendf("Set `%v` to `%v`!", ctx.Args[0], b)
+		return err
 	case "timezone":
 		loc, err := time.LoadLocation(ctx.Args[1])
 		if err != nil {
 			_, err = ctx.Replyc(bcr.ColourRed, "I couldn't find a timezone named ``%v``.\nTimezone should be in `Continent/City` format; to find your timezone, use a tool such as <https://xske.github.io/tz/>.", bcr.EscapeBackticks(ctx.Args[1]))
 			return err
 		}
-		_, err = bot.DB.Pool.Exec(context.Background(), "insert into user_config (user_id, timezone) values ($1, $2) on conflict (user_id) do update set timezone = $2", ctx.Author.ID, loc.String())
+
+		err = bot.DB.UserStringSet(ctx.Author.ID, "timezone", loc.String())
 		if err != nil {
 			return bot.Report(ctx, err)
 		}
 
 		_, err = ctx.Replyc(bcr.ColourGreen, "Set your timezone to %v.", loc.String())
+		return err
 	default:
 		_, err = ctx.Send("I don't recognise that config key.")
+		return err
 	}
-	return
 }

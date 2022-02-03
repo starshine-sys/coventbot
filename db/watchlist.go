@@ -14,7 +14,7 @@ func (db *DB) Watchlist(guildID discord.GuildID) (list []uint64, err error) {
 
 // IsWatchlisted returns true if a user is on the watchlist
 func (db *DB) IsWatchlisted(guildID discord.GuildID, userID discord.UserID) (b bool) {
-	db.Pool.QueryRow(context.Background(), "select $1 = any(watch_list) from (select * from servers where id = $2) as server", userID, guildID).Scan(&b)
+	_ = db.Pool.QueryRow(context.Background(), "select $1 = any(watch_list) from (select * from servers where id = $2) as server", userID, guildID).Scan(&b)
 	return b
 }
 

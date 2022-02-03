@@ -173,8 +173,7 @@ func (bot *Bot) checkVoiceState(s *state.State, gc Server, vc discord.VoiceState
 	}
 
 	if gc.LevelMessages != NoMessages && gc.RewardText != "" {
-		var msgsDisabled bool
-		err = bot.DB.Pool.QueryRow(context.Background(), "select disable_levelup_messages from user_config where user_id = $1", vc.UserID).Scan(&msgsDisabled)
+		msgsDisabled, err := bot.DB.UserBoolGet(vc.UserID, "disable_levelup_messages")
 		if err != nil && err != pgx.ErrNoRows {
 			bot.Sugar.Errorf("Error checking if user has disabled level messages: %v", err)
 		}

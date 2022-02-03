@@ -54,8 +54,10 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	var embedless bool
-	bot.DB.Pool.QueryRow(context.Background(), "select embedless_reminders from user_config where user_id = $1", ctx.Author.ID).Scan(&embedless)
+	embedless, err := bot.DB.UserBoolGet(ctx.Author.ID, "embedless_reminders")
+	if err != nil {
+		bot.Sugar.Errorf("Error getting user config for %v: %v", ctx.Author.ID, err)
+	}
 
 	content := ""
 	e := []discord.Embed{}

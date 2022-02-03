@@ -1,7 +1,6 @@
 package bot
 
 import (
-	"context"
 	"sort"
 	"sync"
 	"time"
@@ -172,8 +171,7 @@ func (b *botModule) Commands() []*bcr.Command {
 
 // PagedEmbed ...
 func (bot *Bot) PagedEmbed(ctx *bcr.Context, embeds []discord.Embed, timeout time.Duration) (msg *discord.Message, err error) {
-	var reactions bool
-	bot.DB.Pool.QueryRow(context.Background(), "select reaction_pages from user_config where user_id = $1", ctx.Author.ID).Scan(&reactions)
+	reactions, _ := bot.DB.UserBoolGet(ctx.Author.ID, "reaction_pages")
 
 	if reactions {
 		msg, _, err = ctx.PagedEmbedTimeout(embeds, false, timeout)
