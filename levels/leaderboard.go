@@ -14,6 +14,14 @@ func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
+	noRanks, err := bot.DB.GuildBoolGet(ctx.Message.GuildID, "levels:disable_ranks")
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+	if noRanks {
+		return ctx.SendX("Ranks are disabled on this server.")
+	}
+
 	if sc.LeaderboardModOnly || !sc.LevelsEnabled {
 		perm, _ := bot.HelperRole.Check(ctx)
 

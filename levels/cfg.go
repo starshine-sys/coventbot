@@ -137,6 +137,19 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 			_, err = ctx.Replyc(bcr.ColourOrange, "⚠️ Enabling or disabling Carline-compatible levels **will** break existing ranks! Use with care.")
 		}
 		return err
+	case "disable_ranks":
+		b, err := strconv.ParseBool(ctx.Args[1])
+		if err != nil {
+			_, err = ctx.Send("You must give either `true` or `false` for the new value.")
+			return err
+		}
+
+		err = bot.DB.GuildBoolSet(ctx.Message.GuildID, "levels:disable_ranks", b)
+		if err != nil {
+			return bot.Report(ctx, err)
+		}
+		_, err = ctx.Reply("Set `%v` to `%v`.", ctx.Args[0], b)
+		return err
 	case "between_xp":
 		t, err := time.ParseDuration(ctx.Args[1])
 		if err != nil || t <= 0 || t > 24*time.Hour {

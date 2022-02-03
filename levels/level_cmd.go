@@ -9,6 +9,7 @@ import (
 	"image/png"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 
 	// to decode JPG backgrounds
@@ -129,12 +130,18 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	// get leaderboard (for rank)
 	// filter the leaderboard to match the `leaderboard` command
 	var rank int
-	lb, err := bot.getLeaderboard(ctx.Message.GuildID, false)
-	if err == nil {
-		for i, uc := range lb {
-			if uc.UserID == u.ID {
-				rank = i + 1
-				break
+	noRanks, err := bot.DB.GuildBoolGet(ctx.Message.GuildID, "levels:disable_ranks")
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+	if !noRanks {
+		lb, err := bot.getLeaderboard(ctx.Message.GuildID, false)
+		if err == nil {
+			for i, uc := range lb {
+				if uc.UserID == u.ID {
+					rank = i + 1
+					break
+				}
 			}
 		}
 	}
@@ -339,6 +346,10 @@ func (bot *Bot) generateEmbed(ctx *bcr.Context,
 		Author: &discord.EmbedAuthor{
 			Name: name,
 		},
+	}
+
+	if rank == 0 {
+		e.Title = "Level " + strconv.FormatInt(lvl, 10)
 	}
 
 	{
