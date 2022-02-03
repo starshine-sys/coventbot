@@ -143,10 +143,12 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	clr := uc.Colour
 	avatarURL := u.AvatarURLWithType(discord.PNGImage) + "?size=256"
 	username := u.Username
-	if clr == 0 && ctx.Guild != nil {
+	if ctx.Guild != nil {
 		m, err := bot.Member(ctx.Guild.ID, u.ID)
 		if err == nil {
-			clr = discord.MemberColor(*ctx.Guild, m)
+			if clr == 0 {
+				clr = discord.MemberColor(*ctx.Guild, m)
+			}
 			if m.Avatar != "" {
 				avatarURL = m.AvatarURLWithType(discord.PNGImage, ctx.Message.GuildID) + "?size=256"
 			}
@@ -184,8 +186,9 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 func (bot *Bot) generateImage(ctx *bcr.Context,
 	name, avatarURL, backgroundURL string, clr discord.Color,
 	rank int, lvl, xp, xpForNext, xpForPrev int64,
-) (r io.Reader, err error) {
-
+) (
+	r io.Reader, err error,
+) {
 	img := gg.NewContext(width, height)
 
 	// background
