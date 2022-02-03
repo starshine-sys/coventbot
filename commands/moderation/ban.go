@@ -18,7 +18,7 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 
 	member, err := ctx.ParseMember(ctx.Args[0])
 	if err == nil {
-		if !bot.aboveUser(ctx, member) {
+		if !bot.aboveUser(ctx, ctx.Member, member) {
 			_, err = ctx.Send("You're not high enough in the role hierarchy to do that.")
 			return
 		}

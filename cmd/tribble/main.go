@@ -141,6 +141,9 @@ func main() {
 
 	sugar.Info("Connected to Discord. Press Ctrl-C or send an interrupt signal to stop.")
 
+	// start event scheduler
+	go bot.Scheduler.Start()
+
 	// sync slash commands
 	err = bot.Router.SyncCommands(c.SyncCommandsIn...)
 	if err == nil {

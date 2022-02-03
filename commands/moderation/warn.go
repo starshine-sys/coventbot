@@ -12,7 +12,7 @@ import (
 )
 
 func (bot *Bot) warn(ctx *bcr.Context) (err error) {
-	go func() { ctx.State.Typing(ctx.Channel.ID) }()
+	go ctx.State.Typing(ctx.Channel.ID)
 
 	u, err := ctx.ParseMember(ctx.Args[0])
 	if err != nil {
@@ -27,7 +27,7 @@ func (bot *Bot) warn(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	if !bot.aboveUser(ctx, u) {
+	if !bot.aboveUser(ctx, ctx.Member, u) {
 		_, err = ctx.Send("You're not high enough in the hierarchy to do that.")
 		return
 	}
@@ -53,14 +53,18 @@ func (bot *Bot) warn(ctx *bcr.Context) (err error) {
 	return
 }
 
-func (bot *Bot) aboveUser(ctx *bcr.Context, member *discord.Member) (above bool) {
+func (bot *Bot) aboveUser(ctx *bcr.Context, mod *discord.Member, member *discord.Member) (above bool) {
 	if ctx.Guild == nil {
 		return false
 	}
 
+	if ctx.Guild.OwnerID == mod.User.ID {
+		return true
+	}
+
 	var modRoles, memberRoles bcr.Roles
 	for _, r := range ctx.Guild.Roles {
-		for _, id := range ctx.Member.RoleIDs {
+		for _, id := range mod.RoleIDs {
 			if r.ID == id {
 				modRoles = append(modRoles, r)
 				break

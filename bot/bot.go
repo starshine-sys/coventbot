@@ -24,9 +24,10 @@ import (
 type Bot struct {
 	*bcrbot.Bot
 
-	Config *types.BotConfig
-	Sugar  *zap.SugaredLogger
-	DB     *db.DB
+	Config    *types.BotConfig
+	Sugar     *zap.SugaredLogger
+	DB        *db.DB
+	Scheduler *Scheduler
 
 	GuildLogWebhook *webhook.Client
 
@@ -81,6 +82,7 @@ func New(
 		members: map[memberKey]member{},
 	}
 
+	b.Scheduler = NewScheduler(b, db)
 	b.HelperRole = &HelperRole{b}
 	b.ModRole = &ModRole{b}
 	b.AdminRole = &AdminRole{b}

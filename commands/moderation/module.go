@@ -1,10 +1,7 @@
 package moderation
 
 import (
-	"sync"
-
 	"github.com/diamondburned/arikawa/v3/discord"
-	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -27,6 +24,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Bot:    bot,
 		ModLog: modlog.New(bot),
 	}
+
+	// register event types
+	b.Scheduler.AddType(&changeRoles{})
 
 	// add handler for importing other bots' mod logs
 	mirror.Init(bot)
@@ -351,20 +351,10 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	bot.Router.AddHandler(b.channelbanOnJoin)
 	bot.Router.AddHandler(b.muteRoleDelete)
-	bot.Router.AddHandler(b.muteOnJoin)
 
 	_, modLogList := modlog.InitCommands(bot)
 
 	list = append(list, modLogList...)
-
-	state, _ := bot.Router.StateFromGuildID(0)
-
-	var o sync.Once
-	state.AddHandler(func(_ *gateway.ReadyEvent) {
-		o.Do(func() {
-			go b.doPendingActions(state)
-		})
-	})
 
 	return
 }

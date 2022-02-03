@@ -7,6 +7,7 @@ import (
 
 	"codeberg.org/eviedelta/detctime/durationparser"
 	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 )
 
@@ -59,7 +60,13 @@ func (bot *Bot) muteme(ctx *bcr.Context) (err error) {
 	}
 
 	reason := fmt.Sprintf("Self-mute from %v ago expired", bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, dur))
-	_, err = bot.insertPendingAction(ctx.Guild.ID, ctx.Author.ID, time.Now().Add(dur), PendingUnmute, false, reason)
+
+	_, err = bot.Scheduler.Add(time.Now().Add(dur), &changeRoles{
+		GuildID:        ctx.Message.GuildID,
+		UserID:         ctx.Author.ID,
+		RemoveRoles:    []discord.RoleID{roles.MuteRole},
+		AuditLogReason: reason,
+	})
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -122,7 +129,13 @@ func (bot *Bot) pauseme(ctx *bcr.Context) (err error) {
 	}
 
 	reason := fmt.Sprintf("Self-pause from %v ago expired", bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, dur))
-	_, err = bot.insertPendingAction(ctx.Guild.ID, ctx.Author.ID, time.Now().Add(dur), PendingUnpause, false, reason)
+
+	_, err = bot.Scheduler.Add(time.Now().Add(dur), &changeRoles{
+		GuildID:        ctx.Message.GuildID,
+		UserID:         ctx.Author.ID,
+		RemoveRoles:    []discord.RoleID{roles.PauseRole},
+		AuditLogReason: reason,
+	})
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
