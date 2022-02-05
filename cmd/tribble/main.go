@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/gateway/shard"
+	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
 	"go.uber.org/zap"
@@ -39,6 +41,8 @@ import (
 	"github.com/starshine-sys/tribble/tickets"
 	"github.com/starshine-sys/tribble/todos"
 )
+
+const intents = bcr.RequiredIntents | gateway.IntentGuildMembers | gateway.IntentGuildVoiceStates | gateway.IntentGuildPresences
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
@@ -78,10 +82,27 @@ func main() {
 	sugar.Info("Connected to database.")
 
 	// create a new bot
-	r, err := bcr.NewWithIntents(c.Token, c.Owners, c.Prefixes, bcr.RequiredIntents|gateway.IntentGuildMembers|gateway.IntentGuildVoiceStates|gateway.IntentGuildPresences)
+	nsfn := state.NewShardFunc(func(_ *shard.Manager, s *state.State) {
+		s.AddIntents(intents)
+	})
+
+	mgr, err := shard.NewIdentifiedManager(gateway.IdentifyData{
+		Token: "Bot " + c.Token,
+		Properties: gateway.IdentifyProperties{
+			Browser: "Discord iOS",
+		},
+		LargeThreshold: 250,
+	}, nsfn)
 	if err != nil {
-		sugar.Fatal("Error creating bot:", err)
+		sugar.Fatal("Error creating shard manager: %v", err)
 	}
+
+	owners := make([]string, 0)
+	for _, o := range c.Owners {
+		owners = append(owners, o.String())
+	}
+
+	r := bcr.New(mgr, owners, c.Prefixes)
 	bcrbot := bcrbot.NewWithRouter(r)
 
 	bot := bot.New(bcrbot, sugar, db, c)
