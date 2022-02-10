@@ -23,9 +23,9 @@ func (s *State) sendMessage(ls *lua.LState) int {
 	chID := s.ctx.Message.ChannelID
 
 	// first argument is channel ID
-	id := s._getChannelID(ls, 1)
-	if id != nil {
-		chID = *id
+	id, ok := s._getChannelID(ls, 1)
+	if ok {
+		chID = id
 	}
 
 	ch, err := s.ctx.State.Channel(chID)
@@ -73,14 +73,12 @@ func (s *State) react(ls *lua.LState) int {
 	mID := s.ctx.Message.ID
 
 	// first argument is channel ID
-	chIDp := s._getChannelID(ls, 1)
-	if chIDp != nil {
-		chID = *chIDp
+	if v, ok := s._getChannelID(ls, 1); ok {
+		chID = v
 	}
 
-	mIDp := s._getMessageID(ls, 2)
-	if mIDp != nil {
-		mID = *mIDp
+	if v, ok := s._getMessageID(ls, 2); ok {
+		mID = v
 	}
 
 	msg, err := s.ctx.State.Message(chID, mID)

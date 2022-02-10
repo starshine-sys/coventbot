@@ -77,6 +77,7 @@ func NewState(bot *bot.Bot, ctx *bcr.Context, params *parameters.Parameters) *St
 	s.setArgumentFuncs()
 	s.setRequireFuncs()
 	s.setScheduleFuncs()
+	s.setRoleFuncs()
 
 	return s
 }

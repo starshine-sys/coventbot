@@ -10,45 +10,83 @@ import (
 
 // These functions are not used in Lua directly
 
-func (s *State) _getChannelID(ls *lua.LState, idx int) *discord.ChannelID {
+func (s *State) _getChannelID(ls *lua.LState, idx int) (discord.ChannelID, bool) {
 	v := ls.Get(idx)
 	switch v.Type() {
 	case lua.LTNil:
-		return nil
+		return discord.NullChannelID, false
 	case lua.LTNumber:
 		id := uint64(v.(lua.LNumber))
-		return (*discord.ChannelID)(&id)
+		return discord.ChannelID(id), true
 	case lua.LTString:
 		i, err := strconv.ParseUint(string(v.(lua.LString)), 10, 64)
 		if err != nil {
-			return nil
+			return discord.NullChannelID, false
 		}
 
-		return (*discord.ChannelID)(&i)
+		return discord.ChannelID(i), true
 	default:
-		ls.RaiseError("argument %d must be a string, number, or nil", idx)
-		return nil
+		return discord.NullChannelID, false
 	}
 }
 
-func (s *State) _getMessageID(ls *lua.LState, idx int) *discord.MessageID {
+func (s *State) _getMessageID(ls *lua.LState, idx int) (discord.MessageID, bool) {
 	v := ls.Get(idx)
 	switch v.Type() {
 	case lua.LTNil:
-		return nil
+		return discord.NullMessageID, false
 	case lua.LTNumber:
 		id := uint64(v.(lua.LNumber))
-		return (*discord.MessageID)(&id)
+		return discord.MessageID(id), true
 	case lua.LTString:
 		i, err := strconv.ParseUint(string(v.(lua.LString)), 10, 64)
 		if err != nil {
-			return nil
+			return discord.NullMessageID, false
 		}
 
-		return (*discord.MessageID)(&i)
+		return discord.MessageID(i), true
 	default:
-		ls.RaiseError("argument %d must be a string, number, or nil", idx)
-		return nil
+		return discord.NullMessageID, false
+	}
+}
+
+func (s *State) _getUserID(ls *lua.LState, idx int) (discord.UserID, bool) {
+	v := ls.Get(idx)
+	switch v.Type() {
+	case lua.LTNil:
+		return discord.NullUserID, false
+	case lua.LTNumber:
+		id := uint64(v.(lua.LNumber))
+		return discord.UserID(id), true
+	case lua.LTString:
+		i, err := strconv.ParseUint(string(v.(lua.LString)), 10, 64)
+		if err != nil {
+			return discord.NullUserID, false
+		}
+
+		return discord.UserID(i), true
+	default:
+		return discord.NullUserID, false
+	}
+}
+
+func (s *State) _getRoleID(ls *lua.LState, idx int) (discord.RoleID, bool) {
+	v := ls.Get(idx)
+	switch v.Type() {
+	case lua.LTNil:
+		return discord.NullRoleID, false
+	case lua.LTNumber:
+		id := uint64(v.(lua.LNumber))
+		return discord.RoleID(id), true
+	case lua.LTString:
+		i, err := strconv.ParseUint(string(v.(lua.LString)), 10, 64)
+		if err != nil {
+			return discord.NullRoleID, false
+		}
+
+		return discord.RoleID(i), true
+	default:
+		return discord.NullRoleID, false
 	}
 }
 

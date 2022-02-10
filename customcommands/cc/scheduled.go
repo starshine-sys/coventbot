@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"1f320.xyz/x/parameters"
+	"codeberg.org/eviedelta/detctime/durationparser"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -33,6 +34,8 @@ func (dat *ScheduledCC) Execute(cctx context.Context, id int64, bot *bot.Bot) er
 		return err
 	}
 
+	bot.Sugar.Debugf("executing scheduled cc %v (event %v)", cmd.ID, id)
+
 	ds, sid := bot.Router.StateFromGuildID(dat.Guild.ID)
 	ctx := &bcr.Context{
 		State:   ds,
@@ -50,7 +53,11 @@ func (dat *ScheduledCC) Execute(cctx context.Context, id int64, bot *bot.Bot) er
 	s.ls.SetGlobal("scheduled_args", lua.LString(dat.Parameters))
 	s.isScheduled = true
 
-	return s.Do(cctx, cmd.ID, cmd.Source)
+	err = s.Do(cctx, cmd.ID, cmd.Source)
+	if err != nil {
+		bot.Sugar.Errorf("error executing scheduled cc %v (event %v): %v", cmd.ID, id, err)
+	}
+	return err
 }
 
 func (dat *ScheduledCC) Offset() time.Duration { return time.Minute }
@@ -90,14 +97,14 @@ func (s *State) scheduleCC(ls *lua.LState) int {
 		return 1
 	}
 
-	dur, err := time.ParseDuration(ls.CheckString(2))
+	dur, err := durationparser.Parse(ls.CheckString(2))
 	if err != nil {
 		ls.RaiseError("%q cannot be parsed as a duration", ls.CheckString(2))
 		return 1
 	}
 
-	if dur < time.Minute || dur > 7*24*time.Hour {
-		ls.RaiseError("delay must be between 1 minute and 7 days")
+	if dur < time.Minute || dur > 100*24*time.Hour {
+		ls.RaiseError("delay must be between 1 minute and 100 days")
 		return 1
 	}
 
