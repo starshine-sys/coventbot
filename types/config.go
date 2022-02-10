@@ -17,6 +17,7 @@ type BotConfig struct {
 	GlobalQuotes bool `yaml:"global_quotes"`
 
 	SyncCommandsIn []discord.GuildID `yaml:"sync_commands_in"`
+	AllowCCs       []discord.GuildID `yaml:"allow_ccs"` // Guilds to allow custom commands in
 
 	GuildLogWebhook Webhook `yaml:"guild_log"`
 

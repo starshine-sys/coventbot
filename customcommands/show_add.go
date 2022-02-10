@@ -16,6 +16,17 @@ import (
 const maxScriptSize = 10 * 1024
 
 func (bot *Bot) showOrAdd(ctx *bcr.Context) (err error) {
+	allowCC := false
+	for _, id := range bot.Config.AllowCCs {
+		if id == ctx.Message.GuildID {
+			allowCC = true
+			break
+		}
+	}
+	if !allowCC {
+		return ctx.SendX("This guild does not have custom commands enabled.")
+	}
+
 	if len(ctx.Args) == 0 {
 		ccs, err := bot.DB.AllCustomCommands(ctx.Message.GuildID)
 		if err != nil {

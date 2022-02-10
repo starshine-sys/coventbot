@@ -9,6 +9,7 @@ import (
 
 	"1f320.xyz/x/parameters"
 	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -35,16 +36,32 @@ func Init(b *bot.Bot) (s string, list []*bcr.Command) {
 	bot.Router.AddHandler(bot.messageCreate)
 
 	bot.Router.AddCommand(&bcr.Command{
-		Name:    "cc",
-		Summary: "Show or create a custom command",
-		Usage:   "[name]",
-		Command: bot.showOrAdd,
+		Name:             "cc",
+		Summary:          "Show or create a custom command",
+		Usage:            "[name]",
+		Command:          bot.showOrAdd,
+		GuildPermissions: discord.PermissionManageGuild,
 	})
 
 	return
 }
 
 func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
+	if !m.GuildID.IsValid() {
+		return
+	}
+
+	allowCC := false
+	for _, id := range bot.Config.AllowCCs {
+		if id == m.GuildID {
+			allowCC = true
+			break
+		}
+	}
+	if !allowCC {
+		return
+	}
+
 	if !bot.Router.MatchPrefix(m.Message) {
 		return
 	}
