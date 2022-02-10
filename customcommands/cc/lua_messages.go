@@ -15,6 +15,11 @@ func (s *State) setMessageFuncs() {
 }
 
 func (s *State) sendMessage(ls *lua.LState) int {
+	if s.discordCalls >= 10 {
+		ls.RaiseError("maximum number of Discord calls reached (10)")
+		return 1
+	}
+
 	chID := s.ctx.Message.ChannelID
 
 	// first argument is channel ID
@@ -47,6 +52,7 @@ func (s *State) sendMessage(ls *lua.LState) int {
 		return 1
 	}
 
+	s.discordCalls++
 	msg, err := s.ctx.State.SendMessageComplex(chID, data)
 	if err != nil {
 		ls.RaiseError("error sending message: %s", err.Error())
@@ -58,6 +64,11 @@ func (s *State) sendMessage(ls *lua.LState) int {
 }
 
 func (s *State) react(ls *lua.LState) int {
+	if s.discordCalls >= 10 {
+		ls.RaiseError("maximum number of Discord calls reached (10)")
+		return 0
+	}
+
 	chID := s.ctx.Message.ChannelID
 	mID := s.ctx.Message.ID
 
@@ -84,6 +95,7 @@ func (s *State) react(ls *lua.LState) int {
 
 	react := s._getString(ls, 3)
 
+	s.discordCalls++
 	err = s.ctx.State.React(msg.ChannelID, msg.ID, discord.APIEmoji(react))
 	if err != nil {
 		ls.RaiseError("error reacting to message: %s", err.Error())

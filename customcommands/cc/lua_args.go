@@ -8,6 +8,7 @@ func (s *State) setArgumentFuncs() {
 	t := s.ls.NewTable()
 	t.RawSetString("pop", s.ls.NewFunction(s.pop))
 	t.RawSetString("peek", s.ls.NewFunction(s.peek))
+	t.RawSetString("has_next", s.ls.NewFunction(s.hasNext))
 	t.RawSetString("remainder", s.ls.NewFunction(s.remainder))
 	t.RawSetString("next_channel", s.ls.NewFunction(s.nextChannel))
 	t.RawSetString("next_channel_check", s.ls.NewFunction(s.nextChannelCheck))
@@ -30,6 +31,15 @@ func (s *State) pop(ls *lua.LState) int {
 // 1. string
 func (s *State) peek(ls *lua.LState) int {
 	ls.Push(lua.LString(s.params.Peek()))
+	return 1
+}
+
+// has_next
+// - 0 arguments
+// - returns:
+// 1. bool
+func (s *State) hasNext(ls *lua.LState) int {
+	ls.Push(lua.LBool(s.params.HasNext()))
 	return 1
 }
 

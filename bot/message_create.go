@@ -3,9 +3,7 @@ package bot
 import (
 	"fmt"
 	"strings"
-	"time"
 
-	"1f320.xyz/x/parameters"
 	"emperror.dev/errors"
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/api/webhook"
@@ -15,7 +13,6 @@ import (
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/tribble/customcommands/cc"
 )
 
 // MessageCreate is run on a message create event
@@ -117,44 +114,6 @@ func (bot *Bot) MessageCreate(m *gateway.MessageCreateEvent) {
 		bot.Sugar.Errorf("Error sending message: %v", err)
 		return
 	}
-
-	bot.customCommands(ctx)
-}
-
-func (bot *Bot) customCommands(ctx *bcr.Context) {
-	i := bot.CheckPrefix(ctx.Message)
-	if i == -1 {
-		return
-	}
-	content := ctx.Message.Content[i:]
-	content = strings.TrimSpace(content)
-
-	params := parameters.NewParameters(content, false)
-	cmdName := strings.ToLower(params.Pop())
-	if cmdName == "" {
-		return
-	}
-
-	cmd, err := bot.DB.CustomCommand(ctx.Message.GuildID, cmdName)
-	if err != nil {
-		return
-	}
-
-	t := time.Now()
-	s := cc.NewState(ctx, params)
-
-	err = s.Do(cmd.Source, time.Minute)
-	if err != nil {
-		_, err = ctx.State.SendMessageComplex(ctx.Message.ChannelID, api.SendMessageData{
-			Content:         fmt.Sprintf("An error occurred while executing the custom command ``%v/%v``:\n```lua\n%v\n```", cmd.ID, bcr.EscapeBackticks(cmd.Name), err),
-			AllowedMentions: &api.AllowedMentions{},
-		})
-		if err != nil {
-			bot.Sugar.Errorf("error sending message: %v", err)
-		}
-	}
-
-	bot.Sugar.Debugf("Executed custom command %v/%v in %v", cmd.ID, cmd.Name, time.Since(t))
 }
 
 func (bot *Bot) handleTagCommand(ctx *bcr.Context) (err error) {
