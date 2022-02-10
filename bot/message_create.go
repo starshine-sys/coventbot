@@ -3,7 +3,10 @@ package bot
 import (
 	"fmt"
 	"strings"
+	"time"
 
+	"1f320.xyz/x/parameters"
+	"emperror.dev/errors"
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/api/webhook"
 	"github.com/diamondburned/arikawa/v3/discord"
@@ -12,6 +15,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/tribble/customcommands/cc"
 )
 
 // MessageCreate is run on a message create event
@@ -85,9 +89,8 @@ func (bot *Bot) MessageCreate(m *gateway.MessageCreateEvent) {
 
 			c := webhook.New(bot.Config.DMs.Webhook.ID, bot.Config.DMs.Webhook.Token)
 
-			c.Execute(data)
-
-			bot.Router.ShardManager.Shard(0).(shard.ShardState).Shard.(*state.State).React(m.ChannelID, m.ID, "✅")
+			_ = c.Execute(data)
+			_ = bot.Router.ShardManager.Shard(0).(shard.ShardState).Shard.(*state.State).React(m.ChannelID, m.ID, "✅")
 		}
 		return
 	}
@@ -108,9 +111,50 @@ func (bot *Bot) MessageCreate(m *gateway.MessageCreateEvent) {
 	// handle tags as commands
 	err = bot.handleTagCommand(ctx)
 	if err != nil {
+		if err == errHadTag {
+			return
+		}
 		bot.Sugar.Errorf("Error sending message: %v", err)
 		return
 	}
+
+	bot.customCommands(ctx)
+}
+
+func (bot *Bot) customCommands(ctx *bcr.Context) {
+	i := bot.CheckPrefix(ctx.Message)
+	if i == -1 {
+		return
+	}
+	content := ctx.Message.Content[i:]
+	content = strings.TrimSpace(content)
+
+	params := parameters.NewParameters(content, false)
+	cmdName := strings.ToLower(params.Pop())
+	if cmdName == "" {
+		return
+	}
+
+	cmd, err := bot.DB.CustomCommand(ctx.Message.GuildID, cmdName)
+	if err != nil {
+		return
+	}
+
+	t := time.Now()
+	s := cc.NewState(ctx, params)
+
+	err = s.Do(cmd.Source, time.Minute)
+	if err != nil {
+		_, err = ctx.State.SendMessageComplex(ctx.Message.ChannelID, api.SendMessageData{
+			Content:         fmt.Sprintf("An error occurred while executing the custom command ``%v/%v``:\n```lua\n%v\n```", cmd.ID, bcr.EscapeBackticks(cmd.Name), err),
+			AllowedMentions: &api.AllowedMentions{},
+		})
+		if err != nil {
+			bot.Sugar.Errorf("error sending message: %v", err)
+		}
+	}
+
+	bot.Sugar.Debugf("Executed custom command %v/%v in %v", cmd.ID, cmd.Name, time.Since(t))
 }
 
 func (bot *Bot) handleTagCommand(ctx *bcr.Context) (err error) {
@@ -145,8 +189,13 @@ func (bot *Bot) handleTagCommand(ctx *bcr.Context) (err error) {
 	}
 
 	_, err = ctx.State.SendMessageComplex(ctx.Message.ChannelID, data)
-	return err
+	if err != nil {
+		return err
+	}
+	return errHadTag
 }
+
+const errHadTag = errors.Sentinel("message had tag")
 
 func (bot *Bot) interactionCreate(ic *gateway.InteractionCreateEvent) {
 	if ic.Type != discord.CommandInteraction {

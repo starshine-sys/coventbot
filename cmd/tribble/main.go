@@ -27,6 +27,7 @@ import (
 	"github.com/starshine-sys/tribble/commands/roles"
 	"github.com/starshine-sys/tribble/commands/static"
 	"github.com/starshine-sys/tribble/commands/tags"
+	"github.com/starshine-sys/tribble/customcommands"
 	"github.com/starshine-sys/tribble/db"
 	"github.com/starshine-sys/tribble/etc"
 	"github.com/starshine-sys/tribble/gatekeeper"
@@ -140,6 +141,7 @@ func main() {
 	keyroles.Init(bot)
 	quotes.Init(bot)
 	termora.Init(bot)
+	customcommands.Init(bot)
 
 	s, _ := bot.Router.StateFromGuildID(0)
 
