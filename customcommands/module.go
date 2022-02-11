@@ -47,7 +47,7 @@ func Init(b *bot.Bot) (s string, list []*bcr.Command) {
 }
 
 func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
-	if !m.GuildID.IsValid() {
+	if !m.GuildID.IsValid() || m.Author.Bot {
 		return
 	}
 
