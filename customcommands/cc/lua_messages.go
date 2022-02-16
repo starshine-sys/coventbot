@@ -47,9 +47,27 @@ func (s *State) sendMessage(ls *lua.LState) int {
 	switch v.Type() {
 	case lua.LTString:
 		data.Content = string(v.(lua.LString))
+	case lua.LTTable:
+		t := v.(*lua.LTable)
+
+		e, ok := s.embed(t)
+		if ok {
+			data.Embeds = []discord.Embed{e}
+		}
+
+		v := t.RawGetString("content")
+		s, ok := v.(lua.LString)
+		if ok {
+			data.Content = string(s)
+		}
+
+		v = t.RawGetString("allow_all_mentions")
+		b, ok := v.(lua.LBool)
+		if ok && bool(b) {
+			data.AllowedMentions = nil
+		}
 	default:
-		ls.RaiseError("send_message does not yet support non-string messages")
-		return 1
+		data.Content = v.String()
 	}
 
 	s.discordCalls++

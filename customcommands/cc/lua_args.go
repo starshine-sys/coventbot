@@ -1,6 +1,10 @@
 package cc
 
-import lua "github.com/yuin/gopher-lua"
+import (
+	"time"
+
+	lua "github.com/yuin/gopher-lua"
+)
 
 // This file contains functions used for custom commands.
 
@@ -13,7 +17,19 @@ func (s *State) setArgumentFuncs() {
 	t.RawSetString("next_channel", s.ls.NewFunction(s.nextChannel))
 	t.RawSetString("next_channel_check", s.ls.NewFunction(s.nextChannelCheck))
 
+	s.ls.SetGlobal("current_timestamp", s.ls.NewFunction(s.currentTimestamp))
 	s.ls.SetGlobal("args", t)
+}
+
+// current_timestamp
+// - 0 arguments
+// - returns:
+// 1. string of current timestamp in RFC3339 format
+func (s *State) currentTimestamp(ls *lua.LState) int {
+	str := time.Now().UTC().Format(time.RFC3339)
+
+	ls.Push(lua.LString(str))
+	return 1
 }
 
 // pop
