@@ -28,8 +28,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}))
 
 	conf := b.Router.AddCommand(&bcr.Command{
-		Name:    "approval",
-		Summary: "Configure manual approval.",
+		Name:              "approval",
+		Summary:           "Configure manual approval.",
+		CustomPermissions: bot.ModRole,
 
 		Command: func(ctx *bcr.Context) (err error) { return ctx.Help([]string{"approval"}) },
 	})

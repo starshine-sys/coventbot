@@ -34,7 +34,6 @@ import (
 	"github.com/starshine-sys/tribble/keyroles"
 	"github.com/starshine-sys/tribble/levels"
 	"github.com/starshine-sys/tribble/names"
-	"github.com/starshine-sys/tribble/pklog"
 	"github.com/starshine-sys/tribble/quotes"
 	"github.com/starshine-sys/tribble/reactroles"
 	"github.com/starshine-sys/tribble/starboard"
@@ -44,6 +43,31 @@ import (
 )
 
 const intents = bcr.RequiredIntents | gateway.IntentGuildMembers | gateway.IntentGuildVoiceStates | gateway.IntentGuildPresences
+
+// all of the bot's modules
+var modules = []func(*bot.Bot) (string, []*bcr.Command){
+	static.Init,
+	moderation.Init,
+	levels.Init,
+	reactroles.Init,
+	reminders.Init,
+	roles.Init,
+	tags.Init,
+	config.Init,
+	todos.Init,
+	chanmirror.Init,
+	notes.Init,
+	starboard.Init,
+	gatekeeper.Init,
+	approval.Init,
+	names.Init,
+	admin.Init,
+	tickets.Init,
+	keyroles.Init,
+	quotes.Init,
+	termora.Init,
+	customcommands.Init,
+}
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
@@ -114,34 +138,8 @@ func main() {
 	bot.Prefix(c.Prefixes...)
 	bot.Owner(c.Owners...)
 
-	// add basic commands
-	bot.Add(static.Init)
-	// add mod commands
-	bot.Add(moderation.Init)
-	// add todos
-	bot.Add(todos.Init)
-	// add role commands
-	bot.Add(roles.Init)
-	// add config commands
-	bot.Add(config.Init)
-
-	chanmirror.Init(bot)
-	notes.Init(bot)
-	starboard.Init(bot)
-	gatekeeper.Init(bot)
-	approval.Init(bot)
-	names.Init(bot)
-	pklog.Init(bot)
-	admin.Init(bot)
-	levels.Init(bot)
-	reactroles.Init(bot)
-	reminders.Init(bot)
-	tags.Init(bot)
-	tickets.Init(bot)
-	keyroles.Init(bot)
-	quotes.Init(bot)
-	termora.Init(bot)
-	customcommands.Init(bot)
+	// add modules
+	bot.Add(modules...)
 
 	s, _ := bot.Router.StateFromGuildID(0)
 

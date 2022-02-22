@@ -21,9 +21,10 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	b := &Bot{bot}
 
 	rr := bot.Router.AddCommand(&bcr.Command{
-		Name:    "reactroles",
-		Aliases: []string{"rr"},
-		Summary: "Create or edit reaction roles",
+		Name:              "reactroles",
+		Aliases:           []string{"rr"},
+		Summary:           "Create or edit reaction roles",
+		CustomPermissions: bot.ModRole,
 
 		Command: func(ctx *bcr.Context) (err error) {
 			err = ctx.Help([]string{"reactroles"})

@@ -141,17 +141,19 @@ func New(
 }
 
 // Add adds a module to the bot
-func (bot *Bot) Add(f func(*Bot) (string, []*bcr.Command)) {
-	m, c := f(bot)
+func (bot *Bot) Add(fns ...func(*Bot) (string, []*bcr.Command)) {
+	for _, fn := range fns {
+		m, c := fn(bot)
 
-	// sort the list of commands
-	sort.Sort(bcr.Commands(c))
+		// sort the list of commands
+		sort.Sort(bcr.Commands(c))
 
-	// add the module
-	bot.Modules = append(bot.Modules, &botModule{
-		name:     m,
-		commands: c,
-	})
+		// add the module
+		bot.Modules = append(bot.Modules, &botModule{
+			name:     m,
+			commands: c,
+		})
+	}
 }
 
 type botModule struct {

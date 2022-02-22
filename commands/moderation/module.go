@@ -237,6 +237,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Ban a member from using a channel.",
 		Usage:   "[channel] <member>",
 		Args:    bcr.MinArgs(1),
+		// because we check permissions in the command itself
+		Hidden: true,
 
 		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
 			fs.BoolP("full", "f", false, "Also hide the channel from the user.")
@@ -252,6 +254,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Ban a member from using a channel.",
 		Usage:   "[channel] <member>",
 		Args:    bcr.MinArgs(1),
+		// because we check permissions in the command itself
+		Hidden: true,
 
 		Command: b.unchannelban,
 	}))

@@ -3,6 +3,7 @@ package info
 import (
 	"time"
 
+	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -82,23 +83,17 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:   b.serverInfo,
 	}))
 
-	help := b.Router.AddCommand(&bcr.Command{
+	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "help",
 		Summary: "Show info about the bot, or info about a specific command.",
 		Usage:   "[command]",
+		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.BoolP("all", "a", false, "Show all commands, not just the ones you have access to.")
+			return fs
+		},
 
 		Command: b.help,
-	})
-
-	help.AddSubcommand(&bcr.Command{
-		Name:    "commands",
-		Aliases: []string{"cmds"},
-		Summary: "Show a list of all commands.",
-
-		Command: b.CommandList,
-	})
-
-	list = append(list, help)
+	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "avatar",

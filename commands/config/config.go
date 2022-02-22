@@ -187,8 +187,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	})
 
 	triggers := b.Router.AddCommand(&bcr.Command{
-		Name:    "triggers",
-		Summary: "Add or remove triggers (reactions that trigger commands)",
+		Name:              "triggers",
+		Summary:           "Add or remove triggers (reactions that trigger commands)",
+		CustomPermissions: bot.ModRole,
 
 		GuildOnly: true,
 		Command:   func(ctx *bcr.Context) (err error) { return ctx.Help([]string{"triggers"}) },
