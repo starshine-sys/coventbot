@@ -35,8 +35,9 @@ var blankPixels = []int{96, 96, 96, 96, 85, 85, 85, 85, 74, 74, 74, 74, 68, 68, 
 //go:embed templates
 var imageData embed.FS
 
-var boldFont font.Face
 var normalFont font.Face
+
+var montserrat, noto, emoji *truetype.Font
 
 func mustParse(path string) *truetype.Font {
 	b, err := imageData.ReadFile(path)
@@ -52,32 +53,15 @@ func mustParse(path string) *truetype.Font {
 	return f
 }
 
+const defaultBoldSize = 60
+
 func init() {
 	// montserrat for most latin letters
-	montserrat := mustParse("templates/Montserrat-Medium.ttf")
+	montserrat = mustParse("templates/Montserrat-Medium.ttf")
 	// noto as fallback for other characters
-	noto := mustParse("templates/NotoSans-Medium.ttf")
+	noto = mustParse("templates/NotoSans-Medium.ttf")
 	// emoji fallback
-	emoji := mustParse("templates/NotoEmoji-Regular.ttf")
-
-	mf := &multiface.Face{}
-
-	// add montserrat font
-	mf.AddTruetypeFace(truetype.NewFace(montserrat, &truetype.Options{
-		Size: 60,
-	}), montserrat)
-
-	// add noto font
-	mf.AddTruetypeFace(truetype.NewFace(noto, &truetype.Options{
-		Size: 60,
-	}), noto)
-
-	// add noto emoji
-	mf.AddTruetypeFace(truetype.NewFace(emoji, &truetype.Options{
-		Size: 60,
-	}), emoji)
-
-	boldFont = mf
+	emoji = mustParse("templates/NotoEmoji-Regular.ttf")
 
 	normalFont = truetype.NewFace(
 		mustParse("templates/Montserrat-Regular.ttf"),
@@ -85,6 +69,26 @@ func init() {
 			Size: 40,
 		},
 	)
+}
+
+func boldFontSize(size float64) *multiface.Face {
+	mf := &multiface.Face{}
+
+	mf.AddTruetypeFace(truetype.NewFace(montserrat, &truetype.Options{
+		Size: size,
+	}), montserrat)
+
+	// add noto font
+	mf.AddTruetypeFace(truetype.NewFace(noto, &truetype.Options{
+		Size: size,
+	}), noto)
+
+	// add noto emoji
+	mf.AddTruetypeFace(truetype.NewFace(emoji, &truetype.Options{
+		Size: size,
+	}), emoji)
+
+	return mf
 }
 
 const (
@@ -290,20 +294,29 @@ func (bot *Bot) generateImage(ctx *bcr.Context,
 
 	img.SetHexColor("#ffffff")
 
-	img.SetFontFace(boldFont)
+	currentSize := float64(defaultBoldSize)
+	img.SetFontFace(boldFontSize(currentSize))
 
-	displayName := ""
-	for i, r := range name {
-		if i > 18 {
-			displayName += "..."
+	targetLen := (width - 100) - 350
+	if rank != 0 {
+		targetLen -= 200
+	}
+
+	for currentSize > 1 {
+		w, h := img.MeasureString(name)
+
+		if w < float64(targetLen) {
+			bot.Sugar.Debugf("name %q fits in %v height", name, h)
+
 			break
 		}
 
-		displayName += string(r)
+		currentSize -= 1
+		img.SetFontFace(boldFontSize(currentSize))
 	}
 
 	// name
-	img.DrawStringAnchored(displayName, 350, 120, 0, 0.5)
+	img.DrawStringAnchored(name, 350, 120, 0, 0.5)
 
 	// rank/xp
 	img.SetFontFace(normalFont)

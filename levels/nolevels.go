@@ -134,7 +134,7 @@ func (bot *Bot) nolevelLoop() {
 	for {
 		select {
 		case <-sc:
-			break
+			return
 		default:
 		}
 
