@@ -8,8 +8,8 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/julienschmidt/httprouter"
 	"github.com/starshine-sys/tribble/types"
 )
 
@@ -27,13 +27,14 @@ type gatekeeperData struct {
 	Config *types.BotConfig
 }
 
-var gatekeeperTmpl = template.Must(template.New("").Parse(tmpl))
+var gatekeeperTmpl = template.Must(template.New("").Parse(gatekeeperHtml))
+var textTmpl = template.Must(template.New("").Parse(textHtml))
 
 // GatekeeperGET ...
-func (bot *Bot) GatekeeperGET(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	id, err := uuid.Parse(ps.ByName("uuid"))
+func (bot *Bot) GatekeeperGET(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "uuid"))
 	if err != nil {
-		fmt.Fprintf(w, "Invalid UUID (%v) provided!\n", ps.ByName("uuid"))
+		fmt.Fprintf(w, "Invalid UUID (%v) provided!\n", chi.URLParam(r, "uuid"))
 		return
 	}
 
@@ -62,7 +63,7 @@ func (bot *Bot) GatekeeperGET(w http.ResponseWriter, r *http.Request, ps httprou
 }
 
 // VerifyPOST ...
-func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		fmt.Fprintln(w, "Internal server error")
 		bot.Sugar.Errorf("Error parsing form: %v", err)

@@ -7,13 +7,14 @@ require (
 	codeberg.org/eviedelta/detctime v0.0.0-20201201223733-52d0e0a1ba3d
 	emperror.dev/errors v0.8.0
 	github.com/AndreKR/multiface v0.0.0-20190725194701-b414aa6424a8
-	github.com/ReneKroon/ttlcache/v2 v2.7.0
+	github.com/ReneKroon/ttlcache/v2 v2.7.0 // indirect
 	github.com/diamondburned/arikawa/v3 v3.0.0-rc.2.0.20211005062227-918cce64e985
 	github.com/disintegration/imaging v1.6.2
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fogleman/gg v1.3.0
 	github.com/georgysavva/scany v0.2.8
 	github.com/getsentry/sentry-go v0.11.0
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/google/uuid v1.2.0
 	github.com/jackc/pgx/v4 v4.11.0

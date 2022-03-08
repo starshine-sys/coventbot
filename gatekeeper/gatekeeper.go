@@ -2,10 +2,11 @@ package gatekeeper
 
 import (
 	"embed"
+	"io/fs"
 	"net/http"
 	"time"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/go-chi/chi/v5"
 	"github.com/kataras/hcaptcha"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -15,32 +16,43 @@ import (
 type Bot struct {
 	*bot.Bot
 
-	httpRouter *httprouter.Router
-	HCaptcha   *hcaptcha.Client
+	chi      *chi.Mux
+	HCaptcha *hcaptcha.Client
 }
 
 //go:embed style/*
 var styles embed.FS
 
-//go:embed tmpl.html
-var tmpl string
+func mustSub(f fs.FS, path string) fs.FS {
+	sub, err := fs.Sub(f, path)
+	if err != nil {
+		panic(err)
+	}
+	return sub
+}
+
+//go:embed gatekeeper.html
+var gatekeeperHtml string
+
+//go:embed text.html
+var textHtml string
 
 // Init ...
 func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	s = "Verification"
 
 	b := &Bot{
-		Bot:        bot,
-		httpRouter: httprouter.New(),
-		HCaptcha:   hcaptcha.New(bot.Config.HCaptchaSecret),
+		Bot:      bot,
+		chi:      chi.NewMux(),
+		HCaptcha: hcaptcha.New(bot.Config.HCaptchaSecret),
 	}
 
-	b.httpRouter.ServeFiles("/static/*filepath", http.FS(styles))
-	b.httpRouter.GET("/gatekeeper/:uuid", b.GatekeeperGET)
-	b.httpRouter.GET("/", func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	b.chi.Handle("/static/", http.FileServer(http.FS(mustSub(styles, "style/"))))
+	b.chi.Get("/gatekeeper/{uuid}", b.GatekeeperGET)
+	b.chi.Get("/", func(rw http.ResponseWriter, r *http.Request) {
 		http.Redirect(rw, r, "https://github.com/starshine-sys/tribble", http.StatusTemporaryRedirect)
 	})
-	b.httpRouter.POST("/verify", b.VerifyPOST)
+	b.chi.Post("/verify", b.VerifyPOST)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "agree",
@@ -91,7 +103,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	go func() {
 		for {
-			err := http.ListenAndServe(bot.Config.VerifyListen, b.httpRouter)
+			err := http.ListenAndServe(bot.Config.VerifyListen, b.chi)
 			if err != nil {
 				bot.Sugar.Errorf("Error running HTTP server, restarting: %v", err)
 			}
