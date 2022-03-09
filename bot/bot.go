@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"context"
 	"net/http"
 	"sort"
 	"sync"
@@ -147,17 +148,6 @@ func New(
 		state.AddHandler(b.memberRemoveEvent)
 	})
 
-	// serve http
-	go func() {
-		for {
-			err := http.ListenAndServe(b.Config.HTTPListen, b.Chi)
-			if err != nil {
-				b.Sugar.Errorf("Error running HTTP server, restarting: %v", err)
-			}
-			time.Sleep(30 * time.Second)
-		}
-	}()
-
 	return b
 }
 
@@ -203,4 +193,20 @@ func (bot *Bot) PagedEmbed(ctx *bcr.Context, embeds []discord.Embed, timeout tim
 
 	msg, _, err = ctx.ButtonPages(embeds, timeout)
 	return
+}
+
+// Start wraps around Router.ShardManager.Open()
+func (bot *Bot) Start(ctx context.Context) error {
+	// serve http
+	go func() {
+		for {
+			err := http.ListenAndServe(bot.Config.HTTPListen, bot.Chi)
+			if err != nil {
+				bot.Sugar.Errorf("Error running HTTP server, restarting: %v", err)
+			}
+			time.Sleep(30 * time.Second)
+		}
+	}()
+
+	return bot.Router.ShardManager.Open(ctx)
 }

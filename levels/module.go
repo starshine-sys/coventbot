@@ -21,6 +21,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	b := &Bot{bot}
 
+	bot.Chi.Get(`/leaderboard/{id:\d+}`, b.webLeaderboard)
 	bot.Router.AddHandler(b.messageCreate)
 
 	lvl := bot.Router.AddCommand(&bcr.Command{
