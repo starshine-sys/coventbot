@@ -56,7 +56,7 @@ func (bot *Bot) starboardMessage(state *state.State, m discord.Message, settings
 }
 
 // embed creates a starboard embed for the given message object
-func (bot *Bot) embed(m discord.Message) (e discord.Embed) {
+func (bot *Bot) embed(m discord.Message) discord.Embed {
 	name := m.Author.Username
 	if !m.WebhookID.IsValid() {
 		member, err := bot.Member(m.GuildID, m.Author.ID)
@@ -73,7 +73,7 @@ func (bot *Bot) embed(m discord.Message) (e discord.Embed) {
 		}
 	}
 
-	return discord.Embed{
+	e := discord.Embed{
 		Description: m.Content,
 		Author: &discord.EmbedAuthor{
 			Name: name,
@@ -82,16 +82,63 @@ func (bot *Bot) embed(m discord.Message) (e discord.Embed) {
 		Footer: &discord.EmbedFooter{
 			Text: fmt.Sprintf("ID: %v", m.ID),
 		},
-		Fields: []discord.EmbedField{
-			{
-				Name:  "Source",
-				Value: fmt.Sprintf("[Jump to message](https://discord.com/channels/%v/%v/%v)", m.GuildID, m.ChannelID, m.ID),
-			},
-		},
 		Timestamp: discord.Timestamp(m.Timestamp.Time()),
 		Color:     etc.ColourGold,
 		Image: &discord.EmbedImage{
 			URL: attachmentLink,
 		},
 	}
+
+	if len(m.Embeds) > 0 {
+		title := m.Embeds[0].Title
+		if title == "" && m.Embeds[0].Author != nil && m.Embeds[0].Author.Name != "" {
+			title = m.Embeds[0].Author.Name
+		}
+
+		value := m.Embeds[0].Description
+		if len(value) > 1000 {
+			value = e.Description[:999] + "..."
+		}
+
+		if title != "" && value != "" {
+			e.Fields = append(e.Fields, discord.EmbedField{Name: title, Value: value})
+		}
+
+		for _, f := range m.Embeds[0].Fields {
+			if e.Length() > 4000 {
+				break
+			}
+
+			e.Fields = append(e.Fields, f)
+		}
+	}
+
+	if m.Reference != nil {
+		s, _ := bot.Router.StateFromGuildID(m.GuildID)
+		ref, err := s.Message(m.Reference.ChannelID, m.Reference.MessageID)
+		if err == nil {
+			name := "Replying to " + ref.Author.Tag()
+			value := ref.Content
+			if ref.Content == "" {
+				value = `*\[no content\]*`
+			} else if len(ref.Content) > 5600-e.Length() {
+				maxLen := 5600 - e.Length()
+				value = ref.Content[:maxLen] + "..."
+			}
+
+			if name != "" && value != "" {
+				e.Fields = append(e.Fields, discord.EmbedField{
+					Name:  name,
+					Value: fmt.Sprintf("[%v](%v)", value, ref.URL()),
+				})
+			}
+		}
+	}
+
+	e.Fields = append(e.Fields, discord.EmbedField{
+		Name:  "Source",
+		Value: fmt.Sprintf("[Jump to message](https://discord.com/channels/%v/%v/%v)", m.GuildID, m.ChannelID, m.ID),
+	})
+
+	return e
 }
