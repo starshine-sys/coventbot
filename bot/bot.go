@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"net/http"
 	"sort"
 	"sync"
 	"time"
@@ -11,6 +12,8 @@ import (
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/utils/handler"
 	"github.com/getsentry/sentry-go"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
 	"github.com/starshine-sys/pkgo"
@@ -27,6 +30,7 @@ type Bot struct {
 	Sugar     *zap.SugaredLogger
 	DB        *db.DB
 	Scheduler *Scheduler
+	Chi       *chi.Mux
 
 	GuildLogWebhook *webhook.Client
 
@@ -77,6 +81,7 @@ func New(
 		DB:     db,
 		Config: config,
 		PK:     pkgo.New(""),
+		Chi:    chi.NewMux(),
 
 		members: map[memberKey]member{},
 	}
@@ -85,6 +90,11 @@ func New(
 	b.HelperRole = &HelperRole{b}
 	b.ModRole = &ModRole{b}
 	b.AdminRole = &AdminRole{b}
+
+	// set up web router
+	b.Chi.Use(middleware.Recoverer)
+	b.Chi.Use(middleware.Logger)
+	b.Chi.Mount("/static/", staticServer)
 
 	// create a Sentry config
 	if config.SentryURL != "" {
@@ -136,6 +146,17 @@ func New(
 		state.AddHandler(b.memberAddEvent)
 		state.AddHandler(b.memberRemoveEvent)
 	})
+
+	// serve http
+	go func() {
+		for {
+			err := http.ListenAndServe(b.Config.HTTPListen, b.Chi)
+			if err != nil {
+				b.Sugar.Errorf("Error running HTTP server, restarting: %v", err)
+			}
+			time.Sleep(30 * time.Second)
+		}
+	}()
 
 	return b
 }

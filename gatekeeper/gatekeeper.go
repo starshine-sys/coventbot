@@ -1,35 +1,23 @@
 package gatekeeper
 
 import (
-	"embed"
 	"net/http"
-	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/kataras/hcaptcha"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
+
+	_ "embed"
 )
 
 // Bot ...
 type Bot struct {
 	*bot.Bot
-
-	chi      *chi.Mux
 	HCaptcha *hcaptcha.Client
 }
 
-//go:embed style/*
-var styles embed.FS
-
-var staticServer = http.StripPrefix("/static/", http.FileServer(http.FS(styles)))
-
 //go:embed gatekeeper.html
 var gatekeeperHtml string
-
-//go:embed text.html
-var textHtml string
 
 // Init ...
 func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
@@ -37,19 +25,14 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	b := &Bot{
 		Bot:      bot,
-		chi:      chi.NewMux(),
 		HCaptcha: hcaptcha.New(bot.Config.HCaptchaSecret),
 	}
 
-	b.chi.Use(middleware.Recoverer)
-	b.chi.Use(middleware.Logger)
-
-	b.chi.Mount("/static/", staticServer)
-	b.chi.Get("/gatekeeper/{uuid}", b.GatekeeperGET)
-	b.chi.Get("/", func(rw http.ResponseWriter, r *http.Request) {
+	b.Chi.Get("/gatekeeper/{uuid}", b.GatekeeperGET)
+	b.Chi.Get("/", func(rw http.ResponseWriter, r *http.Request) {
 		http.Redirect(rw, r, "https://github.com/starshine-sys/tribble", http.StatusTemporaryRedirect)
 	})
-	b.chi.Post("/verify", b.VerifyPOST)
+	b.Chi.Post("/verify", b.VerifyPOST)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "agree",
@@ -97,16 +80,6 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		CustomPermissions: bot.ModRole,
 		Command:           b.setRole,
 	})
-
-	go func() {
-		for {
-			err := http.ListenAndServe(bot.Config.VerifyListen, b.chi)
-			if err != nil {
-				bot.Sugar.Errorf("Error running HTTP server, restarting: %v", err)
-			}
-			time.Sleep(30 * time.Second)
-		}
-	}()
 
 	b.Router.AddHandler(b.memberAdd)
 	b.Router.AddHandler(b.memberLeave)

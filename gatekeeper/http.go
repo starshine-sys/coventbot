@@ -28,22 +28,6 @@ type gatekeeperData struct {
 }
 
 var gatekeeperTmpl = template.Must(template.New("").Parse(gatekeeperHtml))
-var textTmpl = template.Must(template.New("").Parse(textHtml))
-
-func (bot *Bot) ShowText(w http.ResponseWriter, title, header, text string, v ...interface{}) {
-	var data = struct {
-		Title, Header, Text string
-	}{title, header, fmt.Sprintf(text, v...)}
-
-	if data.Header == "" {
-		data.Header = data.Title
-	}
-
-	err := textTmpl.Execute(w, data)
-	if err != nil {
-		bot.Sugar.Errorf("error executing text template: %v", err)
-	}
-}
 
 // GatekeeperGET ...
 func (bot *Bot) GatekeeperGET(w http.ResponseWriter, r *http.Request) {

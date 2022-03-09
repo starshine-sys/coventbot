@@ -6,7 +6,7 @@ services:
     command: ["/app/tribble"]
     environment:
       - "DATABASE_URL=postgresql://postgres:postgres@postgres/postgres"
-      - "VERIFY_LISTEN=:3000"
+      - "HTTP_LISTEN=:3000"
     volumes:
       - "./config.yaml:/app/data/config.yaml:ro"
     restart: unless-stopped

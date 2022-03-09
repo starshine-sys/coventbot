@@ -21,8 +21,8 @@ type BotConfig struct {
 
 	GuildLogWebhook Webhook `yaml:"guild_log"`
 
-	VerifyListen    string `yaml:"verify_listen"`
-	VerifyBaseURL   string `yaml:"verify_base_url"`
+	HTTPListen      string `yaml:"http_listen"`
+	HTTPBaseURL     string `yaml:"http_base_url"`
 	HCaptchaSitekey string `yaml:"hcaptcha_sitekey"`
 	HCaptchaSecret  string `yaml:"hcaptcha_secret"`
 

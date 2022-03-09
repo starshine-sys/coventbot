@@ -29,7 +29,7 @@ func (bot *Bot) agree(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	url := fmt.Sprintf("%v/gatekeeper/%v", bot.Config.VerifyBaseURL, p.Key)
+	url := fmt.Sprintf("%v/gatekeeper/%v", bot.Config.HTTPBaseURL, p.Key)
 
 	_, err = ctx.NewDM(ctx.Author.ID).Content(
 		fmt.Sprintf("Please solve the captcha at the following link to verify that you're a human: <%v>", url),

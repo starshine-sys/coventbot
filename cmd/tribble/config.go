@@ -25,8 +25,8 @@ func getConfig() (config *types.BotConfig) {
 	if s := os.Getenv("DATABASE_URL"); s != "" {
 		config.DatabaseURL = s
 	}
-	if s := os.Getenv("VERIFY_LISTEN"); s != "" {
-		config.VerifyListen = s
+	if s := os.Getenv("HTTP_LISTEN"); s != "" {
+		config.HTTPListen = s
 	}
 
 	return config
