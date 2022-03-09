@@ -2,11 +2,11 @@ package gatekeeper
 
 import (
 	"embed"
-	"io/fs"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/kataras/hcaptcha"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
@@ -23,13 +23,7 @@ type Bot struct {
 //go:embed style/*
 var styles embed.FS
 
-func mustSub(f fs.FS, path string) fs.FS {
-	sub, err := fs.Sub(f, path)
-	if err != nil {
-		panic(err)
-	}
-	return sub
-}
+var staticServer = http.StripPrefix("/static/", http.FileServer(http.FS(styles)))
 
 //go:embed gatekeeper.html
 var gatekeeperHtml string
@@ -47,7 +41,10 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		HCaptcha: hcaptcha.New(bot.Config.HCaptchaSecret),
 	}
 
-	b.chi.Handle("/static/", http.FileServer(http.FS(mustSub(styles, "style/"))))
+	b.chi.Use(middleware.Recoverer)
+	b.chi.Use(middleware.Logger)
+
+	b.chi.Mount("/static/", staticServer)
 	b.chi.Get("/gatekeeper/{uuid}", b.GatekeeperGET)
 	b.chi.Get("/", func(rw http.ResponseWriter, r *http.Request) {
 		http.Redirect(rw, r, "https://github.com/starshine-sys/tribble", http.StatusTemporaryRedirect)

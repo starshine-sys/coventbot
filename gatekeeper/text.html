@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="/static/style/normalize.css" type="text/css">
+    <link rel="stylesheet" href="/static/style/sakura-earthly.css" media="screen" />
+    <link rel="stylesheet" href="/static/style/sakura-dark.css" media="screen and (prefers-color-scheme: dark)" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+</head>
+
+<body>
+    {{if .Header}}
+    <h1>{{.Header}}</h1>
+    {{end}}
+    <p>{{.Text}}</p>
+</body>
+
+</html>

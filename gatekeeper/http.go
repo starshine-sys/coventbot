@@ -30,22 +30,38 @@ type gatekeeperData struct {
 var gatekeeperTmpl = template.Must(template.New("").Parse(gatekeeperHtml))
 var textTmpl = template.Must(template.New("").Parse(textHtml))
 
+func (bot *Bot) ShowText(w http.ResponseWriter, title, header, text string, v ...interface{}) {
+	var data = struct {
+		Title, Header, Text string
+	}{title, header, fmt.Sprintf(text, v...)}
+
+	if data.Header == "" {
+		data.Header = data.Title
+	}
+
+	err := textTmpl.Execute(w, data)
+	if err != nil {
+		bot.Sugar.Errorf("error executing text template: %v", err)
+	}
+}
+
 // GatekeeperGET ...
 func (bot *Bot) GatekeeperGET(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "uuid"))
 	if err != nil {
-		fmt.Fprintf(w, "Invalid UUID (%v) provided!\n", chi.URLParam(r, "uuid"))
+		bot.ShowText(w, "Gatekeeper error", "", "Invalid UUID (%v) provided.", chi.URLParam(r, "uuid"))
 		return
 	}
 
 	u, err := bot.userByUUID(id)
 	if err != nil {
-		fmt.Fprintln(w, "Internal server error")
+		bot.ShowText(w, "Internal server error", "", "An internal server error has occurred.")
+
 		bot.Sugar.Errorf("Error getting UUID from database: %v", err)
 		return
 	}
 	if !u.Pending {
-		fmt.Fprintf(w, "User %v is not pending!\n", u.UserID)
+		bot.ShowText(w, "Gatekeeper error", "", "User %v is not pending.", u.UserID)
 		return
 	}
 
@@ -71,41 +87,43 @@ func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.FormValue("uuid") == "" || r.FormValue("h-captcha-response") == "" {
-		fmt.Fprintln(w, "One or more required values was empty!")
+		bot.ShowText(w, "Gatekeeper error", "", "One or more required values was empty.")
 		return
 	}
 
 	id, err := uuid.Parse(r.FormValue("uuid"))
 	if err != nil {
-		fmt.Fprintln(w, "Invalid UUID provided!")
+		bot.ShowText(w, "Gatekeeper error", "", "Invalid UUID provided.")
 		return
 	}
 
 	u, err := bot.userByUUID(id)
 	if err != nil {
-		fmt.Fprintln(w, "Internal server error")
+		bot.ShowText(w, "Gatekeeper error", "", "Internal server error.")
+
 		bot.Sugar.Errorf("Error getting UUID from database: %v", err)
 		return
 	}
 	if !u.Pending {
-		fmt.Fprintf(w, "User %v is not pending!\n", u.UserID)
+		bot.ShowText(w, "Gatekeeper error", "", "User %v is not pending.", u.UserID)
 		return
 	}
 
 	resp := bot.HCaptcha.SiteVerify(r)
 	if !resp.Success {
+		bot.ShowText(w, "Verification failed", "", "Verification failed.")
 		fmt.Fprintln(w, "Verification failed.")
 	}
 
 	s, err := bot.serverSettings(u.ServerID)
 	if err != nil {
-		fmt.Fprintln(w, "Internal server error")
+		bot.ShowText(w, "Gatekeeper error", "", "Internal server error.")
 		bot.Sugar.Errorf("Error getting server settings: %v", err)
 	}
 
 	if !s.MemberRole.IsValid() {
 		// we shouldn't get here
-		fmt.Fprintln(w, "Done! You may now close this window.")
+		bot.ShowText(w, "Gatekeeper", "", "Done! You may now close this window.")
 		bot.Sugar.Error("User passed verification, but no member role was set.")
 		return
 	}
@@ -116,7 +134,7 @@ func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request) {
 		AuditLogReason: "Gatekeeper: add member role",
 	})
 	if err != nil {
-		fmt.Fprintln(w, "There was an error adding your member role. Please contact a server administrator for help.")
+		bot.ShowText(w, "Gatekeeper error", "", "There was an error adding your member role. Please contact a server administrator for help.")
 		bot.Sugar.Errorf("Error adding role for %v in %v: %v", u.UserID, u.ServerID, err)
 	}
 
@@ -133,5 +151,5 @@ func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request) {
 		bot.Sugar.Errorf("Error setting pending status for %v: %v", u.UserID, err)
 	}
 
-	fmt.Fprintln(w, "Done! You may now close this window.")
+	bot.ShowText(w, "Gatekeeper", "", "Done! You may now close this window.")
 }
