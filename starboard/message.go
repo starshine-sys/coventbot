@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/diamondburned/arikawa/v3/api/webhook"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/tribble/db"
 	"github.com/starshine-sys/tribble/etc"
 )
@@ -29,8 +31,35 @@ func (bot *Bot) starboardMessage(state *state.State, m discord.Message, settings
 	msgContent := fmt.Sprintf("**%v** %v <#%v>", count, settings.StarboardEmoji, m.ChannelID)
 
 	// if s is nil, this is a new message
-	if s == nil || s.MessageID == 0 {
-		msg, err := state.SendMessage(settings.StarboardChannel, msgContent, embed)
+	if s == nil || !s.StarboardMessageID.IsValid() {
+		wh, err := bot.DB.StarboardChannelWebhook(settings.StarboardChannel)
+		if err != nil {
+			bot.Sugar.Warnf("could not find starboard webhook for channel %v", settings.StarboardChannel)
+			return
+		}
+
+		client := bot.Webhook(wh.ID, wh.Token)
+
+		username := bot.Router.Bot.Username
+		avatarURL := bot.Router.Bot.AvatarURL()
+
+		if settings.StarboardAvatarURL != "" {
+			avatarURL = settings.StarboardAvatarURL
+		}
+		if settings.StarboardUsername != "" {
+			username = settings.StarboardUsername
+		} else if member, err := bot.Member(m.GuildID, bot.Router.Bot.ID); err == nil {
+			if member.Nick != "" {
+				username = member.Nick
+			}
+		}
+
+		msg, err := client.ExecuteAndWait(webhook.ExecuteData{
+			Content:   msgContent,
+			Embeds:    []discord.Embed{embed},
+			Username:  username,
+			AvatarURL: avatarURL,
+		})
 		if err != nil {
 			bot.Sugar.Errorf("Error sending starboard message: %v", err)
 			return
@@ -41,13 +70,28 @@ func (bot *Bot) starboardMessage(state *state.State, m discord.Message, settings
 			ChannelID:          m.ChannelID,
 			ServerID:           m.GuildID,
 			StarboardMessageID: msg.ID,
+			WebhookID:          &wh.ID,
 		})
 		if err != nil {
 			bot.Sugar.Errorf("Error saving starboard message: %v", err)
 		}
 	} else {
 		// otherwise, edit the existing message
-		_, err := state.EditMessage(settings.StarboardChannel, s.StarboardMessageID, msgContent, embed)
+		if s.WebhookID == nil {
+			bot.Sugar.Warnf("starboard message %v does not have a webhook stored, cannot edit it", s.StarboardMessageID)
+			return
+		}
+
+		wh, err := bot.DB.StarboardWebhook(*s.WebhookID)
+		if err != nil {
+			bot.Sugar.Warnf("could not find starboard webhook %v", *s.WebhookID)
+			return
+		}
+
+		_, err = bot.Webhook(wh.ID, wh.Token).EditMessage(s.StarboardMessageID, webhook.EditMessageData{
+			Content: option.NewNullableString(msgContent),
+			Embeds:  &[]discord.Embed{embed},
+		})
 		if err != nil {
 			bot.Sugar.Errorf("Error editing starboard message: %v", err)
 			return

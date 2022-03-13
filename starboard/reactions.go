@@ -200,6 +200,4 @@ func (bot *Bot) reactionInner(userID discord.UserID, channelID discord.ChannelID
 	if count >= settings.StarboardLimit {
 		bot.starboardMessage(s, *m, settings, star, count)
 	}
-
-	return
 }

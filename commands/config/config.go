@@ -157,6 +157,28 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:   b.starboardStats,
 	})
 
+	sb.AddSubcommand(&bcr.Command{
+		Name:    "name",
+		Aliases: []string{"username"},
+		Summary: "Set this server's starboard username.",
+		Usage:   "<name>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.ModRole,
+		Command:           b.starboardSetUsername,
+	})
+
+	sb.AddSubcommand(&bcr.Command{
+		Name:    "avatar",
+		Aliases: []string{"pfp"},
+		Summary: "Set this server's starboard avatar.",
+		Usage:   "<link>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.ModRole,
+		Command:           b.starboardSetAvatar,
+	})
+
 	bl := sb.AddSubcommand(&bcr.Command{
 		Name:    "blacklist",
 		Aliases: []string{"block", "bl"},

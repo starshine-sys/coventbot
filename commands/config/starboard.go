@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 	"strings"
 
@@ -123,4 +124,66 @@ func (bot *Bot) starboardSetLimit(ctx *bcr.Context) (err error) {
 
 	_, err = ctx.Sendf("Starboard limit changed to %v stars.", i)
 	return
+}
+
+func (bot *Bot) starboardSetUsername(ctx *bcr.Context) (err error) {
+	if len(ctx.RawArgs) < 2 || len(ctx.RawArgs) > 80 {
+		_, err = ctx.Replyc(bcr.ColourRed, "Username must be between 2 and 80 characters in length, is %v.", len(ctx.RawArgs))
+		return
+	}
+
+	settings, err := bot.DB.Starboard(ctx.Message.GuildID)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	settings.StarboardUsername = ctx.RawArgs
+	err = bot.DB.SetStarboard(ctx.Message.GuildID, settings)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	_, err = ctx.Sendf("Starboard username changed to %q", ctx.RawArgs)
+	return
+}
+
+func (bot *Bot) starboardSetAvatar(ctx *bcr.Context) (err error) {
+	resp, err := http.Get(ctx.RawArgs)
+	if err != nil || resp.StatusCode == 404 {
+		_, err = ctx.Replyc(bcr.ColourRed, "Invalid link, could not be resolved: %v", err)
+		return
+	}
+	resp.Body.Close()
+
+	if !isImage(resp.Header.Get("Content-Type")) {
+		_, err = ctx.Replyc(bcr.ColourRed, "URL does not point to an image (content type: %v)", resp.Header.Get("Content-Type"))
+		return
+	}
+
+	settings, err := bot.DB.Starboard(ctx.Message.GuildID)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	settings.StarboardAvatarURL = ctx.RawArgs
+	err = bot.DB.SetStarboard(ctx.Message.GuildID, settings)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	_, err = ctx.State.SendMessage(ctx.Message.ChannelID, "Starboard avatar changed!", discord.Embed{
+		Color: bcr.ColourBlurple,
+		Image: &discord.EmbedImage{
+			URL: ctx.RawArgs,
+		},
+	})
+	return
+}
+
+func isImage(s string) bool {
+	switch s {
+	case "image/jpeg", "image/png", "image/webp", "image/gif":
+		return true
+	}
+	return false
 }

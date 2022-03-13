@@ -10,9 +10,11 @@ import (
 
 // StarboardSettings is the starboard settings for a server
 type StarboardSettings struct {
-	StarboardChannel discord.ChannelID
-	StarboardEmoji   string
-	StarboardLimit   int
+	StarboardChannel   discord.ChannelID
+	StarboardEmoji     string
+	StarboardLimit     int
+	StarboardUsername  string
+	StarboardAvatarURL string
 }
 
 // Errors for setting the blacklist
@@ -23,13 +25,13 @@ var (
 
 // Starboard gets the starboard settings for a server
 func (db *DB) Starboard(id discord.GuildID) (s StarboardSettings, err error) {
-	err = pgxscan.Get(context.Background(), db.Pool, &s, "select starboard_channel, starboard_emoji, starboard_limit from servers where id = $1", id)
+	err = pgxscan.Get(context.Background(), db.Pool, &s, "select starboard_channel, starboard_emoji, starboard_limit, starboard_username, starboard_avatar_url from servers where id = $1", id)
 	return
 }
 
 // SetStarboard sets the starboard settings for a server
 func (db *DB) SetStarboard(id discord.GuildID, s StarboardSettings) (err error) {
-	_, err = db.Pool.Exec(context.Background(), "update servers set starboard_channel = $1, starboard_emoji = $2, starboard_limit = $3 where id = $4", s.StarboardChannel, s.StarboardEmoji, s.StarboardLimit, id)
+	_, err = db.Pool.Exec(context.Background(), "update servers set starboard_channel = $1, starboard_emoji = $2, starboard_limit = $3, starboard_username = $4, starboard_avatar_url = $5 where id = $6", s.StarboardChannel, s.StarboardEmoji, s.StarboardLimit, s.StarboardUsername, s.StarboardAvatarURL, id)
 	return err
 }
 
