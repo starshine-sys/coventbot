@@ -21,7 +21,7 @@ func (bot *Bot) resetSlowmode(ctx *bcr.Context) (err error) {
 				Color:       bcr.ColourBlurple,
 			}},
 			YesPrompt: "Yes",
-			YesStyle:  discord.DangerButton,
+			YesStyle:  discord.DangerButtonStyle(),
 		})
 		if !yes || timeout {
 			_, err = ctx.Send(":x: Cancelled.")

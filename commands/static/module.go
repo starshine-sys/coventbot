@@ -54,20 +54,17 @@ If a message link is given as input, and the message has multiple emotes in it, 
 
 		SlashCommand: b.bubbleSlash,
 		Options: &[]discord.CommandOption{
-			{
-				Name:        "size",
+			&discord.IntegerOption{
+				OptionName:  "size",
 				Description: "Size of the bubble wrap (default 10).",
-				Type:        discord.IntegerOption,
 			},
-			{
-				Name:        "prepop",
+			&discord.BooleanOption{
+				OptionName:  "prepop",
 				Description: "Whether to pre-pop some bubbles.",
-				Type:        discord.BooleanOption,
 			},
-			{
-				Name:        "ephemeral",
+			&discord.BooleanOption{
+				OptionName:  "ephemeral",
 				Description: "Whether to send the bubble wrap as a message only visible to you.",
-				Type:        discord.BooleanOption,
 			},
 		},
 	}))
@@ -81,16 +78,14 @@ If a message link is given as input, and the message has multiple emotes in it, 
 
 		SlashCommand: b.linkto,
 		Options: &[]discord.CommandOption{
-			{
-				Name:         "channel",
-				Type:         discord.ChannelOption,
+			&discord.ChannelOption{
+				OptionName:   "channel",
 				ChannelTypes: []discord.ChannelType{discord.GuildText, discord.GuildNews, discord.GuildPublicThread, discord.GuildPrivateThread, discord.GuildNewsThread},
 				Required:     true,
 				Description:  "The channel to link to.",
 			},
-			{
-				Name:        "topic",
-				Type:        discord.StringOption,
+			&discord.StringOption{
+				OptionName:  "topic",
 				Required:    false,
 				Description: "The topic.",
 			},
@@ -176,10 +171,9 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Command: b.sampa,
 
 		SlashCommand: b.sampaSlash,
-		Options: &[]discord.CommandOption{{
-			Name:        "text",
+		Options: &[]discord.CommandOption{&discord.StringOption{
+			OptionName:  "text",
 			Description: "The text to convert to IPA.",
-			Type:        discord.StringOption,
 			Required:    true,
 		}},
 	}))
@@ -191,22 +185,19 @@ If a message link is given as input, and the message has multiple emotes in it, 
 
 		SlashCommand: b.pride,
 		Options: &[]discord.CommandOption{
-			{
-				Name:        "flag",
+			&discord.StringOption{
+				OptionName:  "flag",
 				Description: "Which flag to use.",
-				Type:        discord.StringOption,
 				Required:    false,
 			},
-			{
-				Name:        "user",
+			&discord.UserOption{
+				OptionName:  "user",
 				Description: "Which user's avatar to add a pride flag to.",
-				Type:        discord.UserOption,
 				Required:    false,
 			},
-			{
-				Name:        "pk-member",
+			&discord.StringOption{
+				OptionName:  "pk-member",
 				Description: "Which PluralKit member's avatar to add a pride flag to.",
-				Type:        discord.StringOption,
 				Required:    false,
 			},
 		},

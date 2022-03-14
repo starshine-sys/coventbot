@@ -9,7 +9,6 @@ import (
 	"github.com/diamondburned/arikawa/v3/api/webhook"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
-	"github.com/diamondburned/arikawa/v3/gateway/shard"
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
@@ -87,7 +86,7 @@ func (bot *Bot) MessageCreate(m *gateway.MessageCreateEvent) {
 			c := webhook.New(bot.Config.DMs.Webhook.ID, bot.Config.DMs.Webhook.Token)
 
 			_ = c.Execute(data)
-			_ = bot.Router.ShardManager.Shard(0).(shard.ShardState).Shard.(*state.State).React(m.ChannelID, m.ID, "✅")
+			_ = bot.Router.ShardManager.Shard(0).(*state.State).React(m.ChannelID, m.ID, "✅")
 		}
 		return
 	}
@@ -157,7 +156,7 @@ func (bot *Bot) handleTagCommand(ctx *bcr.Context) (err error) {
 const errHadTag = errors.Sentinel("message had tag")
 
 func (bot *Bot) interactionCreate(ic *gateway.InteractionCreateEvent) {
-	if ic.Type != discord.CommandInteraction {
+	if ic.Data.InteractionType() != discord.CommandInteractionType {
 		return
 	}
 

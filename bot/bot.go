@@ -9,7 +9,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/api/webhook"
 	"github.com/diamondburned/arikawa/v3/discord"
-	"github.com/diamondburned/arikawa/v3/gateway/shard"
+	"github.com/diamondburned/arikawa/v3/session/shard"
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/utils/handler"
 	"github.com/getsentry/sentry-go"
@@ -129,8 +129,7 @@ func New(
 
 		// add guild remove handler
 		state.PreHandler = handler.New()
-		state.PreHandler.Synchronous = true
-		state.PreHandler.AddHandler(b.guildDelete)
+		state.PreHandler.AddSyncHandler(b.guildDelete)
 
 		// add message create handler
 		state.AddHandler(b.MessageCreate)

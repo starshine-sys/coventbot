@@ -13,7 +13,7 @@ func (bot *Bot) clear(ctx *bcr.Context) (err error) {
 		yes, timeout := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
 			Message:   "Warning: this will delete **all** reaction roles for this server. Are you sure you want to continue?",
 			YesPrompt: "Clear",
-			YesStyle:  discord.DangerButton,
+			YesStyle:  discord.DangerButtonStyle(),
 		})
 		if !yes || timeout {
 			_, err = ctx.Send("Cancelled.")

@@ -27,7 +27,7 @@ func (bot *ModLog) cmdImport(ctx *bcr.Context) (err error) {
 		yes, timeout := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
 			Message:   "⚠️ There are existing mod logs for this server, which will be deleted if you proceed with this import. Are you sure you want to proceed?",
 			YesPrompt: "Yes, clear data and proceed",
-			YesStyle:  discord.DangerButton,
+			YesStyle:  discord.DangerButtonStyle(),
 		})
 		if !yes || timeout {
 			_, err = ctx.Send("Import cancelled.")

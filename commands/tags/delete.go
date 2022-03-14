@@ -45,7 +45,7 @@ func (bot *Bot) deleteTag(ctx *bcr.Context) (err error) {
 			Color:     ctx.Router.EmbedColor,
 		}},
 		YesPrompt: "Delete",
-		YesStyle:  discord.DangerButton,
+		YesStyle:  discord.DangerButtonStyle(),
 
 		Timeout: 5 * time.Minute,
 	})

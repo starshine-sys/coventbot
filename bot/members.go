@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"context"
 	"sort"
 	"time"
 
@@ -23,7 +24,7 @@ func (bot *Bot) requestGuildMembers(g *gateway.GuildCreateEvent) {
 	if g.MemberCount != uint64(len(g.Members)) {
 		bot.Sugar.Debugf("Did not get all members for %v (%v) in guild create, chunking", g.ID, g.Name)
 
-		err := s.Gateway.RequestGuildMembers(gateway.RequestGuildMembersData{
+		err := s.Gateway().Send(context.Background(), &gateway.RequestGuildMembersCommand{
 			GuildIDs: []discord.GuildID{g.ID},
 			Limit:    0,
 		})
@@ -60,7 +61,7 @@ func (bot *Bot) memberUpdateEvent(ev *gateway.GuildMemberUpdateEvent) {
 		return
 	}
 
-	ev.Update(&v.Member)
+	ev.UpdateMember(&v.Member)
 
 	bot.members[memberKey{
 		GuildID: ev.GuildID,

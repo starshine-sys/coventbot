@@ -13,7 +13,7 @@ type Bot struct {
 	*bot.Bot
 }
 
-func (Bot) String() string {
+func (Bot) String(ctx bcr.Contexter) string {
 	return "Tag moderator"
 }
 

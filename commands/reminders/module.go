@@ -57,15 +57,13 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 		SlashCommand: b.remindmeSlash,
 		Options: &[]discord.CommandOption{
-			{
-				Name:        "when",
-				Type:        discord.StringOption,
+			&discord.StringOption{
+				OptionName:  "when",
 				Description: "When or in how long to remind you.",
 				Required:    true,
 			},
-			{
-				Name:        "text",
-				Type:        discord.StringOption,
+			&discord.StringOption{
+				OptionName:  "text",
 				Description: "What to remind you of.",
 			},
 		},
@@ -213,14 +211,11 @@ func (bot *Bot) doReminders() {
 				if len(s) <= 2000 {
 					data.Content = s
 					data.Embeds = nil
-					data.Components = []discord.Component{
+					data.Components = discord.ContainerComponents{
 						&discord.ActionRowComponent{
-							Components: []discord.Component{
-								&discord.ButtonComponent{
-									Label: "Jump to message",
-									Style: discord.LinkButton,
-									URL:   fmt.Sprintf("https://discord.com/channels/%v/%v/%v", linkServer, r.ChannelID, r.MessageID),
-								},
+							&discord.ButtonComponent{
+								Label: "Jump to message",
+								Style: discord.LinkButtonStyle(fmt.Sprintf("https://discord.com/channels/%v/%v/%v", linkServer, r.ChannelID, r.MessageID)),
 							},
 						},
 					}

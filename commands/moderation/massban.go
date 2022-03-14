@@ -51,7 +51,7 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 			Timestamp: discord.NewTimestamp(time.Now().Add(5 * time.Minute)),
 		}},
 		YesPrompt: "Ban",
-		YesStyle:  discord.DangerButton,
+		YesStyle:  discord.DangerButtonStyle(),
 
 		Timeout: 5 * time.Minute,
 	})

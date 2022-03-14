@@ -10,7 +10,7 @@ func (bot *Bot) guildMemberUpdate(ev *gateway.GuildMemberUpdateEvent) {
 		return
 	}
 
-	ev.Update(m)
+	ev.UpdateMember(m)
 
-	s.MemberSet(ev.GuildID, *m, true)
+	s.MemberSet(ev.GuildID, m, true)
 }

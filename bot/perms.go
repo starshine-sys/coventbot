@@ -16,7 +16,7 @@ type AdminRole struct {
 	*Bot
 }
 
-func (bot *AdminRole) String() string {
+func (bot *AdminRole) String(ctx bcr.Contexter) string {
 	return "Admin"
 }
 
@@ -62,7 +62,7 @@ type ModRole struct {
 	*Bot
 }
 
-func (bot *ModRole) String() string {
+func (bot *ModRole) String(ctx bcr.Contexter) string {
 	return "Moderator"
 }
 
@@ -108,7 +108,7 @@ type HelperRole struct {
 	*Bot
 }
 
-func (bot *HelperRole) String() string {
+func (bot *HelperRole) String(ctx bcr.Contexter) string {
 	return "Helper"
 }
 

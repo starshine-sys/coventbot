@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/gateway"
-	"github.com/diamondburned/arikawa/v3/gateway/shard"
+	"github.com/diamondburned/arikawa/v3/session/shard"
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
@@ -111,7 +111,7 @@ func main() {
 		s.AddIntents(intents)
 	})
 
-	mgr, err := shard.NewIdentifiedManager(gateway.IdentifyData{
+	mgr, err := shard.NewIdentifiedManager(gateway.IdentifyCommand{
 		Token: "Bot " + c.Token,
 		Properties: gateway.IdentifyProperties{
 			Browser: "Discord iOS",

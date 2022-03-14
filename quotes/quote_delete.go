@@ -20,7 +20,7 @@ func (bot *Bot) cmdQuoteDelete(ctx *bcr.Context) (err error) {
 			Description: fmt.Sprintf("Are you sure you want to delete the quote `%v` by %v?", q.HID, q.UserID.Mention()),
 		}},
 		YesPrompt: "Delete",
-		YesStyle:  discord.DangerButton,
+		YesStyle:  discord.DangerButtonStyle(),
 	})
 	if !yes || timeout {
 		_, err = ctx.Send(":x: Cancelled.")
