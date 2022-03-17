@@ -7,6 +7,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
+	bcr2 "github.com/starshine-sys/bcr/v2"
 	"github.com/starshine-sys/tribble/etc"
 )
 
@@ -59,4 +60,33 @@ func (bot *Bot) avatar(ctx *bcr.Context) (err error) {
 		},
 	})
 	return
+}
+
+func (bot *Bot) avatarMenu(ctx *bcr2.CommandContext) (err error) {
+	u := ctx.FirstUser()
+
+	embeds := []discord.Embed{
+		{
+			Title:       "Avatar for " + u.Tag(),
+			Description: fmt.Sprintf("[Link](%v)", u.AvatarURL()+"?size=1024"),
+			Image: &discord.EmbedImage{
+				URL: u.AvatarURL() + "?size=1024",
+			},
+			Color: bcr.ColourBlurple,
+		},
+	}
+	if m, err := bot.Member(ctx.Event.GuildID, u.ID); err == nil {
+		if m.Avatar != "" {
+			embeds = append(embeds, discord.Embed{
+				Title:       "Server-specific avatar",
+				Description: fmt.Sprintf("[Link](%v)", m.AvatarURL(ctx.Event.GuildID)+"?size=1024"),
+				Image: &discord.EmbedImage{
+					URL: m.AvatarURL(ctx.Event.GuildID) + "?size=1024",
+				},
+				Color: bcr.ColourBlurple,
+			})
+		}
+	}
+
+	return ctx.ReplyEphemeral("", embeds...)
 }

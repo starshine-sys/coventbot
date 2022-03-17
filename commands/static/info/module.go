@@ -24,6 +24,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		start: time.Now().UTC(),
 	}
 
+	b.Interactions.Command("Show user avatar").Exec(b.avatarMenu)
+
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "ping",
 		Summary: "Show the bot's latency.",

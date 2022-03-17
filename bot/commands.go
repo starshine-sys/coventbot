@@ -9,6 +9,7 @@ import (
 func (bot *Bot) Commands() []api.CreateCommandData { return Commands }
 
 var Commands = []api.CreateCommandData{
+	// chat input commands
 	{
 		Name:        "bubble",
 		Description: "Bubble wrap!",
@@ -97,5 +98,11 @@ var Commands = []api.CreateCommandData{
 				Description: "What to remind you of.",
 			},
 		},
+	},
+
+	// user context menu commands
+	{
+		Name: "Show user avatar",
+		Type: discord.UserCommand,
 	},
 }
