@@ -10,6 +10,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
+	bcr2 "github.com/starshine-sys/bcr/v2"
 )
 
 const cooldownTime = time.Minute
@@ -44,25 +45,84 @@ func (c *cooldown) Set(userID discord.UserID, ch discord.ChannelID) {
 	c.m[cdKey{userID, ch}] = time.Now().Add(cooldownTime)
 }
 
-func (bot *Bot) linkto(ctx bcr.Contexter) (err error) {
+func (bot *Bot) linktoSlash(ctx *bcr2.CommandContext) error {
+	sf, _ := ctx.Options.Find("channel").SnowflakeValue()
+	reason := ctx.Options.Find("reason").String()
+
+	ch, ok := ctx.Data.Resolved.Channels[discord.ChannelID(sf)]
+	if !ok {
+		return ctx.ReplyEphemeral("Somehow, the channel you gave wasn't sent to me.")
+	}
+
+	if cd.Get(ctx.User.ID, ch.ID) {
+		return ctx.ReplyEphemeral("You're currently on cooldown.")
+	}
+
+	perms := discord.CalcOverwrites(*ctx.Guild, ch, *ctx.Member)
+	if !perms.Has(discord.PermissionViewChannel) || !perms.Has(discord.PermissionSendMessages) {
+		return ctx.ReplyEphemeral("You can't send messages to " + ch.Mention() + "!")
+	}
+
+	desc := ""
+	if reason != "" {
+		desc = fmt.Sprintf("\n**Topic**\n> %v", reason)
+	}
+
+	err := ctx.Reply("", discord.Embed{
+		Color:       bcr.ColourBlurple,
+		Description: fmt.Sprintf("Directing conversation to %v%v", ch.Mention(), desc),
+		Footer: &discord.EmbedFooter{
+			Icon: ctx.User.AvatarURLWithType(discord.PNGImage),
+			Text: ctx.User.Tag(),
+		},
+		Timestamp: discord.NowTimestamp(),
+	})
+	if err != nil {
+		return err
+	}
+
+	msg1, err := ctx.Original()
+	if err != nil {
+		return err
+	}
+
+	msg2, err := ctx.State.SendMessage(ch.ID, fmt.Sprintf("<https://discord.com/channels/%v/%v/%v>", ctx.Guild.ID, ctx.Channel.ID, msg1.ID), discord.Embed{
+		Color:       bcr.ColourBlurple,
+		Description: fmt.Sprintf("Conversation moved from %v by %v%v", ctx.Channel.Mention(), ctx.User.Mention(), desc),
+		Footer: &discord.EmbedFooter{
+			Icon: ctx.User.AvatarURLWithType(discord.PNGImage),
+			Text: ctx.User.Tag(),
+		},
+		Timestamp: discord.NowTimestamp(),
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = ctx.State.EditInteractionResponse(discord.AppID(ctx.State.Ready().User.ID), ctx.InteractionToken, api.EditInteractionResponseData{
+		Content: option.NewNullableString(
+			fmt.Sprintf("<https://discord.com/channels/%v/%v/%v>", ch.GuildID, ch.ID, msg2.ID),
+		),
+	})
+	if err != nil {
+		return err
+	}
+
+	cd.Set(ctx.User.ID, ch.ID)
+	return nil
+}
+
+func (bot *Bot) linkto(ctx *bcr.Context) (err error) {
 	var ch *discord.Channel
 	var reason string
 
-	if cctx, ok := ctx.(*bcr.Context); ok {
-		ch, err = cctx.ParseChannel(cctx.Args[0])
-		if err != nil {
-			return ctx.SendEphemeral("You didn't give a valid channel.")
-		}
-		reason = strings.TrimSpace(strings.TrimPrefix(cctx.RawArgs, cctx.Args[0]))
-		if reason == cctx.RawArgs && len(cctx.Args) > 1 {
-			reason = strings.Join(cctx.Args[1:], " ")
-		}
-	} else {
-		ch, err = ctx.GetChannelFlag("channel")
-		if err != nil {
-			return ctx.SendEphemeral("You didn't give a valid channel.")
-		}
-		reason = ctx.GetStringFlag("topic")
+	ch, err = ctx.ParseChannel(ctx.Args[0])
+	if err != nil {
+		return ctx.SendEphemeral("You didn't give a valid channel.")
+	}
+	reason = strings.TrimSpace(strings.TrimPrefix(ctx.RawArgs, ctx.Args[0]))
+	if reason == ctx.RawArgs && len(ctx.Args) > 1 {
+		reason = strings.Join(ctx.Args[1:], " ")
 	}
 
 	if cd.Get(ctx.User().ID, ch.ID) {

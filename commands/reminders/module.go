@@ -13,7 +13,6 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/georgysavva/scany/pgxscan"
-	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -45,6 +44,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	b := &Bot{Bot: bot}
 
+	b.Interactions.Command("remindme").Exec(b.remindmeSlash)
+	b.Interactions.Command("reminders").Exec(b.remindersSlash)
+
 	rm := bot.Router.AddCommand(&bcr.Command{
 		Name:    "remindme",
 		Aliases: []string{"remind", "reminder", "rm"},
@@ -54,35 +56,13 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Args:    bcr.MinArgs(1),
 
 		Command: b.remindme,
-
-		SlashCommand: b.remindmeSlash,
-		Options: &[]discord.CommandOption{
-			&discord.StringOption{
-				OptionName:  "when",
-				Description: "When or in how long to remind you.",
-				Required:    true,
-			},
-			&discord.StringOption{
-				OptionName:  "text",
-				Description: "What to remind you of.",
-			},
-		},
 	})
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{
-		Name: "reminders",
-
-		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
-			fs.BoolP("channel", "c", false, "Only show reminders in this channel.")
-			fs.BoolP("server", "s", false, "Only show reminders in this server.")
-
-			return fs
-		},
-
+		Name:    "reminders",
 		Summary: "Show your reminders.",
 
-		SlashCommand: b.reminders,
-		Options:      &[]discord.CommandOption{},
+		Command: b.reminders,
 	}))
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{

@@ -9,6 +9,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
+	bcr2 "github.com/starshine-sys/bcr/v2"
 )
 
 var re = strings.NewReplacer(
@@ -178,18 +179,13 @@ func (bot *Bot) sampa(ctx *bcr.Context) (err error) {
 	return
 }
 
-func (bot *Bot) sampaSlash(v bcr.Contexter) (err error) {
-	ctx := v.(*bcr.SlashContext)
+func (bot *Bot) sampaSlash(ctx *bcr2.CommandContext) (err error) {
+	text := ctx.Option("text").String()
 
-	text := v.GetStringFlag("text")
-
-	err = ctx.State.RespondInteraction(ctx.InteractionID, ctx.InteractionToken, api.InteractionResponse{
-		Type: api.MessageInteractionWithSource,
-		Data: &api.InteractionResponseData{
-			Content: option.NewNullableString(re.Replace(text)),
-			AllowedMentions: &api.AllowedMentions{
-				Parse: []api.AllowedMentionType{},
-			},
+	err = ctx.ReplyComplex(api.InteractionResponseData{
+		Content: option.NewNullableString(re.Replace(text)),
+		AllowedMentions: &api.AllowedMentions{
+			Parse: []api.AllowedMentionType{},
 		},
 	})
 	if err != nil {
@@ -201,7 +197,7 @@ func (bot *Bot) sampaSlash(v bcr.Contexter) (err error) {
 		return err
 	}
 
-	_, err = bot.DB.Pool.Exec(context.Background(), "insert into command_responses (message_id, user_id) values ($1, $2)", msg.ID, ctx.Author.ID)
+	_, err = bot.DB.Pool.Exec(context.Background(), "insert into command_responses (message_id, user_id) values ($1, $2)", msg.ID, ctx.User.ID)
 	return
 }
 

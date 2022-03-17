@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 	"github.com/starshine-sys/tribble/commands/static/info"
@@ -23,6 +24,11 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}
 
 	bot.Add(info.Init)
+
+	bot.Interactions.Command("bubble").Exec(b.bubbleSlash)
+	bot.Interactions.Command("pride").Exec(b.prideSlash)
+	bot.Interactions.Command("sampa").Exec(b.sampaSlash)
+	bot.Interactions.Command("linkto").Exec(b.linktoSlash)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "addemoji",
@@ -52,20 +58,11 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Name:    "bubble",
 		Summary: "Bubble wrap!",
 
-		SlashCommand: b.bubbleSlash,
-		Options: &[]discord.CommandOption{
-			&discord.IntegerOption{
-				OptionName:  "size",
-				Description: "Size of the bubble wrap (default 10).",
-			},
-			&discord.BooleanOption{
-				OptionName:  "prepop",
-				Description: "Whether to pre-pop some bubbles.",
-			},
-			&discord.BooleanOption{
-				OptionName:  "ephemeral",
-				Description: "Whether to send the bubble wrap as a message only visible to you.",
-			},
+		Command: b.bubble,
+		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.IntP("size", "s", 10, "Size of the bubble wrap")
+			fs.BoolP("prepop", "p", false, "Whether to pre-pop some bubbles")
+			return fs
 		},
 	}))
 
@@ -76,20 +73,7 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Usage:   "<channel> [topic]",
 		Args:    bcr.MinArgs(1),
 
-		SlashCommand: b.linkto,
-		Options: &[]discord.CommandOption{
-			&discord.ChannelOption{
-				OptionName:   "channel",
-				ChannelTypes: []discord.ChannelType{discord.GuildText, discord.GuildNews, discord.GuildPublicThread, discord.GuildPrivateThread, discord.GuildNewsThread},
-				Required:     true,
-				Description:  "The channel to link to.",
-			},
-			&discord.StringOption{
-				OptionName:  "topic",
-				Required:    false,
-				Description: "The topic.",
-			},
-		},
+		Command: b.linkto,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
@@ -125,8 +109,7 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Name:    "meow",
 		Summary: "Send a random meowmoji.",
 
-		SlashCommand: b.meow,
-		Options:      &[]discord.CommandOption{},
+		Command: b.meow,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
@@ -155,9 +138,6 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Hidden:  true,
 
 		Command: b.hello,
-
-		SlashCommand: b.helloSlash,
-		Options:      &[]discord.CommandOption{},
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
@@ -169,13 +149,6 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Args:        bcr.MinArgs(1),
 
 		Command: b.sampa,
-
-		SlashCommand: b.sampaSlash,
-		Options: &[]discord.CommandOption{&discord.StringOption{
-			OptionName:  "text",
-			Description: "The text to convert to IPA.",
-			Required:    true,
-		}},
 	}))
 
 	pride := b.Router.AddCommand(&bcr.Command{
@@ -183,24 +156,7 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Summary: "Add a pride flag circle to your profile picture!",
 		Usage:   "<flag>",
 
-		SlashCommand: b.pride,
-		Options: &[]discord.CommandOption{
-			&discord.StringOption{
-				OptionName:  "flag",
-				Description: "Which flag to use.",
-				Required:    false,
-			},
-			&discord.UserOption{
-				OptionName:  "user",
-				Description: "Which user's avatar to add a pride flag to.",
-				Required:    false,
-			},
-			&discord.StringOption{
-				OptionName:  "pk-member",
-				Description: "Which PluralKit member's avatar to add a pride flag to.",
-				Required:    false,
-			},
-		},
+		Command: b.pride,
 	})
 
 	bot.Router.AddHandler(b.sampaReaction)

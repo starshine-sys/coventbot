@@ -11,6 +11,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/utils/bot/extras/shellwords"
 	"github.com/starshine-sys/bcr"
+	bcr2 "github.com/starshine-sys/bcr/v2"
 )
 
 func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
@@ -95,32 +96,32 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 	return
 }
 
-func (bot *Bot) remindmeSlash(ctx bcr.Contexter) (err error) {
+func (bot *Bot) remindmeSlash(ctx *bcr2.CommandContext) (err error) {
 	var t time.Time
-	rm := ctx.GetStringFlag("text")
+	rm := ctx.Option("text").String()
 	if rm == "" {
 		rm = "N/A"
 	}
 
-	when := ctx.GetStringFlag("when")
+	when := ctx.Option("when").String()
 	args, err := shellwords.Parse(when)
 	if err != nil {
 		args = strings.Fields(when)
 	}
 
-	loc := bot.userTime(ctx.User().ID)
-	t, _, err = ParseTime(args, bot.userTime(ctx.User().ID))
+	loc := bot.userTime(ctx.User.ID)
+	t, _, err = ParseTime(args, bot.userTime(ctx.User.ID))
 	if err != nil {
 		dur, err := durationparser.Parse(when)
 		if err != nil {
-			return ctx.SendEphemeral("I couldn't parse your input as a valid time or duration.")
+			return ctx.ReplyEphemeral("I couldn't parse your input as a valid time or duration.")
 		}
 		t = time.Now().In(loc).Add(dur)
 	}
 
 	guildID := discord.GuildID(0)
-	if ctx.GetGuild() != nil {
-		guildID = ctx.GetGuild().ID
+	if ctx.Guild != nil {
+		guildID = ctx.Guild.ID
 	}
 	// as there isn't a message associated with a slash command, we just use an approximate message ID
 	// it'll still link to the correct(ish) time
@@ -130,9 +131,9 @@ func (bot *Bot) remindmeSlash(ctx bcr.Contexter) (err error) {
 	err = bot.DB.Pool.QueryRow(context.Background(), `insert into reminders
 	(user_id, message_id, channel_id, server_id, reminder, expires)
 	values
-	($1, $2, $3, $4, $5, $6) returning id`, ctx.User().ID, msgID, ctx.GetChannel().ID, guildID, rm, t.UTC()).Scan(&id)
+	($1, $2, $3, $4, $5, $6) returning id`, ctx.User.ID, msgID, ctx.Channel.ID, guildID, rm, t.UTC()).Scan(&id)
 	if err != nil {
-		return bot.Report(ctx, err)
+		return bot.ReportInteraction(ctx, err)
 	}
 
 	if len(rm) > 128 {
@@ -144,12 +145,17 @@ func (bot *Bot) remindmeSlash(ctx bcr.Contexter) (err error) {
 		rm = "**" + rm + "**"
 	}
 
-	name := ctx.User().Username
-	if ctx.GetMember() != nil && ctx.GetMember().Nick != "" {
-		name = ctx.GetMember().Nick
+	name := ctx.User.Username
+	if ctx.Member != nil && ctx.Member.Nick != "" {
+		name = ctx.Member.Nick
 	}
 
-	msg, err := ctx.Send(fmt.Sprintf("Okay %v, I'll remind you about %v %v. (<t:%v>, #%v)", name, rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), t.Unix(), id))
+	err = ctx.Reply(fmt.Sprintf("Okay %v, I'll remind you about %v %v. (<t:%v>, #%v)", name, rm, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), t.Unix(), id))
+	if err != nil {
+		return err
+	}
+
+	msg, err := ctx.Original()
 	if err != nil {
 		return err
 	}

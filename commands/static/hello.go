@@ -56,33 +56,3 @@ func (bot *Bot) hello(ctx *bcr.Context) (err error) {
 	_, err = ctx.NewMessage().Content(greeting).BlockMentions().Send()
 	return err
 }
-
-func (bot *Bot) helloSlash(v bcr.Contexter) (err error) {
-	ctx := v.(*bcr.SlashContext)
-
-	name := ""
-	if ctx.Event.Member != nil {
-		name = ctx.Event.Member.Nick
-		if name == "" {
-			name = ctx.Event.Member.User.Username
-		}
-	} else {
-		name = ctx.Event.User.Username
-	}
-
-	greeting := fmt.Sprintf(
-		"%v, %v!",
-		greetings[rand.Intn(len(greetings))],
-		name,
-	)
-	if r := rand.Intn(3); r == 1 {
-		if len(emotes) != 0 {
-			if r := rand.Intn(2); r == 1 {
-				greeting = fmt.Sprintf("%v %v", greeting, emotes[rand.Intn(len(emotes))])
-			} else {
-				greeting = fmt.Sprintf("%v %v", emotes[rand.Intn(len(emotes))], greeting)
-			}
-		}
-	}
-	return ctx.SendEphemeral(greeting)
-}

@@ -17,6 +17,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
+	bcr2 "github.com/starshine-sys/bcr/v2"
 	"github.com/starshine-sys/pkgo"
 	"github.com/starshine-sys/tribble/db"
 	"github.com/starshine-sys/tribble/types"
@@ -26,6 +27,8 @@ import (
 // Bot is the main bot struct
 type Bot struct {
 	*bcrbot.Bot
+
+	Interactions *bcr2.Router
 
 	Config    *types.BotConfig
 	Sugar     *zap.SugaredLogger
@@ -91,6 +94,8 @@ func New(
 	b.HelperRole = &HelperRole{b}
 	b.ModRole = &ModRole{b}
 	b.AdminRole = &AdminRole{b}
+
+	b.Interactions = bcr2.NewFromShardManager("Bot "+config.Token, bot.Router.ShardManager)
 
 	// set up web router
 	b.Chi.Use(middleware.Recoverer)

@@ -12,6 +12,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
+	bcr2 "github.com/starshine-sys/bcr/v2"
 )
 
 // MessageCreate is run on a message create event
@@ -156,18 +157,10 @@ func (bot *Bot) handleTagCommand(ctx *bcr.Context) (err error) {
 const errHadTag = errors.Sentinel("message had tag")
 
 func (bot *Bot) interactionCreate(ic *gateway.InteractionCreateEvent) {
-	if ic.Data.InteractionType() != discord.CommandInteractionType {
+	err := bot.Interactions.Execute(ic)
+	if err == bcr2.ErrUnknownCommand {
 		return
-	}
-
-	ctx, err := bot.Router.NewSlashContext(ic)
-	if err != nil {
-		bot.Sugar.Errorf("Couldn't create slash context: %v", err)
-		return
-	}
-
-	err = bot.Router.ExecuteSlash(ctx)
-	if err != nil {
-		bot.Sugar.Errorf("Couldn't execute command: %v", err)
+	} else if err != nil {
+		bot.Sugar.Error("error in bcr v2 handler:", err)
 	}
 }

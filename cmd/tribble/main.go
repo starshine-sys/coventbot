@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/session/shard"
 	"github.com/diamondburned/arikawa/v3/state"
@@ -143,7 +144,11 @@ func main() {
 
 	s, _ := bot.Router.StateFromGuildID(0)
 
-	botUser, _ := s.Me()
+	botUser, err := s.Me()
+	if err != nil {
+		sugar.Fatal("error getting bot user:", err)
+	}
+
 	sugar.Infof("User: %v#%v (%v)", botUser.Username, botUser.Discriminator, botUser.ID)
 	bot.Router.Bot = botUser
 
@@ -166,14 +171,26 @@ func main() {
 	go bot.Scheduler.Start()
 
 	// sync slash commands
-	err = bot.Router.SyncCommands(c.SyncCommandsIn...)
-	if err == nil {
-		sugar.Infof("Synced slash commands!")
-		if len(c.SyncCommandsIn) != 0 {
-			sugar.Infof("Synced in %v", c.SyncCommandsIn)
+	if !c.NoSyncCommands {
+		if len(c.SyncCommandsIn) > 0 {
+			sugar.Infof("Overwriting guild commands in: %v", c.SyncCommandsIn)
+			for _, g := range c.SyncCommandsIn {
+				_, err := bot.Interactions.Rest.BulkOverwriteGuildCommands(discord.AppID(botUser.ID), g, bot.Commands())
+				if err != nil {
+					sugar.Errorf("Couldn't overwrite guild slash commands in %v: %v", g, err)
+				} else {
+					sugar.Infof("Overwrote guild commands in %v!", g)
+				}
+			}
+		} else {
+			sugar.Infof("Overwriting global commands")
+			_, err := bot.Interactions.Rest.BulkOverwriteCommands(discord.AppID(botUser.ID), bot.Commands())
+			if err != nil {
+				sugar.Errorf("Couldn't overwrite global slash commands: %v", err)
+			} else {
+				sugar.Infof("Overwrote global commands!")
+			}
 		}
-	} else {
-		sugar.Errorf("Couldn't sync slash commands: %v", err)
 	}
 
 	sc := make(chan os.Signal, 1)
