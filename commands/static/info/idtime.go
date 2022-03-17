@@ -5,6 +5,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
+	"gitlab.com/1f320/x/duration"
 )
 
 func (bot *Bot) idtime(ctx *bcr.Context) (err error) {
@@ -16,7 +17,7 @@ func (bot *Bot) idtime(ctx *bcr.Context) (err error) {
 
 	_, err = ctx.Send("", discord.Embed{
 		Title:       fmt.Sprintf("Timestamp for `%v`", sf),
-		Description: fmt.Sprintf("<t:%v>\n%v", sf.Time().Unix(), bcr.HumanizeTime(bcr.DurationPrecisionSeconds, sf.Time().UTC())),
+		Description: fmt.Sprintf("<t:%v>\n%v", sf.Time().Unix(), duration.FormatTime(sf.Time().UTC())),
 		Color:       ctx.Router.EmbedColor,
 	})
 	return

@@ -15,6 +15,7 @@ import (
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
+	"gitlab.com/1f320/x/duration"
 )
 
 // Reminder ...
@@ -129,7 +130,7 @@ func (bot *Bot) doReminders() {
 
 			state, _ := bot.Router.StateFromGuildID(r.ServerID)
 
-			desc := fmt.Sprintf("%v you asked to be reminded about%v", bcr.HumanizeTime(bcr.DurationPrecisionSeconds, r.SetTime), reminder)
+			desc := fmt.Sprintf("%v you asked to be reminded about%v", duration.FormatTime(r.SetTime), reminder)
 			if len(desc) > 2048 {
 				desc = desc[:2040] + "..."
 			}
@@ -186,7 +187,7 @@ func (bot *Bot) doReminders() {
 			}
 
 			if embedless {
-				s := fmt.Sprintf("%v: %v (%v)", r.UserID.Mention(), r.Reminder, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, r.SetTime))
+				s := fmt.Sprintf("%v: %v (%v)", r.UserID.Mention(), r.Reminder, duration.FormatTime(r.SetTime))
 
 				if len(s) <= 2000 {
 					data.Content = s

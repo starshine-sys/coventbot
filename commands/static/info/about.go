@@ -10,7 +10,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/dustin/go-humanize"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/tribble/etc"
+	"gitlab.com/1f320/x/duration"
 )
 
 var GitVer string
@@ -66,7 +66,7 @@ func (bot *Bot) about(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Uptime",
-				Value:  fmt.Sprintf("%v (since <t:%v>)", etc.HumanizeDuration(etc.DurationPrecisionSeconds, time.Since(bot.start)), bot.start.Unix()),
+				Value:  fmt.Sprintf("%v (since <t:%v>)", duration.Format(time.Since(bot.start)), bot.start.Unix()),
 				Inline: false,
 			},
 			{

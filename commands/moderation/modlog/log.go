@@ -8,7 +8,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/georgysavva/scany/pgxscan"
-	"github.com/starshine-sys/bcr"
+	"gitlab.com/1f320/x/duration"
 )
 
 // Entry ...
@@ -271,7 +271,7 @@ func (bot *ModLog) Unban(state *state.State, guildID discord.GuildID, userID, mo
 }
 
 // Mute logs a mute
-func (bot *ModLog) Mute(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, duration time.Duration, reason string) (err error) {
+func (bot *ModLog) Mute(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, dur time.Duration, reason string) (err error) {
 	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "mute", reason)
 	if err != nil {
 		return err
@@ -296,8 +296,8 @@ func (bot *ModLog) Mute(state *state.State, guildID discord.GuildID, userID, mod
 	}
 
 	time := "indefinite"
-	if duration != 0 {
-		time = bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, duration)
+	if dur != 0 {
+		time = duration.Format(dur)
 	}
 
 	text := fmt.Sprintf(`**Mute | Case %v**
@@ -316,7 +316,7 @@ func (bot *ModLog) Mute(state *state.State, guildID discord.GuildID, userID, mod
 }
 
 // Pause logs a pause
-func (bot *ModLog) Pause(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, duration time.Duration, reason string) (err error) {
+func (bot *ModLog) Pause(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, dur time.Duration, reason string) (err error) {
 	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "pause", reason)
 	if err != nil {
 		return err
@@ -341,8 +341,8 @@ func (bot *ModLog) Pause(state *state.State, guildID discord.GuildID, userID, mo
 	}
 
 	time := "indefinite"
-	if duration != 0 {
-		time = bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, duration)
+	if dur != 0 {
+		time = duration.Format(dur)
 	}
 
 	text := fmt.Sprintf(`**Pause | Case %v**

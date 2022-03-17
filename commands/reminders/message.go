@@ -11,7 +11,7 @@ import (
 	"codeberg.org/eviedelta/detctime/durationparser"
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/gateway"
-	"github.com/starshine-sys/bcr"
+	"gitlab.com/1f320/x/duration"
 )
 
 const dateReText = `(?i)hey %v,? remind (me|us) to ([\s\S]+) (in|at) (.+)`
@@ -108,7 +108,7 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	}
 
 	msg, err := s.SendMessageComplex(m.ChannelID, api.SendMessageData{
-		Content: fmt.Sprintf("Okay %v, I'll remind you about **%v** %v. (<t:%v>, #%v)", name, text, bcr.HumanizeTime(bcr.DurationPrecisionSeconds, t.Add(time.Second)), t.Unix(), id),
+		Content: fmt.Sprintf("Okay %v, I'll remind you about **%v** in %v. (<t:%v>, #%v)", name, text, duration.Format(time.Until(t.Add(time.Second))), t.Unix(), id),
 		AllowedMentions: &api.AllowedMentions{
 			Parse: []api.AllowedMentionType{},
 		},

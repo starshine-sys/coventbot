@@ -6,7 +6,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/tribble/etc"
+	"gitlab.com/1f320/x/duration"
 )
 
 func (bot *Bot) roleInfo(ctx *bcr.Context) (err error) {
@@ -58,7 +58,7 @@ func (bot *Bot) roleInfo(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Created",
-				Value:  fmt.Sprintf("<t:%v>\n(%v)", r.ID.Time().Unix(), etc.HumanizeTime(etc.DurationPrecisionMinutes, r.ID.Time().UTC())),
+				Value:  fmt.Sprintf("<t:%v>\n(%v)", r.ID.Time().Unix(), duration.FormatTime(r.ID.Time().UTC())),
 				Inline: false,
 			},
 			{

@@ -9,6 +9,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
+	"gitlab.com/1f320/x/duration"
 )
 
 func (bot *Bot) muteme(ctx *bcr.Context) (err error) {
@@ -43,7 +44,7 @@ func (bot *Bot) muteme(ctx *bcr.Context) (err error) {
 	msg = strings.NewReplacer(
 		"{mention}", ctx.Author.Mention(),
 		"{tag}", ctx.Author.Tag(),
-		"{duration}", bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, dur),
+		"{duration}", duration.Format(dur),
 		"{action}", "mute",
 	).Replace(msg)
 
@@ -51,7 +52,7 @@ func (bot *Bot) muteme(ctx *bcr.Context) (err error) {
 		AuditLogReason: api.AuditLogReason(
 			fmt.Sprintf("Self-mute by %v for %v",
 				ctx.Author.Tag(),
-				bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, dur),
+				duration.Format(dur),
 			)),
 	})
 	if err != nil {
@@ -59,7 +60,7 @@ func (bot *Bot) muteme(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	reason := fmt.Sprintf("Self-mute from %v ago expired", bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, dur))
+	reason := fmt.Sprintf("Self-mute from %v ago expired", duration.Format(dur))
 
 	_, err = bot.Scheduler.Add(time.Now().Add(dur), &changeRoles{
 		GuildID:        ctx.Message.GuildID,
@@ -112,7 +113,7 @@ func (bot *Bot) pauseme(ctx *bcr.Context) (err error) {
 	msg = strings.NewReplacer(
 		"{mention}", ctx.Author.Mention(),
 		"{tag}", ctx.Author.Tag(),
-		"{duration}", bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, dur),
+		"{duration}", duration.Format(dur),
 		"{action}", "pause",
 	).Replace(msg)
 
@@ -120,7 +121,7 @@ func (bot *Bot) pauseme(ctx *bcr.Context) (err error) {
 		AuditLogReason: api.AuditLogReason(
 			fmt.Sprintf("Self-pause by %v for %v",
 				ctx.Author.Tag(),
-				bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, dur),
+				duration.Format(dur),
 			)),
 	})
 	if err != nil {
@@ -128,7 +129,7 @@ func (bot *Bot) pauseme(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	reason := fmt.Sprintf("Self-pause from %v ago expired", bcr.HumanizeDuration(bcr.DurationPrecisionMinutes, dur))
+	reason := fmt.Sprintf("Self-pause from %v ago expired", duration.Format(dur))
 
 	_, err = bot.Scheduler.Add(time.Now().Add(dur), &changeRoles{
 		GuildID:        ctx.Message.GuildID,
