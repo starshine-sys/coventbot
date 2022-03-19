@@ -139,7 +139,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 	e.Fields = append(e.Fields, []discord.EmbedField{
 		{
 			Name:   "Nickname",
-			Value:  fmt.Sprintf("%v", If(m.Nick != "", m.Nick, m.User.Username)),
+			Value:  fmt.Sprintf("%v", FirstNonZero(m.Nick, m.User.Username)),
 			Inline: true,
 		},
 		{
@@ -241,10 +241,14 @@ func (bot *Bot) userInfo(ctx *bcr.Context) (err error) {
 	return
 }
 
-// If tries to emulate a ternary operation as well as possible
-func If(b bool, t, f interface{}) interface{} {
-	if b {
-		return t
+// FirstNonZero returns the first value in opts that is not the same as the zero value.
+// If all values are zero, the zero value is returned.
+func FirstNonZero[T comparable](opts ...T) T {
+	zero := *new(T)
+	for _, opt := range opts {
+		if opt != zero {
+			return opt
+		}
 	}
-	return f
+	return zero
 }

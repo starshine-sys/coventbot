@@ -63,7 +63,7 @@ func (bot *Bot) roleInfo(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Permissions",
-				Value:  fmt.Sprintf("%v", If(r.Permissions != 0, strings.Join(bcr.PermStrings(r.Permissions), ", "), "None")),
+				Value:  fmt.Sprintf("%v", FirstNonZero(strings.Join(bcr.PermStrings(r.Permissions), ", "), "None")),
 				Inline: false,
 			},
 		},
