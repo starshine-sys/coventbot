@@ -68,7 +68,7 @@ func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {
 	}
 
 	// increment the user's xp!
-	newXP, err := bot.incrementXP(m.GuildID, m.Author.ID, sc.CarlineCompatible)
+	newXP, err := bot.incrementXP(m.GuildID, m.Author.ID)
 	if err != nil {
 		bot.Sugar.Errorf("Error updating XP for user: %v", err)
 		return

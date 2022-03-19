@@ -40,7 +40,6 @@ type Server struct {
 	LeaderboardModOnly bool
 	ShowNextReward     bool
 	Voice              bool
-	CarlineCompatible  bool `db:"carline_curve"`
 
 	LevelMessages LevelMessages
 	LevelChannel  discord.ChannelID
@@ -76,13 +75,8 @@ func (bot *Bot) getUser(guildID discord.GuildID, userID discord.UserID) (l Level
 	return l, err
 }
 
-func (bot *Bot) incrementXP(guildID discord.GuildID, userID discord.UserID, carlineCurve bool) (newXP int64, err error) {
-	var xp int64
-	if carlineCurve {
-		xp = 15 + int64(rand.Intn(12))
-	} else {
-		xp = 2 + int64(rand.Intn(4))
-	}
+func (bot *Bot) incrementXP(guildID discord.GuildID, userID discord.UserID) (newXP int64, err error) {
+	xp := 15 + int64(rand.Intn(12))
 
 	err = bot.DB.Pool.QueryRow(context.Background(), "update levels set xp = xp + $4, next_time = $3 where server_id = $1 and user_id = $2 returning xp", guildID, userID, time.Now().UTC(), xp).Scan(&newXP)
 	return
