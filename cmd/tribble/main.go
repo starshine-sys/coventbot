@@ -12,6 +12,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/session/shard"
 	"github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/utils/ws"
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
 	"go.uber.org/zap"
@@ -83,21 +84,18 @@ func main() {
 	zcfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	zcfg.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
 	zcfg.EncoderConfig.EncodeDuration = zapcore.StringDurationEncoder
+	zcfg.Level.SetLevel(zapcore.DebugLevel)
 
-	if c.DebugLogging {
-		zcfg.Level.SetLevel(zapcore.DebugLevel)
-	} else {
-		zcfg.Level.SetLevel(zapcore.InfoLevel)
-	}
-
-	zap, err := zcfg.Build(zap.AddStacktrace(zapcore.ErrorLevel))
+	log, err := zcfg.Build(zap.AddStacktrace(zapcore.ErrorLevel))
 	if err != nil {
 		panic(err)
 	}
-	sugar := zap.Sugar()
+	zap.RedirectStdLog(log)
+	sugar := log.Sugar()
 
-	if c.DebugLogging {
-		sugar.Warn("Debug logging enabled. Set \"debug_logging\" in config.yaml to \"false\" to disable.")
+	ws.WSDebug = sugar.Debug
+	ws.WSError = func(err error) {
+		log.WithOptions(zap.AddCallerSkip(1)).Error("websocket error", zap.Error(err))
 	}
 
 	// open the database

@@ -4,10 +4,9 @@ import "github.com/diamondburned/arikawa/v3/discord"
 
 // BotConfig ...
 type BotConfig struct {
-	Token        string
-	DatabaseURL  string `yaml:"database_url"`
-	SentryURL    string `yaml:"sentry_url"`
-	DebugLogging bool   `yaml:"debug_logging"`
+	Token       string
+	DatabaseURL string `yaml:"database_url"`
+	SentryURL   string `yaml:"sentry_url"`
 
 	AESKey string `yaml:"aes_key"`
 
