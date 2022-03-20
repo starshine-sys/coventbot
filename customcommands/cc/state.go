@@ -5,11 +5,11 @@ import (
 	"strings"
 	"time"
 
-	"1f320.xyz/x/parameters"
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 	lua "github.com/yuin/gopher-lua"
+	"gitlab.com/1f320/x/parameters"
 )
 
 // State is a Lua state.

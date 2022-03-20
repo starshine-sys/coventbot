@@ -7,13 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"1f320.xyz/x/parameters"
 	"github.com/diamondburned/arikawa/v3/api"
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 	"github.com/starshine-sys/tribble/customcommands/cc"
+	"gitlab.com/1f320/x/parameters"
 )
 
 type Bot struct {
@@ -36,11 +35,11 @@ func Init(b *bot.Bot) (s string, list []*bcr.Command) {
 	bot.Router.AddHandler(bot.messageCreate)
 
 	bot.Router.AddCommand(&bcr.Command{
-		Name:             "cc",
-		Summary:          "Show or create a custom command",
-		Usage:            "[name]",
-		Command:          bot.showOrAdd,
-		GuildPermissions: discord.PermissionManageGuild,
+		Name:              "cc",
+		Summary:           "Show or create a custom command",
+		Usage:             "[name]",
+		Command:           bot.showOrAdd,
+		CustomPermissions: bot.ModRole,
 	})
 
 	return
