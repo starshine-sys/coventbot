@@ -5,13 +5,13 @@ import (
 	"strconv"
 	"time"
 
-	"1f320.xyz/x/parameters"
 	"codeberg.org/eviedelta/detctime/durationparser"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 	"github.com/starshine-sys/tribble/db"
 	lua "github.com/yuin/gopher-lua"
+	"gitlab.com/1f320/x/parameters"
 )
 
 type ScheduledCC struct {
