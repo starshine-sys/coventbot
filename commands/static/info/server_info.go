@@ -7,7 +7,6 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/dustin/go-humanize"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/tribble/etc"
 	"gitlab.com/1f320/x/duration"
 )
 
@@ -127,7 +126,7 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 			},
 		},
 
-		Color:     etc.ColourBlurple,
+		Color:     bcr.ColourBlurple,
 		Timestamp: discord.NewTimestamp(g.ID.Time()),
 		Footer: &discord.EmbedFooter{
 			Text: fmt.Sprintf("ID: %v | Created", g.ID),

@@ -7,7 +7,6 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/tribble/etc"
 	"gitlab.com/1f320/x/duration"
 )
 
@@ -23,7 +22,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 	}
 
 	// filter the roles to only the ones the user has
-	var rls etc.Roles
+	var rls bcr.Roles
 	for _, gr := range ctx.Guild.Roles {
 		for _, ur := range m.RoleIDs {
 			if gr.ID == ur {
