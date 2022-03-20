@@ -111,7 +111,7 @@ func (bot *Bot) checkVoiceState(s *state.State, gc Server, vc discord.VoiceState
 
 	// increment the user's xp!
 	bot.Sugar.Debugf("Incrementing voice XP for user %v", vc.UserID)
-	newXP, err := bot.incrementXP(gc.ID, vc.UserID, gc.CarlineCompatible)
+	newXP, err := bot.incrementXP(gc.ID, vc.UserID)
 	if err != nil {
 		bot.Sugar.Errorf("Error updating XP for user: %v", err)
 		return
