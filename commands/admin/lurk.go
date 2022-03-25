@@ -18,10 +18,15 @@ func (bot *Bot) lurk(ctx *bcr.Context) error {
 		return ctx.SendfX("channel %v must be a voice channel", ch.Mention())
 	}
 
-	vs, err := voice.NewSession(ctx.State)
-	if err != nil {
-		bot.Sugar.Error("error creating voice session:", err)
-		return ctx.SendfX("error: %v", err)
+	vs, ok := bot.VoiceSessions.Get(ctx.Message.GuildID)
+	if !ok {
+		vs, err = voice.NewSession(ctx.State)
+		if err != nil {
+			bot.Sugar.Error("error creating voice session:", err)
+			return ctx.SendfX("error: %v", err)
+		}
+
+		bot.VoiceSessions.Set(ctx.Message.GuildID, vs)
 	}
 
 	err = vs.JoinChannel(context.Background(), ch.ID, true, true)
@@ -31,4 +36,26 @@ func (bot *Bot) lurk(ctx *bcr.Context) error {
 	}
 
 	return ctx.SendfX("Now lurking in %v!", ch.Mention())
+}
+
+func (bot *Bot) unlurk(ctx *bcr.Context) error {
+	id := ctx.Message.GuildID
+	if len(ctx.Args) > 0 {
+		sf, err := discord.ParseSnowflake(ctx.RawArgs)
+		if err == nil {
+			id = discord.GuildID(sf)
+		}
+	}
+
+	vs, ok := bot.VoiceSessions.Get(id)
+	if !ok {
+		return ctx.SendX("There isn't a voice session for this guild.")
+	}
+
+	err := vs.Leave(context.Background())
+	if err != nil {
+		return ctx.SendfX("error: %v", err)
+	}
+
+	return ctx.SendX("Stopped lurking in this guild!")
 }
