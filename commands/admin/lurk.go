@@ -9,7 +9,7 @@ import (
 )
 
 func (bot *Bot) lurk(ctx *bcr.Context) error {
-	ch, err := ctx.ParseChannel(ctx.RawArgs)
+	ch, err := ctx.ParseChannel(ctx.Args[0])
 	if err != nil {
 		return ctx.SendfX("error: %v", err)
 	}
@@ -29,7 +29,10 @@ func (bot *Bot) lurk(ctx *bcr.Context) error {
 		bot.VoiceSessions.Set(ctx.Message.GuildID, vs)
 	}
 
-	err = vs.JoinChannel(context.Background(), ch.ID, true, true)
+	unmute, _ := ctx.Flags.GetBool("unmute")
+	undeafen, _ := ctx.Flags.GetBool("undeafen")
+
+	err = vs.JoinChannel(context.Background(), ch.ID, !unmute, !undeafen)
 	if err != nil {
 		bot.Sugar.Error("error connecting to voice channel:", err)
 		return ctx.SendfX("error: %v", err)
@@ -57,5 +60,6 @@ func (bot *Bot) unlurk(ctx *bcr.Context) error {
 		return ctx.SendfX("error: %v", err)
 	}
 
+	bot.VoiceSessions.Remove(id)
 	return ctx.SendX("Stopped lurking in this guild!")
 }
