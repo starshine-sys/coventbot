@@ -4,11 +4,14 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/session/shard"
 	"github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/voice"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
+	"gitlab.com/1f320/x/concurrent"
 )
 
 // Bot ...
@@ -17,14 +20,19 @@ type Bot struct {
 
 	loadedAllowedGuilds bool
 
-	Client *http.Client
+	Client        *http.Client
+	VoiceSessions *concurrent.Map[discord.GuildID, *voice.Session]
 }
 
 // Init ...
 func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	s = "Bot owner commands"
 
-	b := &Bot{Bot: bot, Client: &http.Client{}}
+	b := &Bot{
+		Bot:           bot,
+		Client:        &http.Client{},
+		VoiceSessions: concurrent.NewMap[discord.GuildID, *voice.Session](),
+	}
 
 	if b.Config.Branding.Private {
 		var guildCount int
@@ -118,6 +126,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Hidden:    true,
 		OwnerOnly: true,
 		Command:   b.lurk,
+	}))
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "unlurk",
+		Summary: "Stop lurking in a voice channel.",
+		Usage:   "[guild ID]",
+
+		Hidden:    true,
+		OwnerOnly: true,
+		Command:   b.unlurk,
 	}))
 
 	b.Router.ShardManager.ForEach(func(s shard.Shard) {
