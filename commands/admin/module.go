@@ -110,6 +110,16 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:   b.rest,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "lurk",
+		Summary: "Lurk in a voice channel.",
+		Usage:   "<channel>",
+
+		Hidden:    true,
+		OwnerOnly: true,
+		Command:   b.lurk,
+	}))
+
 	b.Router.ShardManager.ForEach(func(s shard.Shard) {
 		state := s.(*state.State)
 
