@@ -8,7 +8,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/api/webhook"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
-	"github.com/starshine-sys/tribble/etc"
+	"github.com/starshine-sys/bcr"
 )
 
 // GuildCreate logs the bot joining a server, and creates a database entry if one doesn't exist
@@ -50,7 +50,7 @@ func (bot *Bot) GuildCreate(g *gateway.GuildCreateEvent) {
 
 			Embeds: []discord.Embed{{
 				Title: "Joined new server",
-				Color: etc.ColourBlurple,
+				Color: bcr.ColourBlurple,
 				Thumbnail: &discord.EmbedThumbnail{
 					URL: g.IconURL(),
 				},

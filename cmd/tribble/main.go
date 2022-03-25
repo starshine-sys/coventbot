@@ -31,7 +31,6 @@ import (
 	"github.com/starshine-sys/tribble/commands/tags"
 	"github.com/starshine-sys/tribble/customcommands"
 	"github.com/starshine-sys/tribble/db"
-	"github.com/starshine-sys/tribble/etc"
 	"github.com/starshine-sys/tribble/gatekeeper"
 	"github.com/starshine-sys/tribble/keyroles"
 	"github.com/starshine-sys/tribble/levels"
@@ -131,7 +130,7 @@ func main() {
 
 	bot := bot.New(bcrbot, sugar, db, c)
 	// set default embed colour
-	bot.Router.EmbedColor = etc.ColourBlurple
+	bot.Router.EmbedColor = bcr.ColourBlurple
 
 	// set the bot's prefix and owners
 	bot.Prefix(c.Prefixes...)

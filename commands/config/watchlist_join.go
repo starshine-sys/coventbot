@@ -6,7 +6,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
-	"github.com/starshine-sys/tribble/etc"
+	"github.com/starshine-sys/bcr"
 )
 
 func (bot *Bot) watchlistMemberAdd(m *gateway.GuildMemberAddEvent) {
@@ -29,7 +29,7 @@ func (bot *Bot) watchlistMemberAdd(m *gateway.GuildMemberAddEvent) {
 
 	e := discord.Embed{
 		Title: "User on watch list joined",
-		Color: etc.ColourOrange,
+		Color: bcr.ColourOrange,
 		Author: &discord.EmbedAuthor{
 			Name: m.User.Username + "#" + m.User.Discriminator,
 			Icon: m.User.AvatarURL(),

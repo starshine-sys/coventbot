@@ -3,7 +3,6 @@ module github.com/starshine-sys/tribble
 go 1.18
 
 require (
-	1f320.xyz/x v0.0.0-20220202151421-a578bc87e703
 	codeberg.org/eviedelta/detctime v0.0.0-20201201223733-52d0e0a1ba3d
 	emperror.dev/errors v0.8.0
 	github.com/AndreKR/multiface v0.0.0-20190725194701-b414aa6424a8

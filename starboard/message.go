@@ -9,8 +9,8 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
+	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/db"
-	"github.com/starshine-sys/tribble/etc"
 )
 
 func (bot *Bot) deleteMessage(
@@ -127,7 +127,7 @@ func (bot *Bot) embed(m discord.Message) discord.Embed {
 			Text: fmt.Sprintf("ID: %v", m.ID),
 		},
 		Timestamp: discord.Timestamp(m.Timestamp.Time()),
-		Color:     etc.ColourGold,
+		Color:     bcr.ColourGold,
 		Image: &discord.EmbedImage{
 			URL: attachmentLink,
 		},
