@@ -7,6 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
+	bcr2 "github.com/starshine-sys/bcr/v2"
 	"github.com/starshine-sys/tribble/bot"
 )
 
@@ -23,6 +24,20 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	bot.Chi.Get(`/leaderboard/{id:\d+}`, b.webLeaderboard)
 	bot.Router.AddHandler(b.messageCreate)
+
+	bot.Interactions.Command("level/show").Check(func(ctx *bcr2.CommandContext) (err error) {
+		if ctx.Guild == nil {
+			return bcr2.NewCheckError[*bcr2.CommandContext]("This command cannot be run in DMs.")
+		}
+		return nil
+	}).Exec(b.showLevel)
+
+	bot.Interactions.Command("level/leaderboard").Check(func(ctx *bcr2.CommandContext) (err error) {
+		if ctx.Guild == nil {
+			return bcr2.NewCheckError[*bcr2.CommandContext]("This command cannot be run in DMs.")
+		}
+		return nil
+	}).Exec(b.leaderboardSlash)
 
 	lvl := bot.Router.AddCommand(&bcr.Command{
 		Name:    "level",
