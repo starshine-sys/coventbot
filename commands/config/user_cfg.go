@@ -25,10 +25,6 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 					Value: "If this is enabled, your reminders are always sent in a DM, even if the bot can send messages in the source channel.",
 				},
 				{
-					Name:  "`usernames_opt_out`",
-					Value: "Disables username logging. Note that nickname changes will still be logged, but are limited to that specific server's moderators.",
-				},
-				{
 					Name:  "`embedless_reminders`",
 					Value: "Sends reminder messages without embeds (except for the jump link), as long as the text fits in a normal message.",
 				},
@@ -57,7 +53,12 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 			return bot.Report(ctx, err)
 		}
 
-		usernameOptOut, err := bot.DB.UserBoolGet(ctx.Author.ID, "usernames_opt_out")
+		embedless, err := bot.DB.UserBoolGet(ctx.Author.ID, "embedless_reminders")
+		if err != nil {
+			return bot.Report(ctx, err)
+		}
+
+		reactionPages, err := bot.DB.UserBoolGet(ctx.Author.ID, "reaction_pages")
 		if err != nil {
 			return bot.Report(ctx, err)
 		}
@@ -72,9 +73,12 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 		}
 
 		_, err = ctx.Send("", discord.Embed{
-			Title:       "User configuration",
-			Description: fmt.Sprintf("`disable_levelup_messages`: %v\n`reminders_in_dm`: %v\n`usernames_opt_out`: %v\n`timezone`: %v", lvlMsg, dmReminders, usernameOptOut, timezone),
-			Color:       ctx.Router.EmbedColor,
+			Title: "User configuration",
+			Description: fmt.Sprintf(
+				"`disable_levelup_messages`: %v\n`reminders_in_dm`: %v\n`embedless_reminders`: %v\n`reaction_pages`: %v\n`timezone`: %v",
+				lvlMsg, dmReminders, embedless, reactionPages, timezone,
+			),
+			Color: ctx.Router.EmbedColor,
 		})
 		return err
 	}
@@ -85,7 +89,7 @@ func (bot *Bot) userCfg(ctx *bcr.Context) (err error) {
 	}
 
 	switch strings.ToLower(ctx.Args[0]) {
-	case "disable_levelup_messages", "reminders_in_dm", "usernames_opt_out", "embedless_reminders", "reaction_pages":
+	case "disable_levelup_messages", "reminders_in_dm", "embedless_reminders", "reaction_pages":
 		b, err := strconv.ParseBool(ctx.Args[1])
 		if err != nil {
 			_, err = ctx.Send("Couldn't parse your input as a boolean (true or false)")

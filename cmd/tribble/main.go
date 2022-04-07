@@ -27,12 +27,10 @@ import (
 	"github.com/starshine-sys/tribble/commands/reminders"
 	"github.com/starshine-sys/tribble/commands/roles"
 	"github.com/starshine-sys/tribble/commands/static"
-	"github.com/starshine-sys/tribble/commands/tags"
 	"github.com/starshine-sys/tribble/customcommands"
 	"github.com/starshine-sys/tribble/db"
 	"github.com/starshine-sys/tribble/keyroles"
 	"github.com/starshine-sys/tribble/levels"
-	"github.com/starshine-sys/tribble/names"
 	"github.com/starshine-sys/tribble/quotes"
 	"github.com/starshine-sys/tribble/reactroles"
 	"github.com/starshine-sys/tribble/starboard"
@@ -51,13 +49,11 @@ var modules = []func(*bot.Bot) (string, []*bcr.Command){
 	reactroles.Init,
 	reminders.Init,
 	roles.Init,
-	tags.Init,
 	config.Init,
 	todos.Init,
 	notes.Init,
 	starboard.Init,
 	approval.Init,
-	names.Init,
 	admin.Init,
 	tickets.Init,
 	keyroles.Init,

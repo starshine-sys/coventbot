@@ -4,14 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"emperror.dev/errors"
-	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/api/webhook"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/state"
-	"github.com/diamondburned/arikawa/v3/utils/json/option"
-	"github.com/starshine-sys/bcr"
 	bcr2 "github.com/starshine-sys/bcr/v2"
 )
 
@@ -104,57 +100,7 @@ func (bot *Bot) MessageCreate(m *gateway.MessageCreateEvent) {
 		bot.Sugar.Errorf("Error executing commands: %v", err)
 		return
 	}
-
-	// handle tags as commands
-	err = bot.handleTagCommand(ctx)
-	if err != nil {
-		if err == errHadTag {
-			return
-		}
-		bot.Sugar.Errorf("Error sending message: %v", err)
-		return
-	}
 }
-
-func (bot *Bot) handleTagCommand(ctx *bcr.Context) (err error) {
-	name := ctx.Command + " " + ctx.RawArgs
-	if ctx.RawArgs == "" {
-		name = ctx.Command
-	}
-
-	t, err := bot.DB.GetTag(ctx.Message.GuildID, name)
-	if err != nil {
-		return nil
-	}
-
-	tr := false
-
-	if len(ctx.Message.Mentions) > 0 {
-		tr = true
-	}
-
-	data := api.SendMessageData{
-		Content: t.Response,
-		AllowedMentions: &api.AllowedMentions{
-			Parse:       []api.AllowedMentionType{},
-			RepliedUser: option.Bool(&tr),
-		},
-	}
-
-	if ctx.Message.Reference != nil {
-		data.Reference = &discord.MessageReference{
-			MessageID: ctx.Message.Reference.MessageID,
-		}
-	}
-
-	_, err = ctx.State.SendMessageComplex(ctx.Message.ChannelID, data)
-	if err != nil {
-		return err
-	}
-	return errHadTag
-}
-
-const errHadTag = errors.Sentinel("message had tag")
 
 func (bot *Bot) interactionCreate(ic *gateway.InteractionCreateEvent) {
 	err := bot.Interactions.Execute(ic)
