@@ -170,7 +170,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	}
 
 	if embed {
-		return ctx.SendX("", bot.generateEmbed(ctx, username, avatarURL, clr, rank, lvl, uc.XP, xpForNext, xpForPrev, sc))
+		return ctx.SendX("", bot.generateEmbed(username, avatarURL, clr, rank, lvl, uc.XP, xpForNext, xpForPrev, sc))
 	}
 
 	// background image
@@ -182,10 +182,10 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		background = uc.Background
 	}
 
-	r, err := bot.generateImage(ctx, username, avatarURL, background, clr, rank, lvl, uc.XP, xpForNext, xpForPrev)
+	r, err := bot.generateImage(username, avatarURL, background, clr, rank, lvl, uc.XP, xpForNext, xpForPrev)
 	if err != nil {
 		bot.Sugar.Errorf("Error generating level card: %v", err)
-		return ctx.SendX("", bot.generateEmbed(ctx, username, avatarURL, clr, rank, lvl, uc.XP, xpForNext, xpForPrev, sc))
+		return ctx.SendX("", bot.generateEmbed(username, avatarURL, clr, rank, lvl, uc.XP, xpForNext, xpForPrev, sc))
 	}
 
 	return ctx.SendFiles("", sendpart.File{
@@ -194,7 +194,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 	})
 }
 
-func (bot *Bot) generateImage(ctx *bcr.Context,
+func (bot *Bot) generateImage(
 	name, avatarURL, backgroundURL string, clr discord.Color,
 	rank int, lvl, xp, xpForNext, xpForPrev int64,
 ) (
@@ -342,7 +342,7 @@ func (bot *Bot) generateImage(ctx *bcr.Context,
 	return buf, nil
 }
 
-func (bot *Bot) generateEmbed(ctx *bcr.Context,
+func (bot *Bot) generateEmbed(
 	name, avatarURL string, clr discord.Color,
 	rank int, lvl, xp, xpForNext, xpForPrev int64,
 	sc Server,
@@ -379,7 +379,7 @@ func (bot *Bot) generateEmbed(ctx *bcr.Context,
 		})
 	}
 
-	reward := bot.getNextReward(ctx.Message.GuildID, lvl)
+	reward := bot.getNextReward(sc.ID, lvl)
 	if reward != nil && sc.ShowNextReward {
 		e.Fields = append(e.Fields, discord.EmbedField{
 			Name:  "Next reward",

@@ -9,6 +9,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/session/shard"
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/voice"
+	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 	"gitlab.com/1f320/x/concurrent"
@@ -122,6 +123,12 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "lurk",
 		Summary: "Lurk in a voice channel.",
 		Usage:   "<channel>",
+		Args:    bcr.MinArgs(1),
+		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.BoolP("unmute", "m", false, "Join unmuted")
+			fs.BoolP("undeafen", "d", false, "Join undeafened")
+			return fs
+		},
 
 		Hidden:    true,
 		OwnerOnly: true,

@@ -99,6 +99,31 @@ var Commands = []api.CreateCommandData{
 			},
 		},
 	},
+	{
+		Name:        "level",
+		Description: "Use levels.",
+		Type:        discord.ChatInputCommand,
+		Options: discord.CommandOptions{
+			&discord.SubcommandOption{
+				OptionName:  "show",
+				Description: "Show your or another user's level.",
+				Options: []discord.CommandOptionValue{&discord.UserOption{
+					OptionName:  "user",
+					Description: "The user to show.",
+					Required:    false,
+				}},
+			},
+			&discord.SubcommandOption{
+				OptionName:  "leaderboard",
+				Description: "Show this server's leaderboard.",
+				Options: []discord.CommandOptionValue{&discord.BooleanOption{
+					OptionName:  "full",
+					Description: "Whether to show the full leaderboard (including users who have left the server)",
+					Required:    false,
+				}},
+			},
+		},
+	},
 
 	// user context menu commands
 	{

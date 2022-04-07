@@ -21,7 +21,7 @@ require (
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
 	github.com/spf13/pflag v1.0.5
 	github.com/starshine-sys/bcr v0.21.1-0.20220215020904-a068e62c718a
-	github.com/starshine-sys/bcr/v2 v2.0.0-20220317015229-0da1b9ac9217
+	github.com/starshine-sys/bcr/v2 v2.0.0-20220407131124-31a6c61b20fb
 	github.com/starshine-sys/dischtml v0.0.0-20211027170332-ec78dbcfa1bd
 	github.com/starshine-sys/pkgo v1.0.0
 	github.com/starshine-sys/snowflake/v2 v2.1.0
@@ -59,6 +59,7 @@ require (
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
+	golang.org/x/sys v0.0.0-20211001092434-39dca1131b70 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	gopkg.in/gorp.v1 v1.7.2 // indirect

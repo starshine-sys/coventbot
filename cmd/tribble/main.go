@@ -188,6 +188,8 @@ func main() {
 				sugar.Infof("Overwrote global commands!")
 			}
 		}
+	} else {
+		sugar.Info("Not syncing commands.")
 	}
 
 	sc := make(chan os.Signal, 1)
