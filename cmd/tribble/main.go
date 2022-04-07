@@ -20,7 +20,6 @@ import (
 
 	"github.com/starshine-sys/tribble/approval"
 	"github.com/starshine-sys/tribble/bot"
-	"github.com/starshine-sys/tribble/chanmirror"
 	"github.com/starshine-sys/tribble/commands/admin"
 	"github.com/starshine-sys/tribble/commands/config"
 	"github.com/starshine-sys/tribble/commands/moderation"
@@ -31,7 +30,6 @@ import (
 	"github.com/starshine-sys/tribble/commands/tags"
 	"github.com/starshine-sys/tribble/customcommands"
 	"github.com/starshine-sys/tribble/db"
-	"github.com/starshine-sys/tribble/gatekeeper"
 	"github.com/starshine-sys/tribble/keyroles"
 	"github.com/starshine-sys/tribble/levels"
 	"github.com/starshine-sys/tribble/names"
@@ -56,10 +54,8 @@ var modules = []func(*bot.Bot) (string, []*bcr.Command){
 	tags.Init,
 	config.Init,
 	todos.Init,
-	chanmirror.Init,
 	notes.Init,
 	starboard.Init,
-	gatekeeper.Init,
 	approval.Init,
 	names.Init,
 	admin.Init,
