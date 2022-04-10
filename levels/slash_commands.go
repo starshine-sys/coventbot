@@ -125,8 +125,11 @@ func (bot *Bot) leaderboardSlash(ctx *bcr.CommandContext) (err error) {
 	}
 
 	if sc.LeaderboardModOnly || !sc.LevelsEnabled {
-		// TODO: replace with a real helper role check
-		if !discord.CalcOverwrites(*ctx.Guild, *ctx.Channel, *ctx.Member).Has(discord.PermissionManageMessages) {
+		if err = bot.CheckHelper(ctx); err != nil {
+			if _, ok := err.(bcr.CheckError[*bcr.CommandContext]); !ok {
+				bot.Sugar.Errorf("error checking for helper perms: %v", err)
+			}
+
 			return ctx.ReplyEphemeral("You don't have permission to use this command, you need the **Manage Messages** permission to use it.")
 		}
 	}
