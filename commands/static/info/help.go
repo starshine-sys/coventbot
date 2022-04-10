@@ -49,17 +49,7 @@ func (bot *Bot) help(ctx *bcr.Context) (err error) {
 	}
 
 	userLevel := 0
-
-	isOwner := false
-	for _, u := range ctx.Router.BotOwners {
-		if ctx.Author.ID.String() == u {
-			isOwner = true
-			break
-		}
-	}
-	if isOwner {
-		userLevel = 4
-	} else if isAdmin, _ := bot.AdminRole.Check(ctx); isAdmin {
+	if isAdmin, _ := bot.AdminRole.Check(ctx); isAdmin {
 		userLevel = 3
 	} else if isMod, _ := bot.ModRole.Check(ctx); isMod {
 		userLevel = 2
