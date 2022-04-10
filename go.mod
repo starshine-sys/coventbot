@@ -14,9 +14,7 @@ require (
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
-	github.com/google/uuid v1.2.0
 	github.com/jackc/pgx/v4 v4.11.0
-	github.com/kataras/hcaptcha v0.0.0-20200711031247-2927d4faf32f
 	github.com/pkg/errors v0.9.1
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
 	github.com/spf13/pflag v1.0.5

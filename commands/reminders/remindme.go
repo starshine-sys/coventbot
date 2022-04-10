@@ -74,11 +74,11 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 			rm = "**" + rm + "**"
 		}
 
-		content = fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", ctx.DisplayName(), rm, duration.Format(time.Until(t.Add(time.Second))), t.Unix(), id)
+		content = fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", ctx.DisplayName(), rm, duration.Format(time.Until(t)), t.Unix(), id)
 	} else {
 		e = []discord.Embed{{
 			Color:       bcr.ColourGreen,
-			Description: fmt.Sprintf("Reminder #%v set for %v from now.\n(<t:%v>)", id, duration.Format(time.Until(t.Add(time.Second))), t.Unix()),
+			Description: fmt.Sprintf("Reminder #%v set for %v from now.\n(<t:%v>)", id, duration.Format(time.Until(t)), t.Unix()),
 		}}
 	}
 
@@ -151,7 +151,7 @@ func (bot *Bot) remindmeSlash(ctx *bcr2.CommandContext) (err error) {
 		name = ctx.Member.Nick
 	}
 
-	err = ctx.Reply(fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", name, rm, duration.Format(time.Until(t.Add(time.Second))), t.Unix(), id))
+	err = ctx.Reply(fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", name, rm, duration.Format(time.Until(t)), t.Unix(), id))
 	if err != nil {
 		return err
 	}
