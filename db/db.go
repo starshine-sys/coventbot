@@ -8,7 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	migrate "github.com/rubenv/sql-migrate"
-	"github.com/starshine-sys/tribble/types"
+	"github.com/starshine-sys/tribble/common"
 	"go.uber.org/zap"
 
 	// pgx driver for migrations
@@ -25,11 +25,11 @@ type DB struct {
 	Pool  *pgxpool.Pool
 	Sugar *zap.SugaredLogger
 
-	Config *types.BotConfig
+	Config *common.BotConfig
 }
 
 // New ...
-func New(url string, sugar *zap.SugaredLogger, c *types.BotConfig) (db *DB, err error) {
+func New(url string, sugar *zap.SugaredLogger, c *common.BotConfig) (db *DB, err error) {
 	err = runMigrations(url, sugar)
 	if err != nil {
 		return nil, err

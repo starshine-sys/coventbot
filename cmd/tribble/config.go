@@ -4,12 +4,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/starshine-sys/tribble/types"
+	"github.com/starshine-sys/tribble/common"
 	"gopkg.in/yaml.v2"
 )
 
-func getConfig() (config *types.BotConfig) {
-	config = &types.BotConfig{}
+func getConfig() (config *common.BotConfig) {
+	config = &common.BotConfig{}
 
 	configFile, err := os.ReadFile("data/config.yaml")
 	if err != nil {

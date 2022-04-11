@@ -19,8 +19,8 @@ import (
 	bcrbot "github.com/starshine-sys/bcr/bot"
 	bcr2 "github.com/starshine-sys/bcr/v2"
 	"github.com/starshine-sys/pkgo"
+	"github.com/starshine-sys/tribble/common"
 	"github.com/starshine-sys/tribble/db"
-	"github.com/starshine-sys/tribble/types"
 	"go.uber.org/zap"
 )
 
@@ -30,7 +30,7 @@ type Bot struct {
 
 	Interactions *bcr2.Router
 
-	Config    *types.BotConfig
+	Config    *common.BotConfig
 	Sugar     *zap.SugaredLogger
 	DB        *db.DB
 	Scheduler *Scheduler
@@ -78,7 +78,7 @@ func New(
 	bot *bcrbot.Bot,
 	sugar *zap.SugaredLogger,
 	db *db.DB,
-	config *types.BotConfig) *Bot {
+	config *common.BotConfig) *Bot {
 	b := &Bot{
 		Bot:    bot,
 		Sugar:  sugar,

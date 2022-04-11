@@ -42,7 +42,7 @@ func NewScheduler(bot *Bot, db *db.DB) *Scheduler {
 	}
 }
 
-// AddType adds event types.
+// AddType adds event common.
 // These should be *pointers*, anything else will panic, even if it implements Event!
 func (s *Scheduler) AddType(events ...Event) {
 	s.mu.Lock()
