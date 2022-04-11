@@ -23,7 +23,7 @@ func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 	}
 
 	if sc.LeaderboardModOnly || !sc.LevelsEnabled {
-		perm, _ := bot.HelperRole.Check(ctx)
+		perm, _ := bot.ModeratorRole.Check(ctx)
 
 		if !perm {
 			_, err = ctx.Sendf("You don't have permission to use this command, you need the **Manage Messages** permission to use it.")

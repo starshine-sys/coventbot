@@ -24,7 +24,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:              "reactroles",
 		Aliases:           []string{"rr"},
 		Summary:           "Create or edit reaction roles",
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 
 		Command: func(ctx *bcr.Context) (err error) {
 			err = ctx.Help([]string{"reactroles"})
@@ -38,7 +38,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<message> <emote/role pairs...>",
 		Args:    bcr.MinArgs(3),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.update,
 	})
 
@@ -55,7 +55,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.new,
 	})
 
@@ -72,7 +72,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.simple,
 	})
 
@@ -82,7 +82,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<message link|ID> <roles...>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.simpleAdd,
 	})
 
@@ -92,7 +92,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<message link|ID> <roles...>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.simpleUpdate,
 	})
 
@@ -101,7 +101,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Clear react roles from the given message or the entire server.",
 		Usage:   "[message]",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.clear,
 	})
 

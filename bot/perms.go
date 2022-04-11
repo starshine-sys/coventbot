@@ -8,8 +8,8 @@ import (
 )
 
 var _ bcr.CustomPerms = (*AdminRole)(nil)
-var _ bcr.CustomPerms = (*ModRole)(nil)
-var _ bcr.CustomPerms = (*HelperRole)(nil)
+var _ bcr.CustomPerms = (*ManagerRole)(nil)
+var _ bcr.CustomPerms = (*ModeratorRole)(nil)
 
 // AdminRole checks if the user has a role with the Administrator permission, or a role with the ADMIN perm level
 type AdminRole struct {
@@ -57,17 +57,17 @@ func (bot *AdminRole) Check(ctx bcr.Contexter) (bool, error) {
 	return false, nil
 }
 
-// ModRole checks if the user has a role with the Manage Server permission, or a role with the MODERATOR perm level
-type ModRole struct {
+// ManagerRole checks if the user has a role with the Manage Server permission, or a role with the MODERATOR perm level
+type ManagerRole struct {
 	*Bot
 }
 
-func (bot *ModRole) String(ctx bcr.Contexter) string {
+func (bot *ManagerRole) String(ctx bcr.Contexter) string {
 	return "Moderator"
 }
 
 // Check ...
-func (bot *ModRole) Check(ctx bcr.Contexter) (bool, error) {
+func (bot *ManagerRole) Check(ctx bcr.Contexter) (bool, error) {
 	if ctx.GetMember() == nil || ctx.GetGuild() == nil {
 		return false, nil
 	}
@@ -87,7 +87,7 @@ func (bot *ModRole) Check(ctx bcr.Contexter) (bool, error) {
 	}
 
 	var roles []uint64
-	err := bot.DB.Pool.QueryRow(context.Background(), "select mod_roles || admin_roles from servers where id = $1", ctx.GetGuild().ID).Scan(&roles)
+	err := bot.DB.Pool.QueryRow(context.Background(), "select manager_roles || admin_roles from servers where id = $1", ctx.GetGuild().ID).Scan(&roles)
 	if err != nil {
 		return false, err
 	}
@@ -103,17 +103,17 @@ func (bot *ModRole) Check(ctx bcr.Contexter) (bool, error) {
 	return false, nil
 }
 
-// HelperRole checks if the user has a role with the Manage Messages permission, or a role with the HELPER perm level
-type HelperRole struct {
+// ModeratorRole checks if the user has a role with the Manage Messages permission, or a role with the HELPER perm level
+type ModeratorRole struct {
 	*Bot
 }
 
-func (bot *HelperRole) String(ctx bcr.Contexter) string {
+func (bot *ModeratorRole) String(ctx bcr.Contexter) string {
 	return "Helper"
 }
 
 // Check ...
-func (bot *HelperRole) Check(ctx bcr.Contexter) (bool, error) {
+func (bot *ModeratorRole) Check(ctx bcr.Contexter) (bool, error) {
 	if ctx.GetMember() == nil || ctx.GetGuild() == nil {
 		return false, nil
 	}
@@ -133,7 +133,7 @@ func (bot *HelperRole) Check(ctx bcr.Contexter) (bool, error) {
 	}
 
 	var roles []uint64
-	err := bot.DB.Pool.QueryRow(context.Background(), "select helper_roles || mod_roles || admin_roles from servers where id = $1", ctx.GetGuild().ID).Scan(&roles)
+	err := bot.DB.Pool.QueryRow(context.Background(), "select moderator_roles || manager_roles || admin_roles from servers where id = $1", ctx.GetGuild().ID).Scan(&roles)
 	if err != nil {
 		return false, err
 	}

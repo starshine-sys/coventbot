@@ -63,7 +63,7 @@ func (bot *Bot) CheckMod(ctx *bcr.CommandContext) (err error) {
 	}
 
 	var roles []uint64
-	err = bot.DB.Pool.QueryRow(context.Background(), "select mod_roles || admin_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
+	err = bot.DB.Pool.QueryRow(context.Background(), "select manager_roles || admin_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
 	if err != nil {
 		return err
 	}
@@ -99,7 +99,7 @@ func (bot *Bot) CheckHelper(ctx *bcr.CommandContext) (err error) {
 	}
 
 	var roles []uint64
-	err = bot.DB.Pool.QueryRow(context.Background(), "select helper_roles || mod_roles || admin_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
+	err = bot.DB.Pool.QueryRow(context.Background(), "select moderator_roles || manager_roles || admin_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
 	if err != nil {
 		return err
 	}

@@ -51,9 +51,9 @@ func (bot *Bot) help(ctx *bcr.Context) (err error) {
 	userLevel := 0
 	if isAdmin, _ := bot.AdminRole.Check(ctx); isAdmin {
 		userLevel = 3
-	} else if isMod, _ := bot.ModRole.Check(ctx); isMod {
+	} else if isMod, _ := bot.ManagerRole.Check(ctx); isMod {
 		userLevel = 2
-	} else if isHelper, _ := bot.HelperRole.Check(ctx); isHelper {
+	} else if isHelper, _ := bot.ModeratorRole.Check(ctx); isHelper {
 		userLevel = 1
 	}
 
@@ -80,9 +80,9 @@ func (bot *Bot) permLevel(cmd *bcr.Command) int {
 	switch cmd.CustomPermissions {
 	case bot.AdminRole:
 		return 3
-	case bot.ModRole:
+	case bot.ManagerRole:
 		return 2
-	case bot.HelperRole:
+	case bot.ModeratorRole:
 		return 1
 	}
 

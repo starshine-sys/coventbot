@@ -10,7 +10,7 @@ import (
 
 func (bot *Bot) helperRoles(ctx *bcr.Context) (err error) {
 	var roles []uint64
-	err = bot.DB.Pool.QueryRow(context.Background(), "select helper_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
+	err = bot.DB.Pool.QueryRow(context.Background(), "select moderator_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -36,7 +36,7 @@ func (bot *Bot) helperAddRole(ctx *bcr.Context) (err error) {
 	}
 
 	var roles []uint64
-	err = bot.DB.Pool.QueryRow(context.Background(), "select helper_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
+	err = bot.DB.Pool.QueryRow(context.Background(), "select moderator_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -48,7 +48,7 @@ func (bot *Bot) helperAddRole(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set helper_roles = array_append(helper_roles, $1) where id = $2", r.ID, ctx.Guild.ID)
+	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set moderator_roles = array_append(moderator_roles, $1) where id = $2", r.ID, ctx.Guild.ID)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -65,7 +65,7 @@ func (bot *Bot) helperRemoveRole(ctx *bcr.Context) (err error) {
 	}
 
 	var roles []uint64
-	err = bot.DB.Pool.QueryRow(context.Background(), "select helper_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
+	err = bot.DB.Pool.QueryRow(context.Background(), "select moderator_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -81,7 +81,7 @@ func (bot *Bot) helperRemoveRole(ctx *bcr.Context) (err error) {
 		_, err = ctx.Replyc(bcr.ColourRed, "%v already isn't a helper role.", r.Mention())
 	}
 
-	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set helper_roles = array_remove(helper_roles, $1) where id = $2", r.ID, ctx.Guild.ID)
+	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set moderator_roles = array_remove(moderator_roles, $1) where id = $2", r.ID, ctx.Guild.ID)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}

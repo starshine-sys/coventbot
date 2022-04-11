@@ -10,7 +10,7 @@ import (
 
 func (bot *Bot) modRoles(ctx *bcr.Context) (err error) {
 	var roles []uint64
-	err = bot.DB.Pool.QueryRow(context.Background(), "select mod_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
+	err = bot.DB.Pool.QueryRow(context.Background(), "select manager_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -36,7 +36,7 @@ func (bot *Bot) modAddRole(ctx *bcr.Context) (err error) {
 	}
 
 	var roles []uint64
-	err = bot.DB.Pool.QueryRow(context.Background(), "select mod_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
+	err = bot.DB.Pool.QueryRow(context.Background(), "select manager_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -48,7 +48,7 @@ func (bot *Bot) modAddRole(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set mod_roles = array_append(mod_roles, $1) where id = $2", r.ID, ctx.Guild.ID)
+	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set manager_roles = array_append(manager_roles, $1) where id = $2", r.ID, ctx.Guild.ID)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -65,7 +65,7 @@ func (bot *Bot) modRemoveRole(ctx *bcr.Context) (err error) {
 	}
 
 	var roles []uint64
-	err = bot.DB.Pool.QueryRow(context.Background(), "select mod_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
+	err = bot.DB.Pool.QueryRow(context.Background(), "select manager_roles from servers where id = $1", ctx.Guild.ID).Scan(&roles)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -81,7 +81,7 @@ func (bot *Bot) modRemoveRole(ctx *bcr.Context) (err error) {
 		_, err = ctx.Replyc(bcr.ColourRed, "%v already isn't a mod role.", r.Mention())
 	}
 
-	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set mod_roles = array_remove(mod_roles, $1) where id = $2", r.ID, ctx.Guild.ID)
+	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set manager_roles = array_remove(manager_roles, $1) where id = $2", r.ID, ctx.Guild.ID)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}

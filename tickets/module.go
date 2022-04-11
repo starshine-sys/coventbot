@@ -80,7 +80,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "list",
 		Summary: "Show a list of ticket categories.",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.list,
 	})
 
@@ -100,7 +100,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.cfg,
 	})
 
@@ -111,7 +111,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:       "<category> <mention|-clear>",
 		Args:        bcr.MinArgs(2),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.mention,
 	})
 
@@ -121,7 +121,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<category> <description|-clear>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.description,
 	})
 

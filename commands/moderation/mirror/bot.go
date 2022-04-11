@@ -34,7 +34,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Hidden:  true,
 
 		OwnerOnly:         true,
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.cmdImport,
 	})
 

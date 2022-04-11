@@ -41,7 +41,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.config,
 	})
 
@@ -51,7 +51,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<id>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.delete,
 	})
 
@@ -62,7 +62,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<id> <roles...>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.setRoles,
 	})
 

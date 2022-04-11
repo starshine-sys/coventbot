@@ -24,7 +24,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"key-role", "keyroles", "key-roles"},
 		Summary: "Show this server's key roles.",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.list,
 	})
 
@@ -34,7 +34,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<role>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.add,
 	})
 
@@ -45,7 +45,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<role>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.remove,
 	})
 
@@ -56,7 +56,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel|-clear>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.channel,
 	})
 

@@ -39,7 +39,7 @@ func Init(b *bot.Bot) (s string, list []*bcr.Command) {
 		Summary:           "Show or create a custom command",
 		Usage:             "[name]",
 		Command:           bot.showOrAdd,
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 	})
 
 	return

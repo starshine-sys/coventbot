@@ -48,7 +48,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<quote ID>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.HelperRole,
+		CustomPermissions: bot.ModeratorRole,
 		Command:           b.cmdQuoteDelete,
 	})
 
@@ -102,7 +102,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<on|off>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.toggle,
 	})
 
@@ -112,7 +112,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<on|off>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.toggleSuppressMessages,
 	})
 

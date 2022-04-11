@@ -103,7 +103,7 @@ func (bot *Bot) setRolePerms(g *gateway.GuildCreateEvent) (err error) {
 		}
 	}
 
-	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set helper_roles = $1, mod_roles = $2, admin_roles = $3, roles_set_up = true where id = $4", helperRoles, modRoles, adminRoles, g.ID)
+	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set moderator_roles = $1, manager_roles = $2, admin_roles = $3, roles_set_up = true where id = $4", helperRoles, modRoles, adminRoles, g.ID)
 	if err == nil {
 		bot.Sugar.Infof("Set helper/mod/admin roles for server %v (%v)", g.Name, g.ID)
 	}

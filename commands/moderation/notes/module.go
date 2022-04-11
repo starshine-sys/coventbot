@@ -22,7 +22,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.HelperRole,
+		CustomPermissions: bot.ModeratorRole,
 		Command:           b.list,
 	})
 
@@ -33,7 +33,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> <note>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.HelperRole,
+		CustomPermissions: bot.ModeratorRole,
 		Command:           b.addNote,
 	})
 
@@ -44,7 +44,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<note ID>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.delNote,
 	})
 
@@ -54,7 +54,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Show a background check for the given user.",
 		Usage:   "[user]",
 
-		CustomPermissions: bot.HelperRole,
+		CustomPermissions: bot.ModeratorRole,
 		Command: func(ctx *bcr.Context) (err error) {
 			if len(ctx.Args) == 0 {
 				ctx.Args = []string{ctx.Author.ID.String()}

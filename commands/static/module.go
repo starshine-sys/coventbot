@@ -49,7 +49,7 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Aliases: []string{"export-emotes"},
 		Summary: "Export this server's emotes to a zip file.",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Permissions:       discord.PermissionManageEmojisAndStickers,
 		Command:           b.exportEmotes,
 	}))

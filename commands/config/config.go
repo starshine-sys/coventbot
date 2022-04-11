@@ -39,7 +39,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<prefix>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.prefixAdd,
 	})
 
@@ -49,7 +49,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<prefix>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.prefixRemove,
 	})
 
@@ -61,7 +61,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary:     "Show the users currently on the watchlist.",
 		Description: "The server watchlist notifies you when a member on it joins your server. Intended to be used for potential problem members who aren't worth banning.",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.watchlist,
 	})
 
@@ -73,7 +73,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:       "<new channel>",
 		Args:        bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.watchlistChannel,
 	})
 
@@ -85,7 +85,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user>",
 
 		Args:              bcr.MinArgs(1),
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.watchlistAdd,
 	})
 
@@ -95,7 +95,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user>",
 
 		Args:              bcr.MinArgs(1),
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.watchlistRemove,
 	})
 
@@ -105,7 +105,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "[user ID] [reason]",
 
 		Args:              bcr.MinArgs(1),
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.watchlistReason,
 	})
 
@@ -114,7 +114,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "View or change this server's starboard settings.",
 
 		GuildOnly:         true,
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.starboardSettings,
 	})
 
@@ -124,7 +124,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<new channel|-clear>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.starboardSetChannel,
 	})
 
@@ -134,7 +134,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<new emoji>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.starboardSetEmoji,
 	})
 
@@ -144,7 +144,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<new limit>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.starboardSetLimit,
 	})
 
@@ -164,7 +164,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<name>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.starboardSetUsername,
 	})
 
@@ -175,7 +175,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<link>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.starboardSetAvatar,
 	})
 
@@ -184,7 +184,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"block", "bl"},
 		Summary: "View this server's starboard blacklist.",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.blacklist,
 	})
 
@@ -194,7 +194,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.blacklistAdd,
 	})
 
@@ -204,14 +204,14 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.blacklistRemove,
 	})
 
 	triggers := b.Router.AddCommand(&bcr.Command{
 		Name:              "triggers",
 		Summary:           "Add or remove triggers (reactions that trigger commands)",
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 
 		GuildOnly: true,
 		Command:   func(ctx *bcr.Context) (err error) { return ctx.Help([]string{"triggers"}) },
@@ -224,7 +224,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Args:    bcr.MinArgs(3),
 
 		GuildOnly:         true,
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.addTrigger,
 	})
 
@@ -235,7 +235,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Args:    bcr.MinArgs(2),
 
 		GuildOnly:         true,
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.delTrigger,
 	})
 
@@ -244,7 +244,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"helperroles"},
 		Summary: "View this server's helper roles.",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.helperRoles,
 	})
 
@@ -254,7 +254,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<role>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.helperAddRole,
 	})
 
@@ -264,7 +264,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<role>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.helperRemoveRole,
 	})
 

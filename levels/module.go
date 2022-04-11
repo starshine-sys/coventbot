@@ -56,7 +56,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> <new XP>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.setXP,
 	})
 
@@ -67,7 +67,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> <new level>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.setlvl,
 	})
 
@@ -97,7 +97,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Set this server's default level background.",
 		Usage:   "[clear]",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.serverBackground,
 	})
 
@@ -107,7 +107,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Configure levels.",
 		Usage:   "[key <new value>]",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.config,
 	})
 
@@ -138,7 +138,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"bl"},
 		Summary: "Configure this server's blacklist.",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           func(ctx *bcr.Context) error { return ctx.Help([]string{"lvl", "config", "blacklist"}) },
 	})
 
@@ -149,7 +149,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel|role>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.blacklistAdd,
 	})
 
@@ -160,7 +160,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel|role>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.blacklistRemove,
 	})
 
@@ -185,7 +185,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Manage the user blacklist for levels.",
 		Usage:   "[user [time]]",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.nolevelsList,
 	})
 
@@ -195,7 +195,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> [time]",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.nolevelsAdd,
 	})
 
@@ -205,7 +205,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.nolevelsRemove,
 	})
 

@@ -36,7 +36,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Show a filtered list of members.",
 		Usage:   "--help",
 
-		CustomPermissions: bot.HelperRole,
+		CustomPermissions: bot.ModeratorRole,
 		Command:           b.members,
 	}))
 
@@ -53,7 +53,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "dump",
 		Summary: "Show a list of *all* roles with permissions and basic information.",
 
-		CustomPermissions: bot.HelperRole,
+		CustomPermissions: bot.ModeratorRole,
 		Command:           b.roleDump,
 	})
 
@@ -89,7 +89,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary:     "Make the bot say something.",
 		Description: "To echo something into a different channel, use the `echo to` subcommand.",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.echo,
 	})
 
@@ -98,7 +98,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Echo something to the specified channel.",
 		Usage:   "<channel>",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.echoTo,
 	})
 
@@ -108,7 +108,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<JSON>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.embed,
 	})
 
@@ -118,7 +118,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel> <JSON>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.embedTo,
 	})
 
@@ -128,7 +128,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<message> <JSON>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.editEmbed,
 	})
 
@@ -140,7 +140,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Make an invite for the current channel, or the given channel.",
 		Usage:   "[channel]",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Permissions:       discord.PermissionCreateInstantInvite,
 		Command:           b.makeInvite,
 	}))
@@ -159,7 +159,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Permissions:       discord.PermissionManageChannels,
 		Command:           b.transcript,
 	}))
@@ -170,7 +170,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Toggles a channel being locked, hiding it from the `@everyone` role.",
 		Usage:   "[channel]",
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.lockdown,
 	}))
 
@@ -188,7 +188,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<duration> [channel]",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 		Command:           b.discordSlowmode,
 	})
 
@@ -205,7 +205,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		},
 
 		Command:           b.cmdSetSlowmode,
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 	})
 
 	slowmode.AddSubcommand(&bcr.Command{
@@ -215,7 +215,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Args:    bcr.MinArgs(1),
 
 		Command:           b.resetSlowmode,
-		CustomPermissions: bot.HelperRole,
+		CustomPermissions: bot.ModeratorRole,
 	})
 
 	slowmode.AddSubcommand(&bcr.Command{
@@ -225,7 +225,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Args:    bcr.MinArgs(1),
 
 		Command:           b.slowmodeRole,
-		CustomPermissions: bot.ModRole,
+		CustomPermissions: bot.ManagerRole,
 	})
 
 	list = append(list, slowmode)
@@ -266,7 +266,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<member> <reason>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.HelperRole,
+		CustomPermissions: bot.ModeratorRole,
 		Command:           b.warn,
 	}))
 
@@ -296,7 +296,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "[role]",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: b.ModRole,
+		CustomPermissions: b.ManagerRole,
 		Command:           b.muteRole,
 	}))
 
@@ -306,7 +306,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "[role]",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: b.ModRole,
+		CustomPermissions: b.ManagerRole,
 		Command:           b.pauseRole,
 	}))
 
@@ -330,7 +330,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 - {action}: replaced with the action type`,
 		Usage: "[new message|-clear]",
 
-		CustomPermissions: b.ModRole,
+		CustomPermissions: b.ManagerRole,
 		Command:           b.cmdMutemeMessage,
 	})
 
