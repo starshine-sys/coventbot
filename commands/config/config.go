@@ -239,92 +239,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command:           b.delTrigger,
 	})
 
-	helper := b.Router.AddCommand(&bcr.Command{
-		Name:    "helper-roles",
-		Aliases: []string{"helperroles"},
-		Summary: "View this server's helper roles.",
-
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.helperRoles,
-	})
-
-	helper.AddSubcommand(&bcr.Command{
-		Name:    "add",
-		Summary: "Add a helper role.",
-		Usage:   "<role>",
-		Args:    bcr.MinArgs(1),
-
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.helperAddRole,
-	})
-
-	helper.AddSubcommand(&bcr.Command{
-		Name:    "remove",
-		Summary: "Remove a helper role.",
-		Usage:   "<role>",
-		Args:    bcr.MinArgs(1),
-
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.helperRemoveRole,
-	})
-
-	mod := b.Router.AddCommand(&bcr.Command{
-		Name:    "mod-roles",
-		Aliases: []string{"modroles"},
-		Summary: "View this server's mod roles.",
-
-		CustomPermissions: bot.AdminRole,
-		Command:           b.modRoles,
-	})
-
-	mod.AddSubcommand(&bcr.Command{
-		Name:    "add",
-		Summary: "Add a mod role.",
-		Usage:   "<role>",
-		Args:    bcr.MinArgs(1),
-
-		CustomPermissions: bot.AdminRole,
-		Command:           b.modAddRole,
-	})
-
-	mod.AddSubcommand(&bcr.Command{
-		Name:    "remove",
-		Summary: "Remove a mod role.",
-		Usage:   "<role>",
-		Args:    bcr.MinArgs(1),
-
-		CustomPermissions: bot.AdminRole,
-		Command:           b.modRemoveRole,
-	})
-
-	admin := b.Router.AddCommand(&bcr.Command{
-		Name:    "admin-roles",
-		Aliases: []string{"adminroles"},
-		Summary: "View this server's admin roles.",
-
-		CustomPermissions: bot.AdminRole,
-		Command:           b.adminRoles,
-	})
-
-	admin.AddSubcommand(&bcr.Command{
-		Name:    "add",
-		Summary: "Add a admin role.",
-		Usage:   "<role>",
-		Args:    bcr.MinArgs(1),
-
-		CustomPermissions: bot.AdminRole,
-		Command:           b.adminAddRole,
-	})
-
-	admin.AddSubcommand(&bcr.Command{
-		Name:    "remove",
-		Summary: "Remove a admin role.",
-		Usage:   "<role>",
-		Args:    bcr.MinArgs(1),
-
-		CustomPermissions: bot.AdminRole,
-		Command:           b.adminRemoveRole,
-	})
+	list = append(list, b.permCommands()...)
 
 	// add trigger handler
 	b.Router.AddHandler(b.triggerReactionAdd)
@@ -334,4 +249,92 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	b.Router.AddHandler(b.watchlistMemberAdd)
 
 	return s, append(list, wl, sb)
+}
+
+func (bot *Bot) permCommands() (cmds []*bcr.Command) {
+	root := bot.Router.AddCommand(&bcr.Command{
+		Name:    "permissions",
+		Aliases: []string{"perms"},
+		Summary: "Configure permissions.",
+		Command: func(ctx *bcr.Context) error { return ctx.Help([]string{"permissions"}) },
+	})
+
+	mod := root.AddSubcommand(&bcr.Command{
+		Name:    "moderator",
+		Aliases: []string{"mod", "moderatorroles"},
+		Summary: "View or manage this server's moderator roles.",
+		Command: bot.moderatorRoles,
+	})
+
+	mod.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add a moderator role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.ManagerRole,
+		Command:           bot.moderatorAddRole,
+	})
+
+	mod.AddSubcommand(&bcr.Command{
+		Name:    "remove",
+		Summary: "Remove a moderator role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.ManagerRole,
+		Command:           bot.moderatorRemoveRole,
+	})
+
+	manager := root.AddSubcommand(&bcr.Command{
+		Name:    "manager",
+		Aliases: []string{"managerroles"},
+		Summary: "View or manage this server's manager roles.",
+		Command: bot.managerRoles,
+	})
+
+	manager.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add a manager role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+		Command: bot.managerAddRole,
+	})
+
+	manager.AddSubcommand(&bcr.Command{
+		Name:    "remove",
+		Summary: "Remove a manager role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+		Command: bot.managerRemoveRole,
+	})
+
+	admin := root.AddSubcommand(&bcr.Command{
+		Name:    "admin",
+		Aliases: []string{"adminroles"},
+		Summary: "View or manage this server's admin roles.",
+		Command: bot.adminRoles,
+	})
+
+	admin.AddSubcommand(&bcr.Command{
+		Name:    "add",
+		Summary: "Add an admin role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.AdminRole,
+		Command:           bot.adminAddRole,
+	})
+
+	admin.AddSubcommand(&bcr.Command{
+		Name:    "remove",
+		Summary: "Remove an admin role.",
+		Usage:   "<role>",
+		Args:    bcr.MinArgs(1),
+
+		CustomPermissions: bot.AdminRole,
+		Command:           bot.adminRemoveRole,
+	})
+
+	return append(cmds)
 }

@@ -155,16 +155,30 @@ func (bot *ModeratorRole) Check(ctx bcr.Contexter) (bool, error) {
 
 func (bot *Bot) CheckPermissions(ctx *bcr.Context) (name string, allowed bool, data api.SendMessageData) {
 	rawPath := ctx.FullCommandPath
-	if strings.EqualFold(ctx.FullCommandPath[0], "help") {
+	if strings.EqualFold(ctx.FullCommandPath[0], "help") && len(ctx.Args) > 0 {
 		rawPath = ctx.Args
 	}
 
 	var path []string
 	c := bot.Router.GetCommand(rawPath[0])
+	if c == nil {
+		return common.DisabledLevel.String(), false, api.SendMessageData{
+			Content: fmt.Sprintf("❌ No command named %v found.", bcr.AsCode(rawPath[0])),
+		}
+	}
+
 	path = append(path, c.Name)
 	if len(rawPath) > 1 {
 		for _, p := range rawPath[1:] {
 			c = c.GetCommand(p)
+			if c == nil {
+				return common.DisabledLevel.String(), false, api.SendMessageData{
+					Content: fmt.Sprintf("❌ No command named %v found.", bcr.AsCode(
+						strings.Join(rawPath, " "),
+					)),
+				}
+			}
+
 			path = append(path, c.Name)
 		}
 	}
