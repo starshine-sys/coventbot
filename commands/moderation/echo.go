@@ -57,7 +57,9 @@ func (bot *Bot) echoInner(ctx *bcr.Context, ch *discord.Channel) (err error) {
 		roles, err := ctx.State.Roles(ch.GuildID)
 		if err == nil {
 			for _, r := range roles {
-				am.Roles = append(am.Roles, r.ID)
+				if r.Mentionable {
+					am.Roles = append(am.Roles, r.ID)
+				}
 			}
 		}
 	}
