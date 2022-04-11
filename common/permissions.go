@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 )
@@ -8,12 +9,29 @@ import (
 type PermissionLevel int
 
 const (
-	InvalidLevel   PermissionLevel = 0
+	DisabledLevel  PermissionLevel = 0
 	EveryoneLevel  PermissionLevel = 1
 	ModeratorLevel PermissionLevel = 2
 	ManagerLevel   PermissionLevel = 3
 	AdminLevel     PermissionLevel = 4
 )
+
+func (p PermissionLevel) String() string {
+	switch p {
+	case DisabledLevel:
+		return "[0] DISABLED"
+	case EveryoneLevel:
+		return "[1] EVERYONE"
+	case ModeratorLevel:
+		return "[2] MODERATOR"
+	case ManagerLevel:
+		return "[3] MANAGER"
+	case AdminLevel:
+		return "[4] ADMIN"
+	default:
+		return fmt.Sprintf("[%d] UNKNOWN", int(p))
+	}
+}
 
 // Node is a permission node.
 type Node struct {
@@ -74,11 +92,16 @@ func (ns Nodes) NodeFor(s string) Node {
 }
 
 func defaultNodeFor(s string) Node {
+	if !defaultPermsAreSorted {
+		sort.Sort(DefaultPermissions)
+		defaultPermsAreSorted = true
+	}
+
 	for _, node := range DefaultPermissions {
 		if node.Matches(s) {
 			return node
 		}
 	}
 
-	return Node{Name: s, Level: InvalidLevel}
+	return Node{Name: s, Level: DisabledLevel}
 }

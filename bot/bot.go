@@ -125,6 +125,8 @@ func New(
 
 	// set the prefix checker
 	b.Router.Prefixer = b.CheckPrefix
+	// set permission checker
+	b.Router.PermissionCheck = b.CheckPermissions
 
 	b.Router.ShardManager.ForEach(func(s shard.Shard) {
 		state := s.(*state.State)

@@ -18,7 +18,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
 	github.com/spf13/pflag v1.0.5
-	github.com/starshine-sys/bcr v0.21.1-0.20220215020904-a068e62c718a
+	github.com/starshine-sys/bcr v0.21.1-0.20220411134441-4c1b535ebaff
 	github.com/starshine-sys/bcr/v2 v2.0.0-20220407131124-31a6c61b20fb
 	github.com/starshine-sys/dischtml v0.0.0-20211027170332-ec78dbcfa1bd
 	github.com/starshine-sys/pkgo v1.0.0
