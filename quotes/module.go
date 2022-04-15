@@ -48,8 +48,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<quote ID>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ModeratorRole,
-		Command:           b.cmdQuoteDelete,
+		Command: b.cmdQuoteDelete,
 	})
 
 	cmd.AddSubcommand(&bcr.Command{
@@ -102,8 +101,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<on|off>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.toggle,
+		Command: b.toggle,
 	})
 
 	quotes.AddSubcommand(&bcr.Command{
@@ -112,8 +110,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<on|off>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.toggleSuppressMessages,
+		Command: b.toggleSuppressMessages,
 	})
 
 	return s, append(list, cmd, quotes)

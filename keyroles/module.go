@@ -24,8 +24,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"key-role", "keyroles", "key-roles"},
 		Summary: "Show this server's key roles.",
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.list,
+		Command: b.list,
 	})
 
 	kr.AddSubcommand(&bcr.Command{
@@ -34,8 +33,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<role>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.add,
+		Command: b.add,
 	})
 
 	kr.AddSubcommand(&bcr.Command{
@@ -45,8 +43,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<role>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.remove,
+		Command: b.remove,
 	})
 
 	kr.AddSubcommand(&bcr.Command{
@@ -56,8 +53,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel|-clear>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.channel,
+		Command: b.channel,
 	})
 
 	b.Router.AddHandler(b.guildMemberUpdate)

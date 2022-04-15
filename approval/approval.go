@@ -23,14 +23,12 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<member>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.approve,
+		Command: b.approve,
 	}))
 
 	conf := b.Router.AddCommand(&bcr.Command{
-		Name:              "approval",
-		Summary:           "Configure manual approval.",
-		CustomPermissions: bot.ManagerRole,
+		Name:    "approval",
+		Summary: "Configure manual approval.",
 
 		Command: func(ctx *bcr.Context) (err error) { return ctx.Help([]string{"approval"}) },
 	})
@@ -40,8 +38,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Configure the channel approval messages are sent in.",
 		Usage:   "<new channel>",
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.setChannel,
+		Command: b.setChannel,
 	})
 
 	conf.AddSubcommand(&bcr.Command{
@@ -49,8 +46,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Configure the message sent when a user is approved.",
 		Usage:   "<new message>",
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.setMessage,
+		Command: b.setMessage,
 	})
 
 	conf.AddSubcommand(&bcr.Command{
@@ -58,8 +54,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Configure the roles added when a user is approved.",
 		Usage:   "<roles|-clear>",
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.setAddRoles,
+		Command: b.setAddRoles,
 	})
 
 	conf.AddSubcommand(&bcr.Command{
@@ -67,8 +62,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Configure the roles removed when a user is approved.",
 		Usage:   "<roles|-clear>",
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.setRemoveRoles,
+		Command: b.setRemoveRoles,
 	})
 
 	return s, append(list, conf)

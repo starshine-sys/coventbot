@@ -21,10 +21,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	b := &Bot{bot}
 
 	rr := bot.Router.AddCommand(&bcr.Command{
-		Name:              "reactroles",
-		Aliases:           []string{"rr"},
-		Summary:           "Create or edit reaction roles",
-		CustomPermissions: bot.ManagerRole,
+		Name:    "reactroles",
+		Aliases: []string{"rr"},
+		Summary: "Create or edit reaction roles",
 
 		Command: func(ctx *bcr.Context) (err error) {
 			err = ctx.Help([]string{"reactroles"})
@@ -38,8 +37,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<message> <emote/role pairs...>",
 		Args:    bcr.MinArgs(3),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.update,
+		Command: b.update,
 	})
 
 	rr.AddSubcommand(&bcr.Command{
@@ -55,8 +53,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.new,
+		Command: b.new,
 	})
 
 	simple := rr.AddSubcommand(&bcr.Command{
@@ -72,8 +69,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.simple,
+		Command: b.simple,
 	})
 
 	simple.AddSubcommand(&bcr.Command{
@@ -82,8 +78,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<message link|ID> <roles...>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.simpleAdd,
+		Command: b.simpleAdd,
 	})
 
 	simple.AddSubcommand(&bcr.Command{
@@ -92,8 +87,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<message link|ID> <roles...>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.simpleUpdate,
+		Command: b.simpleUpdate,
 	})
 
 	rr.AddSubcommand(&bcr.Command{
@@ -101,8 +95,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Clear react roles from the given message or the entire server.",
 		Usage:   "[message]",
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.clear,
+		Command: b.clear,
 	})
 
 	// add handlers

@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/diamondburned/arikawa/v3/api"
@@ -10,148 +11,6 @@ import (
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/common"
 )
-
-var _ bcr.CustomPerms = (*AdminRole)(nil)
-var _ bcr.CustomPerms = (*ManagerRole)(nil)
-var _ bcr.CustomPerms = (*ModeratorRole)(nil)
-
-// AdminRole checks if the user has a role with the Administrator permission, or a role with the ADMIN perm level
-type AdminRole struct {
-	*Bot
-}
-
-func (bot *AdminRole) String(ctx bcr.Contexter) string {
-	return "Admin"
-}
-
-// Check ...
-func (bot *AdminRole) Check(ctx bcr.Contexter) (bool, error) {
-	if ctx.GetMember() == nil || ctx.GetGuild() == nil {
-		return false, nil
-	}
-
-	if ctx.User().ID == ctx.GetGuild().OwnerID {
-		return true, nil
-	}
-
-	for _, id := range ctx.GetMember().RoleIDs {
-		for _, r := range ctx.GetGuild().Roles {
-			if r.ID == id {
-				if r.Permissions.Has(discord.PermissionAdministrator) {
-					return true, nil
-				}
-			}
-		}
-	}
-
-	var roles []uint64
-	err := bot.DB.Pool.QueryRow(context.Background(), "select admin_roles from servers where id = $1", ctx.GetGuild().ID).Scan(&roles)
-	if err != nil {
-		return false, err
-	}
-
-	for _, r := range roles {
-		for _, id := range ctx.GetMember().RoleIDs {
-			if r == uint64(id) {
-				return true, nil
-			}
-		}
-	}
-
-	return false, nil
-}
-
-// ManagerRole checks if the user has a role with the Manage Server permission, or a role with the MODERATOR perm level
-type ManagerRole struct {
-	*Bot
-}
-
-func (bot *ManagerRole) String(ctx bcr.Contexter) string {
-	return "Moderator"
-}
-
-// Check ...
-func (bot *ManagerRole) Check(ctx bcr.Contexter) (bool, error) {
-	if ctx.GetMember() == nil || ctx.GetGuild() == nil {
-		return false, nil
-	}
-
-	if ctx.User().ID == ctx.GetGuild().OwnerID {
-		return true, nil
-	}
-
-	for _, id := range ctx.GetMember().RoleIDs {
-		for _, r := range ctx.GetGuild().Roles {
-			if r.ID == id {
-				if r.Permissions.Has(discord.PermissionManageGuild) {
-					return true, nil
-				}
-			}
-		}
-	}
-
-	var roles []uint64
-	err := bot.DB.Pool.QueryRow(context.Background(), "select manager_roles || admin_roles from servers where id = $1", ctx.GetGuild().ID).Scan(&roles)
-	if err != nil {
-		return false, err
-	}
-
-	for _, r := range roles {
-		for _, id := range ctx.GetMember().RoleIDs {
-			if r == uint64(id) {
-				return true, nil
-			}
-		}
-	}
-
-	return false, nil
-}
-
-// ModeratorRole checks if the user has a role with the Manage Messages permission, or a role with the HELPER perm level
-type ModeratorRole struct {
-	*Bot
-}
-
-func (bot *ModeratorRole) String(ctx bcr.Contexter) string {
-	return "Helper"
-}
-
-// Check ...
-func (bot *ModeratorRole) Check(ctx bcr.Contexter) (bool, error) {
-	if ctx.GetMember() == nil || ctx.GetGuild() == nil {
-		return false, nil
-	}
-
-	if ctx.User().ID == ctx.GetGuild().OwnerID {
-		return true, nil
-	}
-
-	for _, id := range ctx.GetMember().RoleIDs {
-		for _, r := range ctx.GetGuild().Roles {
-			if r.ID == id {
-				if r.Permissions.Has(discord.PermissionManageMessages) {
-					return true, nil
-				}
-			}
-		}
-	}
-
-	var roles []uint64
-	err := bot.DB.Pool.QueryRow(context.Background(), "select moderator_roles || manager_roles || admin_roles from servers where id = $1", ctx.GetGuild().ID).Scan(&roles)
-	if err != nil {
-		return false, err
-	}
-
-	for _, r := range roles {
-		for _, id := range ctx.GetMember().RoleIDs {
-			if r == uint64(id) {
-				return true, nil
-			}
-		}
-	}
-
-	return false, nil
-}
 
 func (bot *Bot) CheckPermissions(ctx *bcr.Context) (name string, allowed bool, data api.SendMessageData) {
 	rawPath := ctx.FullCommandPath
@@ -186,24 +45,14 @@ func (bot *Bot) CheckPermissions(ctx *bcr.Context) (name string, allowed bool, d
 
 	if ctx.Guild == nil {
 		node := common.DefaultPermissions.NodeFor(commandPath)
-		switch node.Level {
-		case common.EveryoneLevel:
+		if node.Level == common.EveryoneLevel {
 			return "`" + common.EveryoneLevel.String() + "`", true, api.SendMessageData{}
-		default:
-			return "`" + node.Level.String() + "`", false, api.SendMessageData{Content: "❌ This command cannot be run in DMs."}
 		}
+		return "`" + node.Level.String() + "`", false, api.SendMessageData{Content: "❌ This command cannot be run in DMs."}
 	}
 
-	nodes, err := bot.DB.Permissions(ctx.Guild.ID)
-	if err != nil {
-		bot.Sugar.Errorf("getting permission nodes for guild %v: %v", ctx.Guild.ID, err)
-		return "`" + common.DisabledLevel.String() + "`", false, api.SendMessageData{
-			Content: "Error checking your permission level.",
-		}
-	}
-
-	userLevel := bot.userPermissions(ctx)
-	node := nodes.NodeFor(commandPath)
+	userLevel := bot.UserBotPermissions(ctx.Author, ctx.Member, ctx.Guild)
+	node := bot.NodeLevel(ctx.Guild.ID, commandPath)
 
 	if node.Level == common.DisabledLevel && userLevel != common.AdminLevel {
 		return "`" + common.DisabledLevel.String() + "`", false, api.SendMessageData{Content: "This command is disabled."}
@@ -236,14 +85,14 @@ func (bot *Bot) permError(
 	}
 }
 
-func (bot *Bot) userPermissions(ctx *bcr.Context) common.PermissionLevel {
-	if ctx.Author.ID == ctx.Guild.OwnerID {
+func (bot *Bot) UserBotPermissions(user discord.User, member *discord.Member, guild *discord.Guild) common.PermissionLevel {
+	if user.ID == guild.OwnerID {
 		return common.AdminLevel
 	}
 
 	// check admin perms
-	for _, id := range ctx.Member.RoleIDs {
-		for _, r := range ctx.Guild.Roles {
+	for _, id := range member.RoleIDs {
+		for _, r := range guild.Roles {
 			if r.ID == id {
 				if r.Permissions.Has(discord.PermissionAdministrator) {
 					return common.AdminLevel
@@ -253,8 +102,8 @@ func (bot *Bot) userPermissions(ctx *bcr.Context) common.PermissionLevel {
 	}
 
 	// check manage guild
-	for _, id := range ctx.Member.RoleIDs {
-		for _, r := range ctx.Guild.Roles {
+	for _, id := range member.RoleIDs {
+		for _, r := range guild.Roles {
 			if r.ID == id {
 				if r.Permissions.Has(discord.PermissionManageGuild) {
 					return common.ManagerLevel
@@ -264,8 +113,8 @@ func (bot *Bot) userPermissions(ctx *bcr.Context) common.PermissionLevel {
 	}
 
 	// check manage messages
-	for _, id := range ctx.Member.RoleIDs {
-		for _, r := range ctx.Guild.Roles {
+	for _, id := range member.RoleIDs {
+		for _, r := range guild.Roles {
 			if r.ID == id {
 				if r.Permissions.Has(discord.PermissionManageMessages) {
 					return common.ModeratorLevel
@@ -278,15 +127,15 @@ func (bot *Bot) userPermissions(ctx *bcr.Context) common.PermissionLevel {
 	err := bot.DB.Pool.QueryRow(
 		context.Background(),
 		"select moderator_roles, manager_roles, admin_roles from servers where id = $1",
-		ctx.GetGuild().ID,
+		guild.ID,
 	).Scan(&moderator, &manager, &admin)
 	if err != nil {
-		bot.Sugar.Errorf("error geting role overrides for guild %v: %v", ctx.Guild.ID, err)
+		bot.Sugar.Errorf("error geting role overrides for guild %v: %v", guild.ID, err)
 		return common.EveryoneLevel
 	}
 
 	for _, r := range admin {
-		for _, id := range ctx.Member.RoleIDs {
+		for _, id := range member.RoleIDs {
 			if r == uint64(id) {
 				return common.AdminLevel
 			}
@@ -294,7 +143,7 @@ func (bot *Bot) userPermissions(ctx *bcr.Context) common.PermissionLevel {
 	}
 
 	for _, r := range manager {
-		for _, id := range ctx.Member.RoleIDs {
+		for _, id := range member.RoleIDs {
 			if r == uint64(id) {
 				return common.ManagerLevel
 			}
@@ -302,7 +151,7 @@ func (bot *Bot) userPermissions(ctx *bcr.Context) common.PermissionLevel {
 	}
 
 	for _, r := range moderator {
-		for _, id := range ctx.Member.RoleIDs {
+		for _, id := range member.RoleIDs {
 			if r == uint64(id) {
 				return common.ModeratorLevel
 			}
@@ -310,4 +159,65 @@ func (bot *Bot) userPermissions(ctx *bcr.Context) common.PermissionLevel {
 	}
 
 	return common.EveryoneLevel
+}
+
+func (bot *Bot) NodeLevel(guildID discord.GuildID, node string) common.Node {
+	if !guildID.IsValid() {
+		return common.DefaultPermissions.NodeFor(node)
+	}
+
+	nodes, err := bot.DB.Permissions(guildID)
+	if err != nil {
+		bot.Sugar.Errorf("getting permission nodes for %v: %v", guildID, err)
+		return common.DefaultPermissions.NodeFor(node)
+	}
+	return nodes.NodeFor(node)
+}
+
+func (bot *Bot) InitValidPermissionNodes() {
+	var nodes []string
+
+	cmds := bot.Router.Commands()
+	for _, c := range cmds {
+		if c.Hidden {
+			continue
+		}
+
+		nodes = append(nodes, bot.recurseSubcommandNodes(c, "", 0)...)
+	}
+
+	nnodes := make(common.Nodes, len(nodes))
+	for i := range nodes {
+		nnodes[i] = common.Node{Name: nodes[i]}
+	}
+
+	sort.Sort(nnodes)
+	for i := range nnodes {
+		nodes[i] = nnodes[i].Name
+	}
+
+	bot.ValidNodes = nodes
+}
+
+func (bot *Bot) recurseSubcommandNodes(c *bcr.Command, prefix string, i int) (nodes []string) {
+	if i > 10 {
+		bot.Sugar.Warn("recurseSubCommandNodes: recursion exceeded 10")
+		return nil
+	}
+
+	subCmds := c.Subcommands()
+	if len(subCmds) == 0 {
+		return []string{prefix + c.Name}
+	}
+
+	for _, sub := range subCmds {
+		if c.Hidden {
+			continue
+		}
+
+		nodes = append(nodes, bot.recurseSubcommandNodes(sub, prefix+c.Name+".", i+1)...)
+	}
+
+	nodes = append(nodes, prefix+c.Name, prefix+c.Name+".*")
+	return nodes
 }

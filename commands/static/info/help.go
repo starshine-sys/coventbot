@@ -8,6 +8,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/tribble/common"
 )
 
 func (bot *Bot) help(ctx *bcr.Context) (err error) {
@@ -48,17 +49,13 @@ func (bot *Bot) help(ctx *bcr.Context) (err error) {
 		perms = discord.PermissionAddReactions | discord.PermissionAttachFiles | discord.PermissionEmbedLinks | discord.PermissionReadMessageHistory | discord.PermissionSendMessages | discord.PermissionUseExternalEmojis | discord.PermissionUseExternalStickers | discord.PermissionUseSlashCommands | discord.PermissionViewChannel
 	}
 
-	userLevel := 0
-	if isAdmin, _ := bot.AdminRole.Check(ctx); isAdmin {
-		userLevel = 3
-	} else if isMod, _ := bot.ManagerRole.Check(ctx); isMod {
-		userLevel = 2
-	} else if isHelper, _ := bot.ModeratorRole.Check(ctx); isHelper {
-		userLevel = 1
+	userLevel := common.EveryoneLevel
+	if ctx.Guild != nil {
+		userLevel = bot.UserBotPermissions(ctx.Author, ctx.Member, ctx.Guild)
 	}
 
 	for _, cmd := range cmds {
-		if !cmd.Hidden && (showAll || (bot.permLevel(cmd) <= userLevel && perms.Has(cmd.Permissions|cmd.GuildPermissions))) {
+		if !cmd.Hidden && (showAll || (bot.NodeLevel(ctx.Message.GuildID, cmd.Name).Level <= userLevel && perms.Has(cmd.Permissions|cmd.GuildPermissions))) {
 			descs = append(descs, fmt.Sprintf("`%v`: %v\n", cmd.Name, cmd.Summary))
 		}
 	}
@@ -70,21 +67,4 @@ func (bot *Bot) help(ctx *bcr.Context) (err error) {
 
 	_, _ = bot.PagedEmbed(ctx, embeds, 15*time.Minute)
 	return err
-}
-
-func (bot *Bot) permLevel(cmd *bcr.Command) int {
-	if cmd.OwnerOnly {
-		return 4
-	}
-
-	switch cmd.CustomPermissions {
-	case bot.AdminRole:
-		return 3
-	case bot.ManagerRole:
-		return 2
-	case bot.ModeratorRole:
-		return 1
-	}
-
-	return 0
 }

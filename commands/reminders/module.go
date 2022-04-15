@@ -45,8 +45,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	b := &Bot{Bot: bot}
 
-	b.Interactions.Command("remindme").Exec(b.remindmeSlash)
-	b.Interactions.Command("reminders").Exec(b.remindersSlash)
+	b.Interactions.Command("remindme").Check(bot.RequireNode("remindme")).Exec(b.remindmeSlash)
+	b.Interactions.Command("reminders").Check(bot.RequireNode("reminders")).Exec(b.remindersSlash)
 
 	rm := bot.Router.AddCommand(&bcr.Command{
 		Name:    "remindme",

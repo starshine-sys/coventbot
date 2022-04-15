@@ -131,6 +131,9 @@ func main() {
 	// add modules
 	bot.Add(modules...)
 
+	// set permission nodes
+	bot.InitValidPermissionNodes()
+
 	s, _ := bot.Router.StateFromGuildID(0)
 
 	botUser, err := s.Me()

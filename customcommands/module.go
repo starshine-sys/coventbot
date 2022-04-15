@@ -35,11 +35,10 @@ func Init(b *bot.Bot) (s string, list []*bcr.Command) {
 	bot.Router.AddHandler(bot.messageCreate)
 
 	bot.Router.AddCommand(&bcr.Command{
-		Name:              "cc",
-		Summary:           "Show or create a custom command",
-		Usage:             "[name]",
-		Command:           bot.showOrAdd,
-		CustomPermissions: bot.ManagerRole,
+		Name:    "cc",
+		Summary: "Show or create a custom command",
+		Usage:   "[name]",
+		Command: bot.showOrAdd,
 	})
 
 	return

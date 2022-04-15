@@ -80,8 +80,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Name:    "list",
 		Summary: "Show a list of ticket categories.",
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.list,
+		Command: b.list,
 	})
 
 	cfg := tickets.AddSubcommand(&bcr.Command{
@@ -100,8 +99,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.cfg,
+		Command: b.cfg,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -111,8 +109,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:       "<category> <mention|-clear>",
 		Args:        bcr.MinArgs(2),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.mention,
+		Command: b.mention,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -121,8 +118,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<category> <description|-clear>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.description,
+		Command: b.description,
 	})
 
 	// add leave/join handlers

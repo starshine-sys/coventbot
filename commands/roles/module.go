@@ -41,8 +41,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 			return fs
 		},
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.config,
+		Command: b.config,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -51,8 +50,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<id>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.delete,
+		Command: b.delete,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -62,8 +60,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<id> <roles...>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.setRoles,
+		Command: b.setRoles,
 	})
 
 	role := bot.Router.GetCommand("role")

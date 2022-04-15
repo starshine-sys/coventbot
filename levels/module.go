@@ -56,8 +56,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> <new XP>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.setXP,
+		Command: b.setXP,
 	})
 
 	lvl.AddSubcommand(&bcr.Command{
@@ -67,8 +66,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> <new level>",
 		Args:    bcr.MinArgs(2),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.setlvl,
+		Command: b.setlvl,
 	})
 
 	lvl.AddSubcommand(&bcr.Command{
@@ -97,8 +95,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Set this server's default level background.",
 		Usage:   "[clear]",
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.serverBackground,
+		Command: b.serverBackground,
 	})
 
 	cfg := lvl.AddSubcommand(&bcr.Command{
@@ -107,8 +104,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Configure levels.",
 		Usage:   "[key <new value>]",
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.config,
+		Command: b.config,
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
@@ -138,8 +134,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Aliases: []string{"bl"},
 		Summary: "Configure this server's blacklist.",
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           func(ctx *bcr.Context) error { return ctx.Help([]string{"lvl", "config", "blacklist"}) },
+		Command: func(ctx *bcr.Context) error { return ctx.Help([]string{"lvl", "config", "blacklist"}) },
 	})
 
 	bl.AddSubcommand(&bcr.Command{
@@ -149,8 +144,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel|role>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.blacklistAdd,
+		Command: b.blacklistAdd,
 	})
 
 	bl.AddSubcommand(&bcr.Command{
@@ -160,8 +154,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<channel|role>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.blacklistRemove,
+		Command: b.blacklistRemove,
 	})
 
 	list = append(list, bot.Router.AddCommand(&bcr.Command{
@@ -185,8 +178,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Summary: "Manage the user blacklist for levels.",
 		Usage:   "[user [time]]",
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.nolevelsList,
+		Command: b.nolevelsList,
 	})
 
 	nolevels.AddSubcommand(&bcr.Command{
@@ -195,8 +187,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user> [time]",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.nolevelsAdd,
+		Command: b.nolevelsAdd,
 	})
 
 	nolevels.AddSubcommand(&bcr.Command{
@@ -205,8 +196,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Usage:   "<user>",
 		Args:    bcr.MinArgs(1),
 
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.nolevelsRemove,
+		Command: b.nolevelsRemove,
 	})
 
 	state, _ := bot.Router.StateFromGuildID(0)

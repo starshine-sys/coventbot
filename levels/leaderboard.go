@@ -22,15 +22,6 @@ func (bot *Bot) leaderboard(ctx *bcr.Context) (err error) {
 		return ctx.SendX("Ranks are disabled on this server.")
 	}
 
-	if sc.LeaderboardModOnly || !sc.LevelsEnabled {
-		perm, _ := bot.ModeratorRole.Check(ctx)
-
-		if !perm {
-			_, err = ctx.Sendf("You don't have permission to use this command, you need the **Manage Messages** permission to use it.")
-			return
-		}
-	}
-
 	full, _ := ctx.Flags.GetBool("full")
 	lb, err := bot.getLeaderboard(ctx.Message.GuildID, full)
 	if err != nil {

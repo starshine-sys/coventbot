@@ -33,9 +33,8 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Args:    bcr.MinArgs(1),
 		Hidden:  true,
 
-		OwnerOnly:         true,
-		CustomPermissions: bot.ManagerRole,
-		Command:           b.cmdImport,
+		OwnerOnly: true,
+		Command:   b.cmdImport,
 	})
 
 	b.Router.AddHandler(b.messageCreate)

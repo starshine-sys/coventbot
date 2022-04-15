@@ -5,6 +5,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr/v2"
+	"github.com/starshine-sys/tribble/common"
 )
 
 func (bot *Bot) CheckAdmin(ctx *bcr.CommandContext) (err error) {
@@ -113,4 +114,29 @@ func (bot *Bot) CheckHelper(ctx *bcr.CommandContext) (err error) {
 	}
 
 	return bcr.NewCheckError[*bcr.CommandContext]("This command requires a helper role.")
+}
+
+func (bot *Bot) RequireNode(required string) bcr.Check[*bcr.CommandContext] {
+	return func(ctx *bcr.CommandContext) (err error) {
+		if ctx.Guild == nil {
+			node := common.DefaultPermissions.NodeFor(required)
+			if node.Level == common.EveryoneLevel {
+				return nil
+			}
+			return bcr.NewCheckError[*bcr.CommandContext]("❌ This command cannot be run in DMs.")
+		}
+
+		userLevel := bot.UserBotPermissions(ctx.User, ctx.Member, ctx.Guild)
+		node := bot.NodeLevel(ctx.Guild.ID, required)
+
+		if node.Level == common.DisabledLevel && userLevel != common.AdminLevel {
+			return bcr.NewCheckError[*bcr.CommandContext]("❌ This command is disabled.")
+		}
+
+		if userLevel < node.Level {
+			return bcr.NewCheckError[*bcr.CommandContext]("", bot.permError(required, node.Level, userLevel).Embeds...)
+		}
+
+		return nil
+	}
 }

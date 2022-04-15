@@ -25,10 +25,10 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	bot.Add(info.Init)
 
-	bot.Interactions.Command("bubble").Exec(b.bubbleSlash)
-	bot.Interactions.Command("pride").Exec(b.prideSlash)
-	bot.Interactions.Command("sampa").Exec(b.sampaSlash)
-	bot.Interactions.Command("linkto").Exec(b.linktoSlash)
+	bot.Interactions.Command("bubble").Check(bot.RequireNode("bubble")).Exec(b.bubbleSlash)
+	bot.Interactions.Command("pride").Check(bot.RequireNode("pride")).Exec(b.prideSlash)
+	bot.Interactions.Command("sampa").Check(bot.RequireNode("sampa")).Exec(b.sampaSlash)
+	bot.Interactions.Command("linkto").Check(bot.RequireNode("linkto")).Exec(b.linktoSlash)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "addemoji",
@@ -49,9 +49,8 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Aliases: []string{"export-emotes"},
 		Summary: "Export this server's emotes to a zip file.",
 
-		CustomPermissions: bot.ManagerRole,
-		Permissions:       discord.PermissionManageEmojisAndStickers,
-		Command:           b.exportEmotes,
+		Permissions: discord.PermissionManageEmojisAndStickers,
+		Command:     b.exportEmotes,
 	}))
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{

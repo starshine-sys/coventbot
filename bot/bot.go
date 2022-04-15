@@ -52,9 +52,7 @@ type Bot struct {
 	members   map[memberKey]member
 	membersMu sync.RWMutex
 
-	ModeratorRole bcr.CustomPerms
-	ManagerRole   bcr.CustomPerms
-	AdminRole     bcr.CustomPerms
+	ValidNodes []string
 }
 
 type member struct {
@@ -91,9 +89,6 @@ func New(
 	}
 
 	b.Scheduler = NewScheduler(b, db)
-	b.ModeratorRole = &ModeratorRole{b}
-	b.ManagerRole = &ManagerRole{b}
-	b.AdminRole = &AdminRole{b}
 
 	b.Interactions = bcr2.NewFromShardManager("Bot "+config.Token, bot.Router.ShardManager)
 
