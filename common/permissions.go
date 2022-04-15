@@ -69,7 +69,13 @@ var _ sort.Interface = Nodes(nil)
 func (ns Nodes) Len() int { return len(ns) }
 
 func (ns Nodes) Less(i, j int) bool {
-	return ns[i].len() > ns[j].len()
+	len1 := ns[i].len()
+	len2 := ns[j].len()
+	if len1 != len2 {
+		return len1 > len2
+	}
+
+	return ns[i].Name < ns[j].Name
 }
 
 func (ns Nodes) Swap(i, j int) {
