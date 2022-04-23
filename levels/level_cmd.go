@@ -37,7 +37,7 @@ var imageData embed.FS
 
 var normalFont font.Face
 
-var montserrat, noto, emoji *truetype.Font
+var montserrat, noto, emoji, jp *truetype.Font
 
 func mustParse(path string) *truetype.Font {
 	b, err := imageData.ReadFile(path)
@@ -60,6 +60,8 @@ func init() {
 	montserrat = mustParse("templates/Montserrat-Medium.ttf")
 	// noto as fallback for other characters
 	noto = mustParse("templates/NotoSans-Medium.ttf")
+	// cjk fallback
+	jp = mustParse("templates/SourceHanSans-VF.ttf")
 	// emoji fallback
 	emoji = mustParse("templates/NotoEmoji-Regular.ttf")
 
@@ -82,6 +84,11 @@ func boldFontSize(size float64) *multiface.Face {
 	mf.AddTruetypeFace(truetype.NewFace(noto, &truetype.Options{
 		Size: size,
 	}), noto)
+
+	// add source han sans
+	mf.AddTruetypeFace(truetype.NewFace(jp, &truetype.Options{
+		Size: size,
+	}), jp)
 
 	// add noto emoji
 	mf.AddTruetypeFace(truetype.NewFace(emoji, &truetype.Options{
