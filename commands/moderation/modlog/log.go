@@ -8,7 +8,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/georgysavva/scany/pgxscan"
-	"gitlab.com/1f320/x/duration"
+	"github.com/starshine-sys/bcr"
 )
 
 // Entry ...
@@ -38,9 +38,12 @@ type ActionType string
 
 // Constants for action types
 const (
-	ActionBan  ActionType = "ban"
-	ActionKick ActionType = "kick"
-	ActionWarn ActionType = "warn"
+	ActionBan          ActionType = "ban"
+	ActionUnban        ActionType = "unban"
+	ActionKick         ActionType = "kick"
+	ActionWarn         ActionType = "warn"
+	ActionChannelban   ActionType = "channelban"
+	ActionUnchannelban ActionType = "unchannelban"
 )
 
 // InsertEntry inserts a mod log entry
@@ -67,13 +70,18 @@ func (bot *ModLog) InsertEntry(guildID discord.GuildID, user, mod discord.UserID
 	return
 }
 
-// Channelban logs a channel ban
-func (bot *ModLog) Channelban(state *state.State, guildID discord.GuildID, channel discord.ChannelID, userID, modID discord.UserID, reason string) (err error) {
+func (bot *ModLog) Log(
+	s *state.State,
+	actionType ActionType,
+	guildID discord.GuildID,
+	userID, modID discord.UserID,
+	reason string,
+) (err error) {
 	if reason == "" {
 		reason = "N/A"
 	}
 
-	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "channelban", fmt.Sprintf("%v: %v", channel.Mention(), reason))
+	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), actionType, reason)
 	if err != nil {
 		return err
 	}
@@ -83,357 +91,58 @@ func (bot *ModLog) Channelban(state *state.State, guildID discord.GuildID, chann
 		return
 	}
 
+	e := bot.Embed(s, entry)
+	msg, err := s.SendEmbeds(ch, e)
+	if err != nil {
+		return
+	}
+
+	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
+	return
+}
+
+func (bot *ModLog) Embed(s *state.State, entry *Entry) (embed discord.Embed) {
+	reason := entry.Reason
 	if len(reason) > 1000 {
 		reason = reason[:1000] + "..."
 	}
 
-	user, err := state.User(userID)
-	if err != nil {
-		return err
-	}
-	mod, err := state.User(modID)
-	if err != nil {
-		return err
-	}
-
-	text := fmt.Sprintf(`**Channel ban for %v | Case %v**
-**User:** %v#%v (%v)
-**Reason:** %v
-**Responsible moderator:** %v#%v (%v)`, channel.Mention(), entry.ID, user.Username, user.Discriminator, entry.UserID, reason, mod.Username, mod.Discriminator, entry.ModID)
-
-	msg, err := state.SendMessage(ch, text)
-	if err != nil {
-		return
+	var u, mod discord.User
+	if user, err := bot.Member(entry.ServerID, entry.UserID); err == nil {
+		u = user.User
+	} else if user, err := s.User(entry.UserID); err == nil {
+		u = *user
+	} else {
+		u = discord.User{Username: "unknown", Discriminator: "0000", ID: entry.UserID}
 	}
 
-	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
-	return
-}
-
-// Unchannelban logs a channel unban
-func (bot *ModLog) Unchannelban(state *state.State, guildID discord.GuildID, channel discord.ChannelID, userID, modID discord.UserID, reason string) (err error) {
-	if reason == "" {
-		reason = "N/A"
+	if user, err := bot.Member(entry.ServerID, entry.UserID); err == nil {
+		mod = user.User
+	} else if user, err := s.User(entry.UserID); err == nil {
+		mod = *user
+	} else {
+		mod = discord.User{Username: "unknown", Discriminator: "0000", ID: entry.UserID}
 	}
 
-	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "unchannelban", fmt.Sprintf("%v: %v", channel.Mention(), reason))
-	if err != nil {
-		return err
+	e := discord.Embed{
+		Title:       fmt.Sprintf("%s | case %d", entry.ActionType, entry.ID),
+		Description: fmt.Sprintf("**User:** %v <@!%v>\n**Reason:** %v\n**Moderator:** %v (%v)", u.Tag(), entry.UserID, entry.Reason, mod.Tag(), entry.ModID),
+		Footer: &discord.EmbedFooter{
+			Text: fmt.Sprintf("ID: %v", entry.UserID),
+		},
+		Timestamp: discord.Timestamp(entry.Time),
 	}
 
-	ch := bot.logChannelFor(guildID)
-	if !ch.IsValid() {
-		return
+	switch entry.ActionType {
+	case ActionBan, ActionChannelban, ActionKick:
+		e.Color = bcr.ColourRed
+	case ActionUnban, ActionUnchannelban:
+		e.Color = bcr.ColourGreen
+	case ActionWarn:
+		e.Color = bcr.ColourOrange
+	default:
+		e.Color = bcr.ColourBlurple
 	}
 
-	if len(reason) > 1000 {
-		reason = reason[:1000] + "..."
-	}
-
-	user, err := state.User(userID)
-	if err != nil {
-		return err
-	}
-	mod, err := state.User(modID)
-	if err != nil {
-		return err
-	}
-
-	text := fmt.Sprintf(`**Channel unban for %v | Case %v**
-**User:** %v#%v (%v)
-**Reason:** %v
-**Responsible moderator:** %v#%v (%v)`, channel.Mention(), entry.ID, user.Username, user.Discriminator, entry.UserID, reason, mod.Username, mod.Discriminator, entry.ModID)
-
-	msg, err := state.SendMessage(ch, text)
-	if err != nil {
-		return
-	}
-
-	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
-	return
-}
-
-// Warn logs a warn
-func (bot *ModLog) Warn(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
-	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "warn", reason)
-	if err != nil {
-		return err
-	}
-
-	ch := bot.logChannelFor(guildID)
-	if !ch.IsValid() {
-		return
-	}
-
-	if len(entry.Reason) > 1000 {
-		entry.Reason = entry.Reason[:1000] + "..."
-	}
-
-	user, err := state.User(userID)
-	if err != nil {
-		return err
-	}
-	mod, err := state.User(modID)
-	if err != nil {
-		return err
-	}
-
-	text := fmt.Sprintf(`**Warn | Case %v**
-**User:** %v#%v (%v)
-**Reason:** %v
-**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
-
-	msg, err := state.SendMessage(ch, text)
-	if err != nil {
-		return
-	}
-
-	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
-	return
-}
-
-// Ban logs a ban
-func (bot *ModLog) Ban(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
-	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "ban", reason)
-	if err != nil {
-		return err
-	}
-
-	ch := bot.logChannelFor(guildID)
-	if !ch.IsValid() {
-		return
-	}
-
-	if len(entry.Reason) > 1000 {
-		entry.Reason = entry.Reason[:1000] + "..."
-	}
-
-	user, err := state.User(userID)
-	if err != nil {
-		return err
-	}
-	mod, err := state.User(modID)
-	if err != nil {
-		return err
-	}
-
-	text := fmt.Sprintf(`**Ban | Case %v**
-**User:** %v#%v (%v)
-**Reason:** %v
-**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
-
-	msg, err := state.SendMessage(ch, text)
-	if err != nil {
-		return
-	}
-
-	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
-	return
-}
-
-// Unban logs a unban
-func (bot *ModLog) Unban(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
-	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "unban", reason)
-	if err != nil {
-		return err
-	}
-
-	ch := bot.logChannelFor(guildID)
-	if !ch.IsValid() {
-		return
-	}
-
-	if len(entry.Reason) > 1000 {
-		entry.Reason = entry.Reason[:1000] + "..."
-	}
-
-	user, err := state.User(userID)
-	if err != nil {
-		return err
-	}
-	mod, err := state.User(modID)
-	if err != nil {
-		return err
-	}
-
-	text := fmt.Sprintf(`**Unban | Case %v**
-**User:** %v#%v (%v)
-**Reason:** %v
-**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
-
-	msg, err := state.SendMessage(ch, text)
-	if err != nil {
-		return
-	}
-
-	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
-	return
-}
-
-// Mute logs a mute
-func (bot *ModLog) Mute(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, dur time.Duration, reason string) (err error) {
-	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "mute", reason)
-	if err != nil {
-		return err
-	}
-
-	ch := bot.logChannelFor(guildID)
-	if !ch.IsValid() {
-		return
-	}
-
-	if len(entry.Reason) > 1000 {
-		entry.Reason = entry.Reason[:1000] + "..."
-	}
-
-	user, err := state.User(userID)
-	if err != nil {
-		return err
-	}
-	mod, err := state.User(modID)
-	if err != nil {
-		return err
-	}
-
-	time := "indefinite"
-	if dur != 0 {
-		time = duration.Format(dur)
-	}
-
-	text := fmt.Sprintf(`**Mute | Case %v**
-**User:** %v#%v (%v)
-**Reason:** %v
-**Duration:** %v
-**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, time, mod.Username, mod.Discriminator, entry.ModID)
-
-	msg, err := state.SendMessage(ch, text)
-	if err != nil {
-		return
-	}
-
-	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
-	return
-}
-
-// Pause logs a pause
-func (bot *ModLog) Pause(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, dur time.Duration, reason string) (err error) {
-	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "pause", reason)
-	if err != nil {
-		return err
-	}
-
-	ch := bot.logChannelFor(guildID)
-	if !ch.IsValid() {
-		return
-	}
-
-	if len(entry.Reason) > 1000 {
-		entry.Reason = entry.Reason[:1000] + "..."
-	}
-
-	user, err := state.User(userID)
-	if err != nil {
-		return err
-	}
-	mod, err := state.User(modID)
-	if err != nil {
-		return err
-	}
-
-	time := "indefinite"
-	if dur != 0 {
-		time = duration.Format(dur)
-	}
-
-	text := fmt.Sprintf(`**Pause | Case %v**
-**User:** %v#%v (%v)
-**Reason:** %v
-**Duration:** %v
-**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, time, mod.Username, mod.Discriminator, entry.ModID)
-
-	msg, err := state.SendMessage(ch, text)
-	if err != nil {
-		return
-	}
-
-	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
-	return
-}
-
-// Unmute logs a unmute
-func (bot *ModLog) Unmute(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
-	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "unmute", reason)
-	if err != nil {
-		return err
-	}
-
-	ch := bot.logChannelFor(guildID)
-	if !ch.IsValid() {
-		return
-	}
-
-	if len(entry.Reason) > 1000 {
-		entry.Reason = entry.Reason[:1000] + "..."
-	}
-
-	user, err := state.User(userID)
-	if err != nil {
-		return err
-	}
-	mod, err := state.User(modID)
-	if err != nil {
-		return err
-	}
-
-	text := fmt.Sprintf(`**Unmute | Case %v**
-**User:** %v#%v (%v)
-**Reason:** %v
-**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
-
-	msg, err := state.SendMessage(ch, text)
-	if err != nil {
-		return
-	}
-
-	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
-	return
-}
-
-// Unpause logs a unpause
-func (bot *ModLog) Unpause(state *state.State, guildID discord.GuildID, userID, modID discord.UserID, reason string) (err error) {
-	entry, err := bot.InsertEntry(guildID, userID, modID, time.Now().UTC(), "unpause", reason)
-	if err != nil {
-		return err
-	}
-
-	ch := bot.logChannelFor(guildID)
-	if !ch.IsValid() {
-		return
-	}
-
-	if len(entry.Reason) > 1000 {
-		entry.Reason = entry.Reason[:1000] + "..."
-	}
-
-	user, err := state.User(userID)
-	if err != nil {
-		return err
-	}
-	mod, err := state.User(modID)
-	if err != nil {
-		return err
-	}
-
-	text := fmt.Sprintf(`**Unpause | Case %v**
-**User:** %v#%v (%v)
-**Reason:** %v
-**Responsible moderator:** %v#%v (%v)`, entry.ID, user.Username, user.Discriminator, entry.UserID, entry.Reason, mod.Username, mod.Discriminator, entry.ModID)
-
-	msg, err := state.SendMessage(ch, text)
-	if err != nil {
-		return
-	}
-
-	_, err = bot.DB.Pool.Exec(context.Background(), "update mod_log set channel_id = $1, message_id = $2 where id = $3 and server_id = $4", ch, msg.ID, entry.ID, guildID)
-	return
+	return e
 }

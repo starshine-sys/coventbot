@@ -57,6 +57,8 @@ var DefaultPermissions = Nodes{
 	{"ban", ManagerLevel},
 	{"approve", ManagerLevel},
 	{"addemoji", ManagerLevel},
+	{"channelban", ManagerLevel},
+	{"unchannelban", ManagerLevel},
 
 	// configuration
 	{"muterole", ManagerLevel},

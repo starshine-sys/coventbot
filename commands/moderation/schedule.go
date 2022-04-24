@@ -2,7 +2,6 @@ package moderation
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/api"
@@ -67,19 +66,12 @@ func (dat *changeRoles) Execute(ctx context.Context, id int64, bot *botpkg.Bot) 
 	}
 
 	if dat.SendModLog {
-		switch strings.ToLower(dat.ModLogType) {
-		case "unmute":
-			err = modlog.New(bot).Unmute(s, dat.GuildID, dat.UserID, dat.ModeratorID, dat.ModLogReason)
-		case "unpause":
-			err = modlog.New(bot).Unpause(s, dat.GuildID, dat.UserID, dat.ModeratorID, dat.ModLogReason)
-		default:
-			bot.Sugar.Errorf("unknown mod log type %q in change role action %v", dat.ModLogType, id)
-			return nil
+		err = modlog.New(bot).Log(s, modlog.ActionType(dat.ModLogType), dat.GuildID, dat.UserID, dat.ModeratorID, dat.ModLogReason)
+		if err != nil {
+			bot.Sugar.Errorf("error sending mod log message: %v", err)
 		}
 	}
-	if err != nil {
-		bot.Sugar.Errorf("error sending mod log message: %v", err)
-	}
+
 	return nil
 }
 

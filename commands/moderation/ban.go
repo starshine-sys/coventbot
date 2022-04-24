@@ -8,6 +8,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/tribble/commands/moderation/modlog"
 )
 
 func (bot *Bot) ban(ctx *bcr.Context) (err error) {
@@ -63,7 +64,7 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = bot.ModLog.Ban(ctx.State, ctx.Message.GuildID, target.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Log(ctx.State, modlog.ActionBan, ctx.Message.GuildID, target.ID, ctx.Author.ID, reason)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -118,7 +119,7 @@ func (bot *Bot) unban(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = bot.ModLog.Unban(ctx.State, ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Log(ctx.State, modlog.ActionUnban, ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}

@@ -2,11 +2,13 @@ package modlog
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 
 	"emperror.dev/errors"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4"
 	"github.com/starshine-sys/bcr"
@@ -55,13 +57,10 @@ func (bot *ModLog) reason(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	oldReason := oldEntry.Reason
 	entryReason := reason
 	if oldEntry.ActionType == "channelban" || oldEntry.ActionType == "unchannelban" {
-		oldReason = strings.Join(strings.Split(oldEntry.Reason, ":")[1:], ":")
-
-		ch := strings.Split(oldEntry.Reason, ":")
-		entryReason = ch[0] + ": " + reason
+		ch, _, _ := strings.Cut(oldEntry.Reason, ": ")
+		entryReason = ch + ": " + reason
 	}
 
 	// update and get the new one
@@ -75,20 +74,18 @@ func (bot *ModLog) reason(ctx *bcr.Context) (err error) {
 		return
 	}
 
+	e := bot.Embed(ctx.State, &entry)
+
 	msg, err := ctx.State.Message(entry.ChannelID, entry.MessageID)
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourOrange, "I updated the reason, but couldn't update the log message.")
 		return
 	}
 
-	content := strings.NewReplacer(oldReason, reason).Replace(msg.Content)
-	// remove the last line so we can replace it with the new responsible moderator
-	s := strings.Split(content, "\n")
-	s = s[:len(s)-1]
-	s = append(s, fmt.Sprintf("**Responsible moderator:** %v (%v)", ctx.Author.Tag(), ctx.Author.ID))
-	content = strings.Join(s, "\n")
-
-	_, err = ctx.Edit(msg, content, false)
+	_, err = ctx.State.EditMessageComplex(msg.ChannelID, msg.ID, api.EditMessageData{
+		Content: option.NewNullableString(""),
+		Embeds:  &[]discord.Embed{e},
+	})
 	if err != nil {
 		_, err = ctx.Replyc(bcr.ColourOrange, "I updated the reason, but couldn't update the log message.")
 		return

@@ -11,6 +11,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/tribble/commands/moderation/modlog"
 )
 
 var channelRe = regexp.MustCompile(`^<#\d{15,}>$`)
@@ -103,12 +104,14 @@ func (bot *Bot) channelban(ctx *bcr.Context) (err error) {
 	}
 
 	// get reason
-	var reason string
+	reason := channel.Mention() + ": "
 	if len(ctx.Args) > 1 {
-		reason = strings.Join(ctx.Args[1:], " ")
+		reason += strings.Join(ctx.Args[1:], " ")
+	} else {
+		reason += "N/A"
 	}
 
-	err = bot.ModLog.Channelban(ctx.State, ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Log(ctx.State, modlog.ActionChannelban, ctx.Message.GuildID, member.User.ID, ctx.Author.ID, reason)
 	if err != nil {
 		bot.Sugar.Errorf("Error logging channelban: %v", err)
 	}
@@ -198,12 +201,14 @@ func (bot *Bot) unchannelban(ctx *bcr.Context) (err error) {
 	}
 
 	// get reason
-	var reason string
+	reason := channel.Mention() + ": "
 	if len(ctx.Args) > 1 {
-		reason = strings.Join(ctx.Args[1:], " ")
+		reason += strings.Join(ctx.Args[1:], " ")
+	} else {
+		reason += "N/A"
 	}
 
-	err = bot.ModLog.Unchannelban(ctx.State, ctx.Message.GuildID, channel.ID, member.User.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Log(ctx.State, modlog.ActionUnchannelban, ctx.Message.GuildID, member.User.ID, ctx.Author.ID, reason)
 	if err != nil {
 		bot.Sugar.Errorf("Error logging unchannelban: %v", err)
 	}

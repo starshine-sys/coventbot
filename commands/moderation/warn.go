@@ -9,6 +9,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/dustin/go-humanize"
 	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/tribble/commands/moderation/modlog"
 )
 
 func (bot *Bot) warn(ctx *bcr.Context) (err error) {
@@ -32,7 +33,7 @@ func (bot *Bot) warn(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	err = bot.ModLog.Warn(ctx.State, ctx.Message.GuildID, u.User.ID, ctx.Author.ID, reason)
+	err = bot.ModLog.Log(ctx.State, modlog.ActionWarn, ctx.Message.GuildID, u.User.ID, ctx.Author.ID, reason)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}

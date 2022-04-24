@@ -9,6 +9,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/starshine-sys/bcr"
+	"github.com/starshine-sys/tribble/commands/moderation/modlog"
 )
 
 func (bot *Bot) massban(ctx *bcr.Context) (err error) {
@@ -74,7 +75,7 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 			return
 		}
 
-		bot.ModLog.Ban(ctx.State, ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
+		bot.ModLog.Log(ctx.State, modlog.ActionBan, ctx.Message.GuildID, u.ID, ctx.Author.ID, reason)
 	}
 
 	_, err = ctx.Sendf("Banned %v members.", len(users))
