@@ -46,6 +46,16 @@ const (
 	ActionUnchannelban ActionType = "unchannelban"
 )
 
+const insertSql = `insert into mod_log
+(id, server_id, user_id, mod_id, action_type, reason, time)
+values
+(
+		coalesce(
+				(select id + 1 from mod_log where server_id = $1 order by id desc limit 1), 1
+		),
+		$1, $2, $3, $4, $5, $6
+)`
+
 // InsertEntry inserts a mod log entry
 func (bot *ModLog) InsertEntry(guildID discord.GuildID, user, mod discord.UserID, timestamp time.Time, actionType ActionType, reason string) (log *Entry, err error) {
 	if reason == "" {
@@ -54,16 +64,7 @@ func (bot *ModLog) InsertEntry(guildID discord.GuildID, user, mod discord.UserID
 
 	log = &Entry{}
 
-	err = pgxscan.Get(context.Background(), bot.DB.Pool, log, `insert into mod_log
-	(id, server_id, user_id, mod_id, action_type, reason, time)
-	values
-	(
-			coalesce(
-					(select id + 1 from mod_log where server_id = $1 order by id desc limit 1), 1
-			),
-			$1, $2, $3, $4, $5, $6
-	)
-	returning *`, guildID, user, mod, actionType, reason, timestamp)
+	err = pgxscan.Get(context.Background(), bot.DB.Pool, log, insertSql+" returning *", guildID, user, mod, actionType, reason, timestamp)
 	if err != nil {
 		return nil, err
 	}

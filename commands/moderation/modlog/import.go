@@ -5,47 +5,22 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/diamondburned/arikawa/v3/discord"
-	"github.com/jackc/pgx/v4"
+	"github.com/georgysavva/scany/pgxscan"
 	"github.com/starshine-sys/bcr"
 )
 
 func (bot *ModLog) cmdImport(ctx *bcr.Context) (err error) {
-	if len(ctx.Message.Attachments) == 0 {
+	if len(ctx.Message.Attachments) == 0 && ctx.RawArgs == "" {
 		_, err = ctx.Send("No file to import attached.")
 		return
 	}
 
-	// check count
-	var currentCount int
-	err = bot.DB.Pool.QueryRow(context.Background(), "select count(*) from mod_log where server_id = $1", ctx.Message.GuildID).Scan(&currentCount)
-	if err != nil {
-		return bot.Report(ctx, err)
+	url := ctx.RawArgs
+	if len(ctx.Message.Attachments) > 0 {
+		url = ctx.Message.Attachments[0].URL
 	}
 
-	if currentCount > 0 {
-		yes, timeout := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
-			Message:   "⚠️ There are existing mod logs for this server, which will be deleted if you proceed with this import. Are you sure you want to proceed?",
-			YesPrompt: "Yes, clear data and proceed",
-			YesStyle:  discord.DangerButtonStyle(),
-		})
-		if !yes || timeout {
-			_, err = ctx.Send("Import cancelled.")
-			return err
-		}
-
-		ct, err := bot.DB.Pool.Exec(context.Background(), "delete from mod_log where server_id = $1", ctx.Message.GuildID)
-		if err != nil {
-			return bot.Report(ctx, err)
-		}
-
-		_, err = ctx.Sendf("Cleared mod logs, %v entries deleted.", ct.RowsAffected())
-		if err != nil {
-			return err
-		}
-	}
-
-	resp, err := http.Get(ctx.Message.Attachments[0].URL)
+	resp, err := http.Get(url)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
@@ -68,30 +43,58 @@ func (bot *ModLog) cmdImport(ctx *bcr.Context) (err error) {
 			Message:   "The server ID in the export doesn't match this server's ID. Do you want to continue anyway?",
 			YesPrompt: "Continue",
 		})
-		if !yes || !timeout {
+		if !yes || timeout {
 			_, err = ctx.Send("Import cancelled.")
 			return err
 		}
 	}
 
-	// do the import
-	count, err := bot.DB.Pool.CopyFrom(
-		context.Background(),
-		pgx.Identifier{"mod_log"},
-		[]string{"id", "server_id", "user_id", "mod_id", "action_type", "reason", "time"},
-		pgx.CopyFromSlice(len(ex.Entries), func(i int) ([]interface{}, error) {
-			return []interface{}{ex.Entries[i].ID, ex.ServerID, ex.Entries[i].UserID, ex.Entries[i].ModID, ex.Entries[i].ActionType, ex.Entries[i].Reason, ex.Entries[i].Time}, nil
-		}),
-	)
+	var currentEntries []Entry
+	err = pgxscan.Select(context.Background(), bot.DB.Pool, &currentEntries, "select * from mod_log where server_id = $1", ctx.Message.GuildID)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+	contains := func(id int64, reason string) bool {
+		for _, e := range currentEntries {
+			if e.ID == id && e.Reason == reason {
+				return true
+			}
+		}
+		return false
+	}
+
+	tx, err := bot.DB.Pool.Begin(context.Background())
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Sendf("Success! Imported %v mod log entr%v.", count, func(b bool) string {
+	// do the import
+	var done int
+
+	for _, e := range ex.Entries {
+		if contains(e.ID, e.Reason) {
+			continue
+		}
+
+		_, err = tx.Exec(context.Background(), insertSql, ctx.Message.GuildID, e.UserID, e.ModID, e.ActionType, e.Reason, e.Time)
+		if err != nil {
+			tx.Rollback(context.Background())
+
+			return bot.Report(ctx, err)
+		}
+		done++
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	_, err = ctx.Sendf("Success! Imported %v mod log entr%v.", done, func(b bool) string {
 		if b {
 			return "y"
 		}
 		return "ies"
-	}(count == 1))
+	}(done == 1))
 	return
 }

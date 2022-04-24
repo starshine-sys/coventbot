@@ -45,7 +45,7 @@ func InitCommands(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	cfg.AddSubcommand(&bcr.Command{
 		Name:    "import",
-		Summary: "Import a mod log. *This will overwrite any existing entries.*",
+		Summary: "Import a mod log.",
 
 		Command: b.cmdImport,
 	})
