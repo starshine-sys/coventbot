@@ -117,12 +117,12 @@ func (bot *ModLog) Embed(s *state.State, entry *Entry) (embed discord.Embed) {
 		u = discord.User{Username: "unknown", Discriminator: "0000", ID: entry.UserID}
 	}
 
-	if user, err := bot.Member(entry.ServerID, entry.UserID); err == nil {
+	if user, err := bot.Member(entry.ServerID, entry.ModID); err == nil {
 		mod = user.User
-	} else if user, err := s.User(entry.UserID); err == nil {
+	} else if user, err := s.User(entry.ModID); err == nil {
 		mod = *user
 	} else {
-		mod = discord.User{Username: "unknown", Discriminator: "0000", ID: entry.UserID}
+		mod = discord.User{Username: "unknown", Discriminator: "0000", ID: entry.ModID}
 	}
 
 	e := discord.Embed{
