@@ -12,9 +12,11 @@ import (
 	"github.com/starshine-sys/tribble/common"
 )
 
-func (bot *Bot) CheckPermissions(ctx *bcr.Context) (name string, allowed bool, data api.SendMessageData) {
+func (bot *Bot) CheckPermissions(ctx *bcr.Context, routing bool) (name string, allowed bool, data api.SendMessageData) {
 	rawPath := ctx.FullCommandPath
-	if strings.EqualFold(ctx.FullCommandPath[0], "help") && len(ctx.Args) > 0 {
+	// if we're not actually checking permissions (and only running this function for the permission name)
+	// check the help command's arguments
+	if !routing && strings.EqualFold(ctx.FullCommandPath[0], "help") && len(ctx.Args) > 0 {
 		rawPath = ctx.Args
 	}
 

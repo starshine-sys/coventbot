@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v3/api/webhook"
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
-	"github.com/diamondburned/arikawa/v3/state"
 	bcr2 "github.com/starshine-sys/bcr/v2"
 )
 
@@ -34,57 +31,8 @@ func (bot *Bot) MessageCreate(m *gateway.MessageCreateEvent) {
 		return
 	}
 
-	// if the message does not start with any of the bot's prefixes (including mentions), return
+	// don't try commands if it can't *possibly* be one
 	if !bot.Router.MatchPrefix(m.Message) {
-		// try DMing the user
-		if !m.GuildID.IsValid() && bot.Config.DMs.Open {
-			// if the user is blocked, return
-			for _, u := range bot.Config.DMs.BlockedUsers {
-				if u == m.Author.ID {
-					return
-				}
-			}
-
-			// if there's no DM webhook set, return
-			if !bot.Config.DMs.Webhook.ID.IsValid() {
-				return
-			}
-
-			data := webhook.ExecuteData{
-				Username:  bot.Router.Bot.Username,
-				AvatarURL: bot.Router.Bot.AvatarURL(),
-
-				Content: "> Received a DM!",
-
-				Embeds: append([]discord.Embed{
-					{
-						Author: &discord.EmbedAuthor{
-							Icon: m.Author.AvatarURL(),
-							Name: m.Author.Username + "#" + m.Author.Discriminator,
-						},
-						Description: m.Author.ID.String(),
-						Color:       bot.Router.EmbedColor,
-					},
-					{
-						Author: &discord.EmbedAuthor{
-							Icon: m.Author.AvatarURL(),
-							Name: m.Author.Username + "#" + m.Author.Discriminator,
-						},
-						Description: m.Content,
-						Color:       bot.Router.EmbedColor,
-						Footer: &discord.EmbedFooter{
-							Text: m.ID.String(),
-						},
-						Timestamp: m.Timestamp,
-					},
-				}, m.Embeds...),
-			}
-
-			c := webhook.New(bot.Config.DMs.Webhook.ID, bot.Config.DMs.Webhook.Token)
-
-			_ = c.Execute(data)
-			_ = bot.Router.ShardManager.Shard(0).(*state.State).React(m.ChannelID, m.ID, "✅")
-		}
 		return
 	}
 
