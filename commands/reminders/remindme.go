@@ -17,16 +17,17 @@ import (
 
 func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 	loc := bot.userTime(ctx.Author.ID)
+	now := time.Now().In(loc)
 
 	t, i, err := ParseTime(ctx.Args, loc)
 	if err != nil {
-		dur, err := durationparser.Parse(ctx.Args[0])
+		dur, err := durationparser.ParseAt(ctx.Args[0], now)
 		if err != nil {
 			_, err = ctx.Replyc(bcr.ColourRed, "I couldn't parse your input as a valid time or duration.")
 			return err
 		}
 		i = 0
-		t = time.Now().In(loc).Add(dur)
+		t = now.Add(dur)
 	}
 
 	if t.Before(time.Now().In(loc)) {
@@ -61,6 +62,7 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 		bot.Sugar.Errorf("Error getting user config for %v: %v", ctx.Author.ID, err)
 	}
 
+	durStr, _ := duration.FormatAt(now, t)
 	content := ""
 	e := []discord.Embed{}
 
@@ -74,11 +76,11 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 			rm = "**" + rm + "**"
 		}
 
-		content = fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", ctx.DisplayName(), rm, duration.Format(time.Until(t.Add(time.Second))), t.Unix(), id)
+		content = fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", ctx.DisplayName(), rm, durStr, t.Unix(), id)
 	} else {
 		e = []discord.Embed{{
 			Color:       bcr.ColourGreen,
-			Description: fmt.Sprintf("Reminder #%v set for %v from now.\n(<t:%v>)", id, duration.Format(time.Until(t.Add(time.Second))), t.Unix()),
+			Description: fmt.Sprintf("Reminder #%v set for %v from now.\n(<t:%v>)", id, durStr, t.Unix()),
 		}}
 	}
 
@@ -111,13 +113,15 @@ func (bot *Bot) remindmeSlash(ctx *bcr2.CommandContext) (err error) {
 	}
 
 	loc := bot.userTime(ctx.User.ID)
-	t, _, err = ParseTime(args, bot.userTime(ctx.User.ID))
+	now := time.Now().In(loc)
+
+	t, _, err = ParseTime(args, loc)
 	if err != nil {
-		dur, err := durationparser.Parse(when)
+		dur, err := durationparser.ParseAt(when, now)
 		if err != nil {
 			return ctx.ReplyEphemeral("I couldn't parse your input as a valid time or duration.")
 		}
-		t = time.Now().In(loc).Add(dur)
+		t = now.Add(dur)
 	}
 
 	guildID := discord.GuildID(0)
@@ -151,7 +155,8 @@ func (bot *Bot) remindmeSlash(ctx *bcr2.CommandContext) (err error) {
 		name = ctx.Member.Nick
 	}
 
-	err = ctx.Reply(fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", name, rm, duration.Format(time.Until(t.Add(time.Second))), t.Unix(), id))
+	durStr, _ := duration.FormatAt(now, t)
+	err = ctx.Reply(fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", name, rm, durStr, t.Unix(), id))
 	if err != nil {
 		return err
 	}
