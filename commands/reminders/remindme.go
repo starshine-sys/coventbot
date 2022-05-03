@@ -17,6 +17,7 @@ import (
 
 func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 	loc := bot.userTime(ctx.Author.ID)
+	now := time.Now().In(loc)
 
 	t, i, err := ParseTime(ctx.Args, loc)
 	if err != nil {
@@ -74,11 +75,13 @@ func (bot *Bot) remindme(ctx *bcr.Context) (err error) {
 			rm = "**" + rm + "**"
 		}
 
-		content = fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", ctx.DisplayName(), rm, duration.Format(time.Until(t)), t.Unix(), id)
+		s, _ := duration.FormatAt(now, t)
+		content = fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", ctx.DisplayName(), rm, s, t.Unix(), id)
 	} else {
+		s, _ := duration.FormatAt(now, t)
 		e = []discord.Embed{{
 			Color:       bcr.ColourGreen,
-			Description: fmt.Sprintf("Reminder #%v set for %v from now.\n(<t:%v>)", id, duration.Format(time.Until(t)), t.Unix()),
+			Description: fmt.Sprintf("Reminder #%v set for %v from now.\n(<t:%v>)", id, s, t.Unix()),
 		}}
 	}
 
@@ -111,9 +114,11 @@ func (bot *Bot) remindmeSlash(ctx *bcr2.CommandContext) (err error) {
 	}
 
 	loc := bot.userTime(ctx.User.ID)
-	t, _, err = ParseTime(args, bot.userTime(ctx.User.ID))
+	now := time.Now().In(loc)
+
+	t, _, err = ParseTime(args, loc)
 	if err != nil {
-		dur, err := durationparser.Parse(when)
+		dur, err := durationparser.ParseAt(when, now)
 		if err != nil {
 			return ctx.ReplyEphemeral("I couldn't parse your input as a valid time or duration.")
 		}
@@ -151,7 +156,8 @@ func (bot *Bot) remindmeSlash(ctx *bcr2.CommandContext) (err error) {
 		name = ctx.Member.Nick
 	}
 
-	err = ctx.Reply(fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", name, rm, duration.Format(time.Until(t)), t.Unix(), id))
+	s, _ := duration.FormatAt(now, t)
+	err = ctx.Reply(fmt.Sprintf("Okay %v, I'll remind you about %v in %v. (<t:%v>, #%v)", name, rm, s, t.Unix(), id))
 	if err != nil {
 		return err
 	}

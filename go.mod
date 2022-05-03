@@ -24,7 +24,7 @@ require (
 	github.com/starshine-sys/pkgo v1.0.0
 	github.com/starshine-sys/snowflake/v2 v2.1.0
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9
-	gitlab.com/1f320/x v0.3.0
+	gitlab.com/1f320/x v0.3.1-0.20220503232111-6772bc9139e9
 	go.uber.org/zap v1.17.0
 	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9
 	gopkg.in/yaml.v2 v2.4.0

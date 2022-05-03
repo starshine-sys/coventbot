@@ -7,7 +7,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
-	"gitlab.com/1f320/x/duration"
+	"github.com/starshine-sys/tribble/common"
 )
 
 func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
@@ -116,7 +116,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 				Name: "Created at",
 				Value: fmt.Sprintf("<t:%v:D> <t:%v:T>\n(%v)",
 					m.User.ID.Time().Unix(), m.User.ID.Time().Unix(),
-					duration.FormatTime(m.User.ID.Time().UTC()),
+					common.FormatTime(m.User.ID.Time().UTC()),
 				),
 			},
 		},
@@ -150,7 +150,7 @@ func (bot *Bot) memberInfo(ctx *bcr.Context) (err error) {
 			Name: "Joined at",
 			Value: fmt.Sprintf("<t:%v:D> <t:%v:T>\n(%v)\n%v days after the server was created",
 				m.Joined.Time().Unix(), m.Joined.Time().Unix(),
-				duration.FormatTime(m.Joined.Time().UTC()),
+				common.FormatTime(m.Joined.Time().UTC()),
 				int(
 					m.Joined.Time().Sub(ctx.Message.GuildID.Time()).Hours()/24,
 				),
@@ -215,7 +215,7 @@ func (bot *Bot) userInfo(ctx *bcr.Context) (err error) {
 				Name: "Created at",
 				Value: fmt.Sprintf("<t:%v:D> <t:%v:T>\n(%v)",
 					u.ID.Time().Unix(), u.ID.Time().Unix(),
-					duration.FormatTime(u.ID.Time().UTC()),
+					common.FormatTime(u.ID.Time().UTC()),
 				),
 			},
 		},

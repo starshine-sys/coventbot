@@ -559,8 +559,8 @@ github.com/zachomedia/go-bdf v0.0.0-20210522061406-1a147053be95/go.mod h1:FWqHpm
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
 github.com/ziutek/mymysql v1.5.4 h1:GB0qdRGsTwQSBVYuVShFBKaXSnSnYYC2d9knnE1LHFs=
 github.com/ziutek/mymysql v1.5.4/go.mod h1:LMSpPZ6DbqWFxNCHW77HeMg9I646SAhApZ/wKdgO/C0=
-gitlab.com/1f320/x v0.3.0 h1:Y05hPtsBKbCx0Z5sfswm05+VQzySammOCXso0Brmum0=
-gitlab.com/1f320/x v0.3.0/go.mod h1:vMUleQINRQbhKJJEIcGmFT1tEPfGyozIZckYCeHMR0k=
+gitlab.com/1f320/x v0.3.1-0.20220503232111-6772bc9139e9 h1:D5wHwG/J29qYYr1LRqXFiLVtg4CBadRbV/cPWqOxH9g=
+gitlab.com/1f320/x v0.3.1-0.20220503232111-6772bc9139e9/go.mod h1:vMUleQINRQbhKJJEIcGmFT1tEPfGyozIZckYCeHMR0k=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/etcd v0.0.0-20191023171146-3cf2f69b5738/go.mod h1:dnLIgRNXwCJa5e+c6mIZCrds/GIG4ncV9HhK5PX7jPg=

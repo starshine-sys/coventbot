@@ -130,7 +130,9 @@ func (bot *Bot) doReminders() {
 
 			state, _ := bot.Router.StateFromGuildID(r.ServerID)
 
-			desc := fmt.Sprintf("%v you asked to be reminded about%v", duration.FormatTime(r.SetTime), reminder)
+			dur, _ := duration.FormatAt(time.Now(), r.SetTime)
+
+			desc := fmt.Sprintf("%v ago you asked to be reminded about%v", dur, reminder)
 			if len(desc) > 2048 {
 				desc = desc[:2040] + "..."
 			}
@@ -187,7 +189,8 @@ func (bot *Bot) doReminders() {
 			}
 
 			if embedless {
-				s := fmt.Sprintf("%v: %v (%v)", r.UserID.Mention(), r.Reminder, duration.FormatTime(r.SetTime))
+				dur, _ := duration.FormatAt(time.Now(), r.SetTime)
+				s := fmt.Sprintf("%v: %v (%v ago)", r.UserID.Mention(), r.Reminder, dur)
 
 				if len(s) <= 2000 {
 					data.Content = s
