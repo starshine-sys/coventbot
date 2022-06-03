@@ -36,7 +36,6 @@ import (
 	"github.com/starshine-sys/tribble/starboard"
 	"github.com/starshine-sys/tribble/termora"
 	"github.com/starshine-sys/tribble/tickets"
-	"github.com/starshine-sys/tribble/todos"
 )
 
 const intents = bcr.RequiredIntents | gateway.IntentGuildMembers | gateway.IntentGuildVoiceStates | gateway.IntentGuildPresences
@@ -50,7 +49,6 @@ var modules = []func(*bot.Bot) (string, []*bcr.Command){
 	reminders.Init,
 	roles.Init,
 	config.Init,
-	todos.Init,
 	notes.Init,
 	starboard.Init,
 	approval.Init,
