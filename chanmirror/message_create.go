@@ -8,7 +8,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/api/webhook"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
-	"github.com/starshine-sys/pkgo"
+	"github.com/starshine-sys/pkgo/v2"
 )
 
 func (bot *Bot) messageCreate(m *gateway.MessageCreateEvent) {

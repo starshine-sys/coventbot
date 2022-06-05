@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/pkgo"
+	"github.com/starshine-sys/pkgo/v2"
 )
 
 var greetings = []string{"Hello", "Heya", "Hi", "Hiya"}

@@ -18,7 +18,7 @@ import (
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
 	bcr2 "github.com/starshine-sys/bcr/v2"
-	"github.com/starshine-sys/pkgo"
+	"github.com/starshine-sys/pkgo/v2"
 	"github.com/starshine-sys/tribble/db"
 	"github.com/starshine-sys/tribble/types"
 	"go.uber.org/zap"

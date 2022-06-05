@@ -11,6 +11,7 @@ import (
 
 func (s *State) setMessageFuncs() {
 	s.ls.SetGlobal("send_message", s.ls.NewFunction(s.sendMessage))
+	s.ls.SetGlobal("delete_message", s.ls.NewFunction(s.deleteMessage))
 	s.ls.SetGlobal("react", s.ls.NewFunction(s.react))
 }
 
@@ -112,7 +113,43 @@ func (s *State) react(ls *lua.LState) int {
 	react := s._getString(ls, 3)
 
 	s.discordCalls++
-	err = s.ctx.State.React(msg.ChannelID, msg.ID, discord.APIEmoji(react))
+	err = s.ctx.State.React(chID, mID, discord.APIEmoji(react))
+	if err != nil {
+		ls.RaiseError("error deleting message: %s", err.Error())
+	}
+	return 0
+}
+
+func (s *State) deleteMessage(ls *lua.LState) int {
+	if s.discordCalls >= 10 {
+		ls.RaiseError("maximum number of Discord calls reached (10)")
+		return 0
+	}
+
+	chID := s.ctx.Message.ChannelID
+	mID := s.ctx.Message.ID
+
+	// first argument is channel ID
+	if v, ok := s._getChannelID(ls, 1); ok {
+		chID = v
+	}
+
+	if v, ok := s._getMessageID(ls, 2); ok {
+		mID = v
+	}
+
+	msg, err := s.ctx.State.Message(chID, mID)
+	if err != nil {
+		ls.RaiseError("message %d/%d not found", chID, mID)
+		return 0
+	}
+	if msg.GuildID != s.ctx.Message.GuildID {
+		ls.RaiseError("message %d/%d not in this guild", chID, mID)
+		return 0
+	}
+
+	s.discordCalls++
+	err = s.ctx.State.DeleteMessage(chID, mID, "Custom command: delete message")
 	if err != nil {
 		ls.RaiseError("error reacting to message: %s", err.Error())
 	}

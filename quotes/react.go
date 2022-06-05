@@ -7,7 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
-	"github.com/starshine-sys/pkgo"
+	"github.com/starshine-sys/pkgo/v2"
 )
 
 func (bot *Bot) reactionAdd(ev *gateway.MessageReactionAddEvent) {

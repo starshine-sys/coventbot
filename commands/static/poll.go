@@ -6,7 +6,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/starshine-sys/bcr"
-	"github.com/starshine-sys/pkgo"
+	"github.com/starshine-sys/pkgo/v2"
 
 	flag "github.com/spf13/pflag"
 )

@@ -181,8 +181,8 @@ github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/
 github.com/google/renameio v0.1.0/go.mod h1:KWCgfxg9yswjAJkECMjeO8J8rahYeXnNhOm40UhjYkI=
 github.com/google/uuid v1.0.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/google/uuid v1.1.2/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/google/uuid v1.2.0 h1:qJYtXnJRWmpe7m/3XlyhrsLrEURqHRM2kxzoxXqyUDs=
-github.com/google/uuid v1.2.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
+github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
 github.com/gorilla/context v1.1.1/go.mod h1:kBGZzfjB9CEq2AlWe17Uuf7NDRt0dE0s8S51q0aT7Yg=
 github.com/gorilla/css v1.0.0 h1:BQqNyPTi50JCFMTw/b67hByjMVXZRwGha6wxVGkeihY=
@@ -513,8 +513,8 @@ github.com/starshine-sys/bcr/v2 v2.0.0-20220407131124-31a6c61b20fb h1:0W7GsP5jAW
 github.com/starshine-sys/bcr/v2 v2.0.0-20220407131124-31a6c61b20fb/go.mod h1:1zF2bK88fwpXPqlHGR2LZPQy4EymMJrWFktn+81NnI4=
 github.com/starshine-sys/dischtml v0.0.0-20211027170332-ec78dbcfa1bd h1:hus1Br5grPXbwIQcPY9G49WhpAQIdqJpgSQOEWeXbig=
 github.com/starshine-sys/dischtml v0.0.0-20211027170332-ec78dbcfa1bd/go.mod h1:8yIpm/ZlHDmYH0Fd+ynUc3y3HzpnDM1d6+ZsO5SFJ4w=
-github.com/starshine-sys/pkgo v1.0.0 h1:NQ+g6LgY+tkQdxXGZ2oTH5Hp2n5/57Vo+RFcHbwkeHs=
-github.com/starshine-sys/pkgo v1.0.0/go.mod h1:w1ObBZa7/lOvCqOx9690uPM5uuaovH8nCZXpt84cAu4=
+github.com/starshine-sys/pkgo/v2 v2.0.1 h1:Jm9WON0Y4teQyJKZjMyAia7aIA8vg/IuNmpbVZUubGM=
+github.com/starshine-sys/pkgo/v2 v2.0.1/go.mod h1:P13mUJ7fo3l0LqRuF8aqrCMz7msQNNF0zgaWnHSx1y0=
 github.com/starshine-sys/snowflake/v2 v2.0.0/go.mod h1:6E5AYqTPb9DL7bp24tcbTLx0/thTcAmyLgscZIP7tzw=
 github.com/starshine-sys/snowflake/v2 v2.1.0 h1:s/e9oGa6md7mKoyA71J2QGxzUl3zzSGCFSJOR+TUMYQ=
 github.com/starshine-sys/snowflake/v2 v2.1.0/go.mod h1:6E5AYqTPb9DL7bp24tcbTLx0/thTcAmyLgscZIP7tzw=

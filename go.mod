@@ -14,7 +14,7 @@ require (
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
-	github.com/google/uuid v1.2.0
+	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/kataras/hcaptcha v0.0.0-20200711031247-2927d4faf32f
 	github.com/pkg/errors v0.9.1
@@ -23,7 +23,7 @@ require (
 	github.com/starshine-sys/bcr v0.21.1-0.20220215020904-a068e62c718a
 	github.com/starshine-sys/bcr/v2 v2.0.0-20220407131124-31a6c61b20fb
 	github.com/starshine-sys/dischtml v0.0.0-20211027170332-ec78dbcfa1bd
-	github.com/starshine-sys/pkgo v1.0.0
+	github.com/starshine-sys/pkgo/v2 v2.0.1
 	github.com/starshine-sys/snowflake/v2 v2.1.0
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9
 	gitlab.com/1f320/x v0.3.1-0.20220503232111-6772bc9139e9
