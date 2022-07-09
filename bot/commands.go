@@ -124,6 +124,22 @@ var Commands = []api.CreateCommandData{
 			},
 		},
 	},
+	{
+		Name:        "info",
+		Description: "Show information about a user, role, or this server.",
+		Type:        discord.ChatInputCommand,
+		Options: discord.CommandOptions{
+			&discord.SubcommandOption{
+				OptionName:  "user",
+				Description: "Show info about a user.",
+				Options: []discord.CommandOptionValue{&discord.UserOption{
+					OptionName:  "user",
+					Description: "The user to look up.",
+					Required:    false,
+				}},
+			},
+		},
+	},
 
 	// user context menu commands
 	{

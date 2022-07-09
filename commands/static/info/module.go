@@ -25,6 +25,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	}
 
 	b.Interactions.Command("Show user avatar").Exec(b.avatarMenu)
+	b.Interactions.Command("info/user").Check(bot.NoDM).Exec(b.slashMemberInfo)
 
 	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "ping",
