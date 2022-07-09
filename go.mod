@@ -21,7 +21,7 @@ require (
 	github.com/starshine-sys/bcr v0.21.1-0.20220418214743-4b4aef09222d
 	github.com/starshine-sys/bcr/v2 v2.0.0-20220407131124-31a6c61b20fb
 	github.com/starshine-sys/dischtml v0.0.0-20211027170332-ec78dbcfa1bd
-	github.com/starshine-sys/pkgo v1.0.0
+	github.com/starshine-sys/pkgo/v2 v2.0.1
 	github.com/starshine-sys/snowflake/v2 v2.1.0
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9
 	gitlab.com/1f320/x v0.3.1-0.20220503232111-6772bc9139e9
@@ -34,6 +34,7 @@ require (
 	github.com/ReneKroon/ttlcache/v2 v2.7.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect

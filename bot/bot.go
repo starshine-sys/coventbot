@@ -18,7 +18,7 @@ import (
 	"github.com/starshine-sys/bcr"
 	bcrbot "github.com/starshine-sys/bcr/bot"
 	bcr2 "github.com/starshine-sys/bcr/v2"
-	"github.com/starshine-sys/pkgo"
+	"github.com/starshine-sys/pkgo/v2"
 	"github.com/starshine-sys/tribble/common"
 	"github.com/starshine-sys/tribble/db"
 	"go.uber.org/zap"
@@ -30,11 +30,12 @@ type Bot struct {
 
 	Interactions *bcr2.Router
 
-	Config    *common.BotConfig
-	Sugar     *zap.SugaredLogger
-	DB        *db.DB
-	Scheduler *Scheduler
-	Chi       *chi.Mux
+	Config      *common.BotConfig
+	Sugar       *zap.SugaredLogger
+	DB          *db.DB
+	Scheduler   *Scheduler
+	Chi         *chi.Mux
+	EmbedColour discord.Color
 
 	GuildLogWebhook *webhook.Client
 
@@ -78,12 +79,13 @@ func New(
 	db *db.DB,
 	config *common.BotConfig) *Bot {
 	b := &Bot{
-		Bot:    bot,
-		Sugar:  sugar,
-		DB:     db,
-		Config: config,
-		PK:     pkgo.New(""),
-		Chi:    chi.NewMux(),
+		Bot:         bot,
+		Sugar:       sugar,
+		DB:          db,
+		Config:      config,
+		PK:          pkgo.New(""),
+		Chi:         chi.NewMux(),
+		EmbedColour: bcr.ColourBlurple,
 
 		members: map[memberKey]member{},
 	}
