@@ -12,7 +12,8 @@ func (bot *Bot) setPending(guildID discord.GuildID, userID discord.UserID) (p Pe
 	err = pgxscan.Get(context.Background(), bot.DB.Pool, &p, `insert into gatekeeper
 	(guild_id, user_id, key, pending) values ($1, $2, $3, true)
 	on conflict (guild_id, user_id) do update
-	set key = $3`, guildID, userID, uuid.New())
+	set key = $3
+	returning *`, guildID, userID, uuid.New())
 	return p, err
 }
 
