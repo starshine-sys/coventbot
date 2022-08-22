@@ -73,7 +73,6 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.setRole,
 	})
 
-	b.Router.AddHandler(b.memberAdd)
 	b.Router.AddHandler(b.memberLeave)
 
 	return s, append(list, conf)

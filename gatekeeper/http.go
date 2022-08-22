@@ -15,8 +15,8 @@ import (
 
 // PendingUser ...
 type PendingUser struct {
-	UserID   discord.UserID
-	ServerID discord.GuildID
+	UserID  discord.UserID
+	GuildID discord.GuildID
 
 	Key     uuid.UUID
 	Pending bool
@@ -45,7 +45,7 @@ func (bot *Bot) GatekeeperGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !u.Pending {
-		bot.ShowText(w, "Gatekeeper error", "", "User %v is not pending.", u.UserID)
+		bot.ShowText(w, "Gatekeeper error", "", "You have already passed the gateway.", u.UserID)
 		return
 	}
 
@@ -99,7 +99,7 @@ func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Verification failed.")
 	}
 
-	s, err := bot.serverSettings(u.ServerID)
+	s, err := bot.serverSettings(u.GuildID)
 	if err != nil {
 		bot.ShowText(w, "Gatekeeper error", "", "Internal server error.")
 		bot.Sugar.Errorf("Error getting server settings: %v", err)
@@ -112,14 +112,14 @@ func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	state, _ := bot.Router.StateFromGuildID(u.ServerID)
+	state, _ := bot.Router.StateFromGuildID(u.GuildID)
 
-	err = state.AddRole(u.ServerID, u.UserID, s.MemberRole, api.AddRoleData{
+	err = state.AddRole(u.GuildID, u.UserID, s.MemberRole, api.AddRoleData{
 		AuditLogReason: "Gatekeeper: add member role",
 	})
 	if err != nil {
 		bot.ShowText(w, "Gatekeeper error", "", "There was an error adding your member role. Please contact a server administrator for help.")
-		bot.Sugar.Errorf("Error adding role for %v in %v: %v", u.UserID, u.ServerID, err)
+		bot.Sugar.Errorf("Error adding role for %v in %v: %v", u.UserID, u.GuildID, err)
 	}
 
 	if s.WelcomeChannel.IsValid() && s.WelcomeMessage != "" {
@@ -130,7 +130,7 @@ func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = bot.completeCaptcha(u.ServerID, u.UserID)
+	err = bot.completeCaptcha(u.GuildID, u.UserID)
 	if err != nil {
 		bot.Sugar.Errorf("Error setting pending status for %v: %v", u.UserID, err)
 	}

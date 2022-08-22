@@ -18,15 +18,13 @@ func (bot *Bot) agree(ctx *bcr.Context) (err error) {
 		return
 	}
 
-	if !bot.isPending(ctx.Message.GuildID, ctx.Author.ID) {
-		_, err = ctx.Send("You are not a pending user.")
-		return
+	p, err := bot.setPending(ctx.Message.GuildID, ctx.Author.ID)
+	if err != nil {
+		return bot.Report(ctx, err)
 	}
 
-	p, err := bot.pendingUser(ctx.Message.GuildID, ctx.Author.ID)
-	if err != nil {
-		bot.Sugar.Errorf("Error getting user: %v", err)
-		return bot.Report(ctx, err)
+	if !p.Pending {
+		return ctx.SendX("You have already passed the gatekeeper.")
 	}
 
 	url := fmt.Sprintf("%v/gatekeeper/%v", bot.Config.HTTPBaseURL, p.Key)

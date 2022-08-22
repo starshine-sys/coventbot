@@ -8,33 +8,22 @@ import (
 	"github.com/google/uuid"
 )
 
-func (bot *Bot) setPending(p PendingUser) (err error) {
-	_, err = bot.DB.Pool.Exec(context.Background(), "insert into gatekeeper (server_id, user_id, key, pending) values ($1, $2, $3, true)", p.ServerID, p.UserID, p.Key)
-	return err
+func (bot *Bot) setPending(guildID discord.GuildID, userID discord.UserID) (p PendingUser, err error) {
+	err = pgxscan.Get(context.Background(), bot.DB.Pool, &p, `insert into gatekeeper
+	(guild_id, user_id, key, pending) values ($1, $2, $3, true)
+	on conflict (guild_id, user_id) do update
+	set key = $3`, guildID, userID, uuid.New())
+	return p, err
 }
 
 func (bot *Bot) deletePending(g discord.GuildID, u discord.UserID) (err error) {
-	_, err = bot.DB.Pool.Exec(context.Background(), "delete from gatekeeper where user_id = $1 and server_id = $2", u, g)
+	_, err = bot.DB.Pool.Exec(context.Background(), "delete from gatekeeper where user_id = $1 and guild_id = $2", u, g)
 	return err
-}
-
-func (bot *Bot) isPending(g discord.GuildID, u discord.UserID) (b bool) {
-	bot.DB.Pool.QueryRow(context.Background(), "select pending from gatekeeper where server_id = $1 and user_id = $2", g, u).Scan(&b)
-	return
-}
-
-func (bot *Bot) pendingUser(g discord.GuildID, u discord.UserID) (p *PendingUser, err error) {
-	p = &PendingUser{}
-	err = pgxscan.Get(context.Background(), bot.DB.Pool, p, "select server_id, user_id, key, pending from gatekeeper where server_id = $1 and user_id = $2", g, u)
-	if err != nil {
-		return nil, err
-	}
-	return
 }
 
 func (bot *Bot) userByUUID(id uuid.UUID) (p *PendingUser, err error) {
 	p = &PendingUser{}
-	err = pgxscan.Get(context.Background(), bot.DB.Pool, p, "select server_id, user_id, key, pending from gatekeeper where key = $1", id)
+	err = pgxscan.Get(context.Background(), bot.DB.Pool, p, "select guild_id, user_id, key, pending from gatekeeper where key = $1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +31,7 @@ func (bot *Bot) userByUUID(id uuid.UUID) (p *PendingUser, err error) {
 }
 
 func (bot *Bot) completeCaptcha(g discord.GuildID, u discord.UserID) (err error) {
-	_, err = bot.DB.Pool.Exec(context.Background(), "update gatekeeper set pending = false where server_id = $1 and user_id = $2", g, u)
+	_, err = bot.DB.Pool.Exec(context.Background(), "update gatekeeper set pending = false where guild_id = $1 and user_id = $2", g, u)
 	return
 }
 
