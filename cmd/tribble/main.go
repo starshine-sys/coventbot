@@ -29,6 +29,7 @@ import (
 	"github.com/starshine-sys/tribble/commands/static"
 	"github.com/starshine-sys/tribble/customcommands"
 	"github.com/starshine-sys/tribble/db"
+	"github.com/starshine-sys/tribble/gatekeeper"
 	"github.com/starshine-sys/tribble/keyroles"
 	"github.com/starshine-sys/tribble/levels"
 	"github.com/starshine-sys/tribble/quotes"
@@ -58,6 +59,7 @@ var modules = []func(*bot.Bot) (string, []*bcr.Command){
 	quotes.Init,
 	termora.Init,
 	customcommands.Init,
+	gatekeeper.Init,
 }
 
 func main() {

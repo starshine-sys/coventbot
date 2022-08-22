@@ -77,6 +77,10 @@ var DefaultPermissions = Nodes{
 	{"cc.*", ManagerLevel},
 	{"approval.*", ManagerLevel},
 
+	// gatekeeper
+	{"captcha.*", ManagerLevel},
+	{"agree", EveryoneLevel},
+
 	// user commands
 	{"todo.*", EveryoneLevel},
 	{"remindme.*", EveryoneLevel},
