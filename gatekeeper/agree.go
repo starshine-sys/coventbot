@@ -18,13 +18,19 @@ func (bot *Bot) agree(ctx *bcr.Context) (err error) {
 		return
 	}
 
+	for _, r := range ctx.Member.RoleIDs {
+		if r == settings.MemberRole {
+			return ctx.SendX("You have already passed the gateway.")
+		}
+	}
+
 	p, err := bot.setPending(ctx.Message.GuildID, ctx.Author.ID)
 	if err != nil {
 		return bot.Report(ctx, err)
 	}
 
 	if !p.Pending {
-		return ctx.SendX("You have already passed the gatekeeper.")
+		return ctx.SendX("You have already passed the gateway.")
 	}
 
 	url := fmt.Sprintf("%v/gatekeeper/%v", bot.Config.HTTPBaseURL, p.Key)
