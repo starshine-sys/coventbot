@@ -94,6 +94,10 @@ func (bot *Bot) setRolePerms(g *gateway.GuildCreateEvent) (err error) {
 	)
 
 	for _, r := range g.Roles {
+		if r.Managed {
+			continue
+		}
+
 		if r.Permissions.Has(discord.PermissionAdministrator) {
 			adminRoles = append(adminRoles, uint64(r.ID))
 		} else if r.Permissions.Has(discord.PermissionManageGuild) {
