@@ -81,6 +81,7 @@ func (bot *Bot) prefixRemove(ctx *bcr.Context) (err error) {
 
 	if !isPrefix {
 		_, err = ctx.Reply("``%v`` is not a prefix for this server.", bcr.EscapeBackticks(ctx.RawArgs))
+		return
 	}
 
 	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set prefixes = array_remove(prefixes, $1) where id = $2", ctx.RawArgs, ctx.Message.GuildID)

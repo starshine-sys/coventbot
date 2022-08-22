@@ -235,7 +235,7 @@ func (bot *Bot) permCommands() (cmds []*bcr.Command) {
 		Name:    "permissions",
 		Aliases: []string{"perms"},
 		Summary: "Configure permissions.",
-		Command: nil,
+		Command: func(ctx *bcr.Context) error { return ctx.Help([]string{"perms"}) },
 	})
 
 	mod := root.AddSubcommand(&bcr.Command{
@@ -311,5 +311,5 @@ func (bot *Bot) permCommands() (cmds []*bcr.Command) {
 		Command: bot.adminRemoveRole,
 	})
 
-	return append(cmds)
+	return append(cmds, root)
 }

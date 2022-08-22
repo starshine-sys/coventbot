@@ -60,5 +60,4 @@ func (bot *Bot) watchlistMemberAdd(m *gateway.GuildMemberAddEvent) {
 	if err != nil {
 		bot.Sugar.Errorf("Error sending watch list warning: %v", err)
 	}
-	return
 }

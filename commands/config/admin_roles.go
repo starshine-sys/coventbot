@@ -79,6 +79,7 @@ func (bot *Bot) adminRemoveRole(ctx *bcr.Context) (err error) {
 
 	if !isSet {
 		_, err = ctx.Replyc(bcr.ColourRed, "%v already isn't a admin role.", r.Mention())
+		return
 	}
 
 	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set admin_roles = array_remove(admin_roles, $1) where id = $2", r.ID, ctx.Guild.ID)
