@@ -46,7 +46,7 @@ type ServerSettings struct {
 }
 
 func (bot *Bot) serverSettings(g discord.GuildID) (s ServerSettings, err error) {
-	err = pgxscan.Get(context.Background(), bot.DB.Pool, &s, "select id, member_role, welcome_channel, welcome_message from servers where id = $1", g)
+	err = pgxscan.Get(context.Background(), bot.DB.Pool, &s, "select id, member_role, welcome_channel, welcome_message, gatekeeper_log from servers where id = $1", g)
 	return
 }
 
