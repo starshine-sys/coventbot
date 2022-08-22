@@ -80,6 +80,50 @@ func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 	return
 }
 
+func (bot *Bot) setLog(ctx *bcr.Context) (err error) {
+	var id discord.ChannelID
+
+	if ctx.RawArgs == "-clear" {
+		id = 0
+	} else {
+		ch, err := ctx.ParseChannel(ctx.RawArgs)
+		if err != nil {
+			_, err = ctx.Send("Channel not found.")
+			return err
+		}
+
+		if ch.GuildID != ctx.Message.GuildID {
+			_, err = ctx.Send("The given channel isn't in this server.")
+			return err
+		}
+
+		id = ch.ID
+	}
+
+	settings, err := bot.serverSettings(ctx.Message.GuildID)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	if settings.GatekeeperLog == id {
+		_, err = ctx.Send("The given channel is already the log channel.")
+		return err
+	}
+
+	settings.GatekeeperLog = id
+	err = bot.setSettings(settings)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	if id == 0 {
+		_, err = ctx.Send("Log channel reset.")
+		return
+	}
+	_, err = ctx.Sendf("Log channel changed to %v.", id.Mention())
+	return
+}
+
 func (bot *Bot) setMessage(ctx *bcr.Context) (err error) {
 	settings, err := bot.serverSettings(ctx.Message.GuildID)
 	if err != nil {

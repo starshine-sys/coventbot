@@ -41,6 +41,7 @@ type ServerSettings struct {
 	MemberRole     discord.RoleID
 	WelcomeChannel discord.ChannelID
 	WelcomeMessage string
+	GatekeeperLog  discord.ChannelID
 }
 
 func (bot *Bot) serverSettings(g discord.GuildID) (s ServerSettings, err error) {
@@ -49,6 +50,6 @@ func (bot *Bot) serverSettings(g discord.GuildID) (s ServerSettings, err error) 
 }
 
 func (bot *Bot) setSettings(s ServerSettings) (err error) {
-	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set member_role = $1, welcome_channel = $2, welcome_message = $3 where id = $4", s.MemberRole, s.WelcomeChannel, s.WelcomeMessage, s.ID)
+	_, err = bot.DB.Pool.Exec(context.Background(), "update servers set member_role = $1, welcome_channel = $2, welcome_message = $3, gatekeeper_log = $4 where id = $5", s.MemberRole, s.WelcomeChannel, s.WelcomeMessage, s.GatekeeperLog, s.ID)
 	return err
 }

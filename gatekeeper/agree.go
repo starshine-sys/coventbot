@@ -37,6 +37,13 @@ func (bot *Bot) agree(ctx *bcr.Context) (err error) {
 		return
 	}
 
+	if settings.GatekeeperLog.IsValid() {
+		_, err = ctx.State.SendMessage(settings.GatekeeperLog, fmt.Sprintf("User %v / %v has passed the agree step of the gateway, now doing verification.", ctx.Author.Tag(), ctx.Author.Mention()))
+		if err != nil {
+			bot.Sugar.Errorf("sending gatekeeper log message: %v", err)
+		}
+	}
+
 	_, err = ctx.Sendf("%v, check your DMs!", ctx.Author.Mention())
 	return
 }

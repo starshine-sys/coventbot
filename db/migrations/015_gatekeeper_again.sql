@@ -16,3 +16,4 @@ create table gatekeeper (
 alter table servers add column welcome_channel bigint not null default 0;
 alter table servers add column welcome_message text not null default 'Welcome to the server, {mention}!';
 alter table servers add column member_role bigint not null default 0;
+alter table servers add column gatekeeper_log bigint not null default 0;

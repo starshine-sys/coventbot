@@ -130,6 +130,19 @@ func (bot *Bot) VerifyPOST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if s.GatekeeperLog.IsValid() {
+		ms := u.UserID.Mention()
+
+		if m, err := state.Member(u.GuildID, u.UserID); err == nil {
+			ms = fmt.Sprintf("%v / %v", m.User.Tag(), m.User.Mention())
+		}
+
+		_, err = state.SendMessage(s.GatekeeperLog, fmt.Sprintf("User %v has passed the gateway and has been given access to the server.", ms))
+		if err != nil {
+			bot.Sugar.Errorf("sending gatekeeper log message: %v", err)
+		}
+	}
+
 	err = bot.completeCaptcha(u.GuildID, u.UserID)
 	if err != nil {
 		bot.Sugar.Errorf("Error setting pending status for %v: %v", u.UserID, err)

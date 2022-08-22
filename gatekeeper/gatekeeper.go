@@ -58,6 +58,14 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	})
 
 	conf.AddSubcommand(&bcr.Command{
+		Name:    "log",
+		Summary: "Set the gatekeeper log channel",
+		Usage:   "<new channel>",
+		Args:    bcr.MinArgs(1),
+		Command: b.setLog,
+	})
+
+	conf.AddSubcommand(&bcr.Command{
 		Name:    "message",
 		Summary: "Set the welcome message",
 		Usage:   "<new message>",
