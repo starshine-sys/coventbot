@@ -2,9 +2,12 @@ package gatekeeper
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/starshine-sys/bcr"
 )
+
+const defaultAgreeResp = "{mention}, check your DMs!"
 
 func (bot *Bot) agree(ctx *bcr.Context) (err error) {
 	settings, err := bot.serverSettings(ctx.Message.GuildID)
@@ -50,6 +53,14 @@ func (bot *Bot) agree(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.Sendf("%v, check your DMs!", ctx.Author.Mention())
-	return
+	resp, err := bot.DB.GuildStringGet(ctx.Message.GuildID, "gateway:agree_response")
+	if err != nil || resp == "" {
+		return ctx.SendX(
+			strings.ReplaceAll(defaultAgreeResp, "{mention}", ctx.Author.Mention()),
+		)
+	}
+
+	return ctx.SendX(
+		strings.ReplaceAll(resp, "{mention}", ctx.Author.Mention()),
+	)
 }

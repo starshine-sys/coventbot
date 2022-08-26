@@ -81,6 +81,14 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.setRole,
 	})
 
+	conf.AddSubcommand(&bcr.Command{
+		Name:    "response",
+		Aliases: []string{"resp"},
+		Summary: "Set the response to the `agree` command. {mention} is replaced with the user's mention.",
+		Usage:   "<new response>",
+		Command: b.setResponse,
+	})
+
 	b.Router.AddHandler(b.memberLeave)
 
 	return s, append(list, conf)

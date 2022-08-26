@@ -36,6 +36,31 @@ func (bot *Bot) settings(ctx *bcr.Context) (err error) {
 	return err
 }
 
+func (bot *Bot) setResponse(ctx *bcr.Context) (err error) {
+	if len(ctx.Args) == 0 {
+		resp, err := bot.DB.GuildStringGet(ctx.Message.GuildID, "gateway:agree_response")
+		if err != nil {
+			return bot.Report(ctx, err)
+		}
+
+		if resp == "" {
+			resp = defaultAgreeResp
+		}
+
+		return ctx.SendX("", discord.Embed{
+			Title:       fmt.Sprintf("Response to `%vagree`", ctx.Prefix),
+			Description: "```\n" + resp + "\n```",
+		})
+	}
+
+	err = bot.DB.GuildStringSet(ctx.Message.GuildID, "gateway:agree_response", ctx.RawArgs)
+	if err != nil {
+		return bot.Report(ctx, err)
+	}
+
+	return ctx.SendfX("`%vagree` response updated!", ctx.Prefix)
+}
+
 func (bot *Bot) setChannel(ctx *bcr.Context) (err error) {
 	var id discord.ChannelID
 
