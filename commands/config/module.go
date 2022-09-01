@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/spf13/pflag"
 	"github.com/starshine-sys/bcr"
 	"github.com/starshine-sys/tribble/bot"
 )
@@ -236,6 +237,33 @@ func (bot *Bot) permCommands() (cmds []*bcr.Command) {
 		Aliases: []string{"perms"},
 		Summary: "Configure permissions.",
 		Command: func(ctx *bcr.Context) error { return ctx.Help([]string{"perms"}) },
+	})
+
+	node := root.AddSubcommand(&bcr.Command{
+		Name:    "node",
+		Aliases: []string{"nodes"},
+		Summary: "List and edit permission nodes.",
+		Flags: func(fs *pflag.FlagSet) *pflag.FlagSet {
+			fs.BoolP("edited", "e", false, "Only show edited nodes.")
+			return fs
+		},
+		Command: bot.showNodes,
+	})
+
+	node.AddSubcommand(&bcr.Command{
+		Name:    "set",
+		Usage:   "<node> <level>",
+		Summary: "Set a permission node.",
+		Args:    bcr.MinArgs(2),
+		Command: bot.setNode,
+	})
+
+	node.AddSubcommand(&bcr.Command{
+		Name:    "reset",
+		Usage:   "<node>",
+		Summary: "Reset a permission node to the default level.",
+		Args:    bcr.MinArgs(1),
+		Command: bot.resetNode,
 	})
 
 	mod := root.AddSubcommand(&bcr.Command{
