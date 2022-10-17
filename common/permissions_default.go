@@ -6,6 +6,7 @@ var DefaultPermissions = Nodes{
 	{"level.setxp", ManagerLevel},
 	{"level.setlvl", ManagerLevel},
 	{"level.config.*", ManagerLevel},
+	{"level.config.import", AdminLevel},
 	{"level.background.server", ManagerLevel},
 	{"nolevels.*", ModeratorLevel},
 	{"leaderboard", EveryoneLevel},

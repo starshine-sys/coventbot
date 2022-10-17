@@ -108,6 +108,13 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
+		Name:    "import",
+		Summary: "Import levels",
+		Usage:   "[JSON url]",
+		Command: b.importLevels,
+	})
+
+	cfg.AddSubcommand(&bcr.Command{
 		Name:    "add-reward",
 		Aliases: []string{"addreward"},
 		Summary: "Add a level reward.",
