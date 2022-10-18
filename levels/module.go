@@ -115,6 +115,12 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 	})
 
 	cfg.AddSubcommand(&bcr.Command{
+		Name:    "export",
+		Summary: "Export levels",
+		Command: b.exportLevels,
+	})
+
+	cfg.AddSubcommand(&bcr.Command{
 		Name:    "add-reward",
 		Aliases: []string{"addreward"},
 		Summary: "Add a level reward.",

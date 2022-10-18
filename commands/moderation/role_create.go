@@ -12,7 +12,7 @@ import (
 
 func (bot *Bot) roleCreate(ctx *bcr.Context) (err error) {
 	if p, _ := ctx.State.Permissions(ctx.Channel.ID, ctx.Bot.ID); !p.Has(discord.PermissionManageRoles) {
-		_, err = ctx.Send("I do not have the Manage Roles permission in this server, and cannot create any roles.")
+		return ctx.SendX("I do not have the Manage Roles permission in this server, and cannot create any roles.")
 	}
 
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
@@ -21,10 +21,10 @@ func (bot *Bot) roleCreate(ctx *bcr.Context) (err error) {
 	fs.BoolVar(&hoist, "h", false, "Whether to hoist the new role")
 	fs.BoolVar(&mentionable, "m", false, "Whether to make the new role mentionable")
 
-	err = fs.Parse(ctx.Args)
+	_ = fs.Parse(ctx.Args)
 	ctx.Args = fs.Args()
 
-	var color = discord.DefaultMemberColor
+	var color = discord.Color(-1)
 
 	if len(ctx.Args) == 0 {
 		_, err = ctx.Sendf("No name specified!")
@@ -62,7 +62,7 @@ func (bot *Bot) roleCreate(ctx *bcr.Context) (err error) {
 	e := discord.Embed{
 		Title: "Success!",
 		Description: fmt.Sprintf(`The role **%v** has been created.
-**Colour:** #%06X
+**Colour:** %s
 **Mentionable:** %v
 **Shown separately:** %v`, r.Name, r.Color, r.Mentionable, r.Hoist),
 		Color: embedColor,

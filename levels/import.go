@@ -3,6 +3,7 @@ package levels
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -22,7 +23,7 @@ func (i *importedLevel) UnmarshalJSON(src []byte) (err error) {
 	raw := struct {
 		UserID    discord.UserID `json:"user_id"`
 		XP        int64          `json:"exp"`
-		CardColor string         `json:"card_color"`
+		CardColor string         `json:"card_color,omitempty"`
 	}{}
 
 	err = json.Unmarshal(src, &raw)
@@ -39,6 +40,25 @@ func (i *importedLevel) UnmarshalJSON(src []byte) (err error) {
 		}
 	}
 	return nil
+}
+
+func (i *importedLevel) MarshalJSON() (b []byte, err error) {
+	clr := fmt.Sprintf("%06X", uint64(i.Colour))
+	if i.Colour == 0 {
+		clr = ""
+	}
+
+	raw := struct {
+		UserID    discord.UserID `json:"user_id"`
+		XP        int64          `json:"exp"`
+		CardColor string         `json:"card_color,omitempty"`
+	}{
+		UserID:    i.UserID,
+		XP:        i.XP,
+		CardColor: clr,
+	}
+
+	return json.Marshal(raw)
 }
 
 func (bot *Bot) importLevels(ctx *bcr.Context) (err error) {

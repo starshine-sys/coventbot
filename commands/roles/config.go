@@ -58,7 +58,7 @@ func (bot *Bot) config(ctx *bcr.Context) (err error) {
 
 	e := discord.Embed{
 		Title:       "Category " + c.Name + " created",
-		Description: fmt.Sprintf("**Colour:** #%06X\n", colour),
+		Description: fmt.Sprintf("**Colour:** %s\n", colour),
 		Color:       colour,
 		Footer: &discord.EmbedFooter{
 			Text: fmt.Sprintf("ID: %v", c.ID),

@@ -79,7 +79,7 @@ func (bot *Bot) message(ctx *bcr.Context) (err error) {
 	if !msg.WebhookID.IsValid() {
 		member, err := bot.Member(msg.GuildID, msg.Author.ID)
 		if err == nil {
-			clr = discord.MemberColor(*ctx.Guild, member)
+			clr, _ = discord.MemberColor(*ctx.Guild, member)
 			if member.Nick != "" {
 				name = member.Nick
 			}
