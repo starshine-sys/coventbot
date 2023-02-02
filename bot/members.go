@@ -7,6 +7,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 )
 
 func (bot *Bot) requestGuildMembers(g *gateway.GuildCreateEvent) {
@@ -27,6 +28,7 @@ func (bot *Bot) requestGuildMembers(g *gateway.GuildCreateEvent) {
 		err := s.Gateway().Send(context.Background(), &gateway.RequestGuildMembersCommand{
 			GuildIDs: []discord.GuildID{g.ID},
 			Limit:    0,
+			Query:    option.NewString(""),
 		})
 		if err != nil {
 			bot.Sugar.Errorf("Error requesting guild members for %v (%v): %v", g.ID, g.Name, err)

@@ -74,7 +74,7 @@ func (bot *Bot) slashMemberInfo(ctx *bcr.CommandContext) (err error) {
 		b.WriteString("No roles.")
 	}
 
-	colour := discord.MemberColor(*ctx.Guild, *m)
+	colour, _ := discord.MemberColor(*ctx.Guild, *m)
 	if colour == 0 {
 		colour = m.User.Accent
 		if colour == 0 {

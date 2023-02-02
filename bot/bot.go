@@ -12,6 +12,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/session/shard"
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/utils/handler"
+	"github.com/diamondburned/arikawa/v3/utils/ws"
 	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -149,6 +150,10 @@ func New(
 		state.AddHandler(b.memberUpdateEvent)
 		state.AddHandler(b.memberAddEvent)
 		state.AddHandler(b.memberRemoveEvent)
+
+		state.AddHandler(func(ev *ws.BackgroundErrorEvent) {
+			b.Sugar.Errorf("background gateway error: %v", ev.Err)
+		})
 	})
 
 	return b
