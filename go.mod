@@ -6,7 +6,7 @@ require (
 	codeberg.org/eviedelta/detctime v0.0.0-20201201223733-52d0e0a1ba3d
 	emperror.dev/errors v0.8.0
 	github.com/AndreKR/multiface v0.0.0-20190725194701-b414aa6424a8
-	github.com/diamondburned/arikawa/v3 v3.2.1-0.20230131083146-52f70d95eb70
+	github.com/diamondburned/arikawa/v3 v3.0.0-rc.5
 	github.com/disintegration/imaging v1.6.2
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fogleman/gg v1.3.0

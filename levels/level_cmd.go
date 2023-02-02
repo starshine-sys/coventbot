@@ -158,7 +158,7 @@ func (bot *Bot) level(ctx *bcr.Context) (err error) {
 		m, err := bot.Member(ctx.Guild.ID, u.ID)
 		if err == nil {
 			if clr == 0 {
-				clr, _ = discord.MemberColor(*ctx.Guild, m)
+				clr = discord.MemberColor(*ctx.Guild, m)
 			}
 			if m.Avatar != "" {
 				avatarURL = m.AvatarURLWithType(discord.PNGImage, ctx.Message.GuildID) + "?size=256"

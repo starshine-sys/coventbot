@@ -71,7 +71,7 @@ func (bot *Bot) showLevel(ctx *bcr.CommandContext) (err error) {
 		m, err := bot.Member(ctx.Guild.ID, u.ID)
 		if err == nil {
 			if clr == 0 {
-				clr, _ = discord.MemberColor(*ctx.Guild, m)
+				clr = discord.MemberColor(*ctx.Guild, m)
 			}
 			if m.Avatar != "" {
 				avatarURL = m.AvatarURLWithType(discord.PNGImage, ctx.Guild.ID) + "?size=256"
