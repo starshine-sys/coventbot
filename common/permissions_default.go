@@ -84,6 +84,7 @@ var DefaultPermissions = Nodes{
 	{"agree", EveryoneLevel},
 
 	// user commands
+	{"8ball", EveryoneLevel},
 	{"todo.*", EveryoneLevel},
 	{"remindme.*", EveryoneLevel},
 	{"userinfo", EveryoneLevel},
