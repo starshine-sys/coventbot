@@ -150,6 +150,15 @@ If a message link is given as input, and the message has multiple emotes in it, 
 		Command: b.sampa,
 	}))
 
+	list = append(list, b.Router.AddCommand(&bcr.Command{
+		Name:    "8ball",
+		Aliases: []string{"eightball", "8-ball"},
+		Summary: "Ask the magic 8-ball a question.",
+		Usage:   "<question>",
+		Args:    bcr.MinArgs(1),
+		Command: b.eightball,
+	}))
+
 	pride := b.Router.AddCommand(&bcr.Command{
 		Name:    "pride",
 		Summary: "Add a pride flag circle to your profile picture!",
