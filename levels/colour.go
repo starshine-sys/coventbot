@@ -30,13 +30,13 @@ func (bot *Bot) colour(ctx *bcr.Context) (err error) {
 			_, err = ctx.Sendf("You don't currently have a colour set. Set one with `%vlvl colour <hex code>`.", ctx.Prefix)
 			return err
 		}
-		url := fmt.Sprintf("https://fakeimg.pl/256x256/%06X/?text=%%20", uc.Colour)
+		url := fmt.Sprintf("https://fakeimg.pl/256x256/%v/?text=%%20", uc.Colour.String())
 		_, err = ctx.Send("", discord.Embed{
 			Thumbnail: &discord.EmbedThumbnail{
 				URL: url,
 			},
 
-			Description: fmt.Sprintf("Your level colour is currently set to **#%06X**. To clear it, type `%vlvl colour clear`.", uc.Colour, ctx.Prefix),
+			Description: fmt.Sprintf("Your level colour is currently set to **#%v**. To clear it, type `%vlvl colour clear`.", uc.Colour.String(), ctx.Prefix),
 
 			Color: uc.Colour,
 		})
