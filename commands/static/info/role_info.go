@@ -38,7 +38,7 @@ func (bot *Bot) roleInfo(ctx *bcr.Context) (err error) {
 			},
 			{
 				Name:   "Colour",
-				Value:  fmt.Sprintf("#%v", r.Color.String()),
+				Value:  r.Color.String(),
 				Inline: true,
 			},
 			{

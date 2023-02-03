@@ -256,7 +256,7 @@ func (bot *Bot) generateImage(
 	}
 
 	// draw pfp to context
-	img.SetHexColor(fmt.Sprintf("#%v", clr.String()))
+	img.SetHexColor(clr.String())
 	img.DrawCircle(200, 200, 130)
 	img.FillPreserve()
 
@@ -279,7 +279,7 @@ func (bot *Bot) generateImage(
 	img.DrawRectangle(350+end, 275, progressBarLen-end, 50)
 	img.Fill()
 
-	img.SetHexColor(fmt.Sprintf("#%vCC", clr.String()))
+	img.SetHexColor(clr.String())
 
 	img.SetColor(color.NRGBA{0xB5, 0xB5, 0xB5, 0xCC})
 
