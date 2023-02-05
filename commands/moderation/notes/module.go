@@ -16,7 +16,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 
 	b := &Bot{bot}
 
-	b.Router.AddCommand(&bcr.Command{
+	notes := b.Router.AddCommand(&bcr.Command{
 		Name:    "notes",
 		Summary: "List a user's notes.",
 		Usage:   "<user>",
@@ -25,7 +25,19 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Command: b.list,
 	})
 
-	b.Router.AddCommand(&bcr.Command{
+	notes.AddSubcommand(&bcr.Command{
+		Name:    "import",
+		Summary: "Import notes from JSON.",
+		Command: b.importNotes,
+	})
+
+	notes.AddSubcommand(&bcr.Command{
+		Name:    "export",
+		Summary: "Export notes to JSON.",
+		Command: b.exportNotes,
+	})
+
+	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "setnote",
 		Aliases: []string{"addnote"},
 		Summary: "Add a note.",
@@ -33,9 +45,9 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Args:    bcr.MinArgs(2),
 
 		Command: b.addNote,
-	})
+	}))
 
-	b.Router.AddCommand(&bcr.Command{
+	list = append(list, b.Router.AddCommand(&bcr.Command{
 		Name:    "delnote",
 		Aliases: []string{"rmnote"},
 		Summary: "Remove a note.",
@@ -43,7 +55,7 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		Args:    bcr.MinArgs(1),
 
 		Command: b.delNote,
-	})
+	}))
 
 	b.Router.AddCommand(&bcr.Command{
 		Name:    "bgc",
@@ -69,5 +81,5 @@ func Init(bot *bot.Bot) (s string, list []*bcr.Command) {
 		},
 	})
 
-	return
+	return "Notes", append(list, notes)
 }

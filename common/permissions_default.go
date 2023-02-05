@@ -46,6 +46,8 @@ var DefaultPermissions = Nodes{
 	{"reason", ModeratorLevel},
 	{"purge", ModeratorLevel},
 	{"notes", ModeratorLevel},
+	{"notes.import", AdminLevel},
+	{"notes.export", AdminLevel},
 	{"modlog", ModeratorLevel},
 	{"members", ModeratorLevel},
 	{"massban", ManagerLevel},
