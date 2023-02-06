@@ -4,4 +4,18 @@ A general-purpose Discord bot. Mostly a personal project, and as such very undoc
 
 ## License
 
-Tribble is licensed under the 3-clause BSD license, which you can find in the `LICENSE` file in the root of this repository.
+Copyright (C) 2021-2023 starshines
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+> Note that Tribble is licensed under the AGPL 3 **only**, not any later version.
