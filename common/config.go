@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-only
 package common
 
 import "github.com/diamondburned/arikawa/v3/discord"

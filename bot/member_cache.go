@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-only
 package bot
 
 import "github.com/diamondburned/arikawa/v3/gateway"
