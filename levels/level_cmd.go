@@ -28,11 +28,6 @@ import (
 	"golang.org/x/image/font"
 )
 
-// oh gods i hate this
-// basically we iterate over this 4 times to crop the avatar into a circle
-// oh gods this is so hacky
-var blankPixels = []int{96, 96, 96, 96, 85, 85, 85, 85, 74, 74, 74, 74, 68, 68, 68, 62, 62, 62, 62, 55, 55, 55, 55, 50, 50, 50, 50, 45, 45, 45, 45, 39, 39, 39, 39, 39, 39, 33, 33, 33, 33, 33, 33, 28, 28, 28, 28, 28, 24, 24, 24, 24, 24, 24, 20, 20, 20, 20, 20, 20, 16, 16, 16, 16, 16, 16, 16, 12, 12, 12, 12, 12, 12, 12, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 4, 4, 4, 4, 4, 4, 4}
-
 //go:embed templates
 var imageData embed.FS
 
@@ -244,17 +239,10 @@ func (bot *Bot) generateImage(
 	// resize pfp to fit + crop to circle (shoddily)
 	pfp = imaging.Resize(pfp, 256, 256, imaging.NearestNeighbor)
 
-	pfpImg := gg.NewContextForImage(pfp)
-	pfpImg.SetColor(color.RGBA{0, 0, 0, 0})
-
-	for y := 0; y < len(blankPixels); y++ {
-		for x := 0; x < blankPixels[y]; x++ {
-			pfpImg.SetPixel(x, y)
-			pfpImg.SetPixel(256-x, 256-y)
-			pfpImg.SetPixel(x, 256-y)
-			pfpImg.SetPixel(256-x, y)
-		}
-	}
+	pfpImg := gg.NewContext(256, 256)
+	pfpImg.DrawCircle(128, 128, 128)
+	pfpImg.Clip()
+	pfpImg.DrawImage(pfp, 0, 0)
 
 	// draw pfp to context
 	img.SetHexColor(clr.String())
