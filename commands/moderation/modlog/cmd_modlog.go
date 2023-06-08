@@ -42,12 +42,12 @@ func (bot *ModLog) modlog(ctx *bcr.Context) (err error) {
 
 		fields = append(fields, discord.EmbedField{
 			Name: fmt.Sprintf("#%v | %v | <t:%v>", entry.ID, entry.ActionType, entry.Time.Unix()),
-			Value: fmt.Sprintf(`Responsible moderator: %v#%v
-Reason: %v`, mod.Username, mod.Discriminator, entry.Reason),
+			Value: fmt.Sprintf(`Responsible moderator: %v
+Reason: %v`, mod.Tag(), entry.Reason),
 		})
 	}
 
-	embeds := bcr.FieldPaginator("Mod logs", fmt.Sprintf("%v#%v - %v", u.Username, u.Discriminator, u.Mention()), bcr.ColourBlurple, fields, 5)
+	embeds := bcr.FieldPaginator("Mod logs", fmt.Sprintf("%v - %v", u.Tag(), u.Mention()), bcr.ColourBlurple, fields, 5)
 
 	_, err = bot.PagedEmbed(ctx, embeds, 10*time.Minute)
 	return err

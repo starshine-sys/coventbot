@@ -50,6 +50,6 @@ func (bot *Bot) approve(ctx *bcr.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.Sendf("Approved **%v#%v**.", m.User.Username, m.User.Discriminator)
+	_, err = ctx.Sendf("Approved **%v**.", m.User.Tag())
 	return
 }

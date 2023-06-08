@@ -41,7 +41,7 @@ func (bot *Bot) GuildCreate(g *gateway.GuildCreateEvent) {
 
 	owner := g.OwnerID.Mention()
 	if o, err := s.User(g.OwnerID); err == nil {
-		owner = fmt.Sprintf("%v#%v (%v)", o.Username, o.Discriminator, o.Mention())
+		owner = fmt.Sprintf("%v (%v)", o.Tag(), o.Mention())
 	}
 
 	if bot.GuildLogWebhook != nil {

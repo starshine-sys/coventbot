@@ -36,7 +36,7 @@ func (bot *Bot) about(ctx *bcr.Context) (err error) {
 	creator := "<@!694563574386786314>"
 	u, err := ctx.State.User(694563574386786314)
 	if err == nil {
-		creator = fmt.Sprintf("<@!%v> / %v#%v", u.ID, u.Username, u.Discriminator)
+		creator = fmt.Sprintf("<@!%v> / %v", u.ID, u.Tag())
 	}
 
 	bot.Counters.Mu.Lock()

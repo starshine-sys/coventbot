@@ -60,7 +60,7 @@ func (bot *Bot) watchlistRemove(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Sendf("Removed %v / **%v#%v** from the watchlist.", u.Mention(), u.Username, u.Discriminator)
+	_, err = ctx.Sendf("Removed %v / **%v** from the watchlist.", u.Mention(), u.Tag())
 	return
 }
 
@@ -86,7 +86,7 @@ func (bot *Bot) watchlistAdd(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Sendf("Added %v / **%v#%v** to the watchlist.", u.Mention(), u.Username, u.Discriminator)
+	_, err = ctx.Sendf("Added %v / **%v** to the watchlist.", u.Mention(), u.Tag())
 	return
 }
 
@@ -105,7 +105,7 @@ func (bot *Bot) watchlistReason(ctx *bcr.Context) (err error) {
 			return
 		}
 
-		_, err = ctx.Sendf("Reason for %v#%v:\n> %v", u.Username, u.Discriminator, reason)
+		_, err = ctx.Sendf("Reason for %v:\n> %v", u.Tag(), reason)
 		return
 	}
 
@@ -122,6 +122,6 @@ func (bot *Bot) watchlistReason(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Sendf("Updated watchlist reason for %v#%v.", u.Username, u.Discriminator)
+	_, err = ctx.Sendf("Updated watchlist reason for %v.", u.Tag())
 	return
 }

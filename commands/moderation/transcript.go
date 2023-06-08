@@ -101,7 +101,7 @@ Messages: %v
 	for _, m := range msgs {
 		b := fmt.Sprintf(`--------------------------------------------------------------------------------
 [%v] %v#%v (%v)
-%v`, m.Timestamp.Time().UTC().Format("2006-01-02 15:05:05"), m.Author.Username, m.Author.Discriminator, m.Author.ID, m.Content)
+%v`, m.Timestamp.Time().UTC().Format("2006-01-02 15:05:05"), m.Author.Tag(), m.Author.ID, m.Content)
 
 		if len(m.Embeds) > 0 {
 			bt, err := json.Marshal(&m.Embeds[0])
@@ -130,7 +130,7 @@ Messages: %v
 		Title: "Transcript of #" + ch.Name,
 
 		Author: &discord.EmbedAuthor{
-			Name: ctx.Author.Username + "#" + ctx.Author.Discriminator,
+			Name: ctx.Author.Tag(),
 			Icon: ctx.Author.AvatarURL(),
 		},
 

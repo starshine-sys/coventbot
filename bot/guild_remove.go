@@ -28,7 +28,7 @@ func (bot *Bot) guildDelete(ev *gateway.GuildDeleteEvent) {
 	} else {
 		owner := g.OwnerID.Mention()
 		if o, err := s.User(g.OwnerID); err == nil {
-			owner = fmt.Sprintf("%v#%v (%v)", o.Username, o.Discriminator, o.Mention())
+			owner = fmt.Sprintf("%v (%v)", o.Tag(), o.Mention())
 		}
 
 		e = discord.Embed{

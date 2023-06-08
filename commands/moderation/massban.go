@@ -32,7 +32,7 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 
 	var toBan string
 	for _, u := range users {
-		toBan += fmt.Sprintf("%v#%v (%v)\n", u.Username, u.Discriminator, u.ID)
+		toBan += fmt.Sprintf("%v (%v)\n", u.Tag(), u.ID)
 	}
 
 	yes, timeout := ctx.ConfirmButton(ctx.Author.ID, bcr.ConfirmData{
@@ -63,16 +63,17 @@ func (bot *Bot) massban(ctx *bcr.Context) (err error) {
 	}
 	if !yes {
 		_, err = ctx.Send("Massban cancelled.")
+		return
 	}
 
 	for _, u := range users {
 		err = ctx.State.Ban(ctx.Message.GuildID, u.ID, api.BanData{
 			DeleteDays: option.NewUint(0),
 			AuditLogReason: api.AuditLogReason(
-				fmt.Sprintf("%v#%v: %v", ctx.Author.Username, ctx.Author.Discriminator, reason)),
+				fmt.Sprintf("%v: %v", ctx.Author.Tag(), reason)),
 		})
 		if err != nil {
-			_, err = ctx.Sendf("I could not ban **%v#%v**, aborting.", u.Username, u.Discriminator)
+			_, err = ctx.Sendf("I could not ban **%v**, aborting.", u.Tag())
 			return
 		}
 

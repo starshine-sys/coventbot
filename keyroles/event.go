@@ -127,7 +127,7 @@ func (bot *Bot) guildMemberUpdate(ev *gateway.GuildMemberUpdateEvent) {
 				if err == nil {
 					e.Fields = append(e.Fields, discord.EmbedField{
 						Name:  "Actor",
-						Value: fmt.Sprintf("%v#%v (%v, %v)", mod.Username, mod.Discriminator, mod.Mention(), mod.ID),
+						Value: fmt.Sprintf("%v (%v, %v)", mod.Tag(), mod.Mention(), mod.ID),
 					})
 				} else {
 					e.Fields = append(e.Fields, discord.EmbedField{

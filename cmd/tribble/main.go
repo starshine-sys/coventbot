@@ -142,7 +142,7 @@ func main() {
 		sugar.Fatal("error getting bot user:", err)
 	}
 
-	sugar.Infof("User: %v#%v (%v)", botUser.Username, botUser.Discriminator, botUser.ID)
+	sugar.Infof("User: %v (%v)", botUser.Tag(), botUser.ID)
 	bot.Router.Bot = botUser
 
 	// connect to discord

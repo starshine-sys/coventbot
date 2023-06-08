@@ -181,7 +181,7 @@ Supported values:
 	// filter names
 	if nameContains != "" {
 		gm = filterMembers(gm, func(m discord.Member) bool {
-			return strings.Contains(strings.ToLower(m.User.Username+"#"+m.User.Discriminator), strings.ToLower(nameContains))
+			return strings.Contains(strings.ToLower(m.User.Tag()), strings.ToLower(nameContains))
 		})
 	}
 
@@ -193,7 +193,7 @@ Supported values:
 		}
 
 		gm = filterMembers(gm, func(m discord.Member) bool {
-			return r.MatchString(m.User.Username + "#" + m.User.Discriminator)
+			return r.MatchString(m.User.Tag())
 		})
 	}
 
@@ -259,7 +259,7 @@ Supported values:
 				"%jd", fmt.Sprintf("<t:%v>", m.Joined.Time().Unix()),
 			).Replace(format+"\n"))
 		} else {
-			s := fmt.Sprintf("%v. %v#%v (%v)\n", i+1, m.User.Username, m.User.Discriminator, m.User.ID)
+			s := fmt.Sprintf("%v. %v (%v)\n", i+1, m.User.Tag(), m.User.ID)
 			if m.Nick != "" {
 				s += fmt.Sprintf("  - %v\n", m.Nick)
 			}

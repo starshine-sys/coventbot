@@ -58,17 +58,17 @@ canClose:
 	}
 
 	buf = append(buf, fmt.Sprintf(`#%v (%v)
-Owner: %v#%v (%v)
+Owner: %v (%v)
 Created %v, closed %v
 Messages: %v
-`, ctx.Channel.Name, ctx.Channel.ID, owner.Username, owner.Discriminator, owner.ID, ctx.Channel.ID.Time().UTC().Format("2006-01-02 15:05:05"), time.Now().UTC().Format("2006-01-02 15:05:05"), len(msgs)))
+`, ctx.Channel.Name, ctx.Channel.ID, owner.Tag(), owner.ID, ctx.Channel.ID.Time().UTC().Format("2006-01-02 15:05:05"), time.Now().UTC().Format("2006-01-02 15:05:05"), len(msgs)))
 
 	users := []string{}
 
 	for _, m := range msgs {
 		b := fmt.Sprintf(`--------------------------------------------------------------------------------
-[%v] %v#%v (%v)
-%v`, m.Timestamp.Time().UTC().Format("2006-01-02 15:05:05"), m.Author.Username, m.Author.Discriminator, m.Author.ID, m.Content)
+[%v] %v (%v)
+%v`, m.Timestamp.Time().UTC().Format("2006-01-02 15:05:05"), m.Author.Tag(), m.Author.ID, m.Content)
 
 		var isInUsers bool
 		for _, u := range users {
@@ -106,7 +106,7 @@ Messages: %v
 		Fields: []discord.EmbedField{
 			{
 				Name:   "Owner",
-				Value:  fmt.Sprintf("%v#%v\n%v", owner.Username, owner.Discriminator, owner.Mention()),
+				Value:  fmt.Sprintf("%v\n%v", owner.Tag(), owner.Mention()),
 				Inline: true,
 			},
 			{

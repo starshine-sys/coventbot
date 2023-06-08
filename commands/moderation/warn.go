@@ -51,7 +51,7 @@ func (bot *Bot) warn(ctx *bcr.Context) (err error) {
 		count = 1
 	}
 
-	_, err = ctx.NewMessage().Content(fmt.Sprintf("**%v#%v** has been warned, this is their %v warning.", u.User.Username, u.User.Discriminator, humanize.Ordinal(count))).Send()
+	_, err = ctx.NewMessage().Content(fmt.Sprintf("**%v** has been warned, this is their %v warning.", u.User.Tag(), humanize.Ordinal(count))).Send()
 	return
 }
 

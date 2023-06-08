@@ -38,7 +38,7 @@ func (bot *Bot) list(ctx *bcr.Context) (err error) {
 	embeds := bcr.FieldPaginator("", "", bcr.ColourBlurple, fields, 5)
 	for i := range embeds {
 		embeds[i].Author = &discord.EmbedAuthor{
-			Name: fmt.Sprintf("%v#%v (%v)", u.Username, u.Discriminator, u.ID),
+			Name: fmt.Sprintf("%v (%v)", u.Tag(), u.ID),
 			Icon: u.AvatarURL(),
 		}
 	}

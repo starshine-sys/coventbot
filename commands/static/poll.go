@@ -40,7 +40,7 @@ func (bot *Bot) poll(ctx *bcr.Context) (err error) {
 		Title:       question,
 		Description: desc,
 		Footer: &discord.EmbedFooter{
-			Text: fmt.Sprintf("%v#%v (%v)", ctx.Author.Username, ctx.Author.Discriminator, ctx.Author.ID),
+			Text: fmt.Sprintf("%v (%v)", ctx.Author.Tag(), ctx.Author.ID),
 			Icon: ctx.Author.AvatarURL(),
 		},
 	})

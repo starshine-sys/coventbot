@@ -43,7 +43,7 @@ func (bot *Bot) inviteInfo(ctx *bcr.Context) (err error) {
 	if g.Inviter != nil {
 		e.Fields = append(e.Fields, discord.EmbedField{
 			Name:   "Created by",
-			Value:  fmt.Sprintf("%v#%v\n%v\nID: %v", g.Inviter.Username, g.Inviter.Discriminator, g.Inviter.Mention(), g.Inviter.ID),
+			Value:  fmt.Sprintf("%v\n%v\nID: %v", g.Inviter.Tag(), g.Inviter.Mention(), g.Inviter.ID),
 			Inline: true,
 		})
 	}

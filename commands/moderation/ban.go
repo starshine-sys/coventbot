@@ -58,7 +58,7 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 
 	err = ctx.State.Ban(ctx.Message.GuildID, target.ID, api.BanData{
 		DeleteDays:     option.NewUint(0),
-		AuditLogReason: api.AuditLogReason(fmt.Sprintf("%v#%v: %v", ctx.Author.Username, ctx.Author.Discriminator, reason)),
+		AuditLogReason: api.AuditLogReason(fmt.Sprintf("%v: %v", ctx.Author.Tag(), reason)),
 	})
 	if err != nil {
 		_, err = ctx.Send("I could not ban that user.")
@@ -70,7 +70,7 @@ func (bot *Bot) ban(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Sendf("Banned **%v#%v**", target.Username, target.Discriminator)
+	_, err = ctx.Sendf("Banned **%v**", target.Tag())
 	return
 }
 
@@ -116,7 +116,7 @@ func (bot *Bot) unban(ctx *bcr.Context) (err error) {
 
 	err = ctx.State.Unban(ctx.Message.GuildID, u.ID, api.AuditLogReason(ctx.Author.Tag()+": "+reason))
 	if err != nil {
-		_, err = ctx.Sendf("I was unable to unban %v#%v.", u.Username, u.Discriminator)
+		_, err = ctx.Sendf("I was unable to unban %v.", u.Tag())
 		return
 	}
 
@@ -125,6 +125,6 @@ func (bot *Bot) unban(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	_, err = ctx.Sendf("Unbanned **%v#%v**", u.Username, u.Discriminator)
+	_, err = ctx.Sendf("Unbanned **%v**", u.Tag())
 	return
 }

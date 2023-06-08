@@ -90,7 +90,7 @@ func (bot *Bot) slashMemberInfo(ctx *bcr.CommandContext) (err error) {
 
 	e := discord.Embed{
 		Author: &discord.EmbedAuthor{
-			Name: m.User.Username + "#" + m.User.Discriminator,
+			Name: m.User.Tag(),
 			Icon: m.User.AvatarURL(),
 		},
 		Thumbnail: &discord.EmbedThumbnail{
@@ -111,15 +111,8 @@ func (bot *Bot) slashMemberInfo(ctx *bcr.CommandContext) (err error) {
 			},
 			{
 				Name:   "Username",
-				Value:  m.User.Username + "#" + m.User.Discriminator,
+				Value:  m.User.Tag(),
 				Inline: true,
-			},
-			{
-				Name: "Created at",
-				Value: fmt.Sprintf("<t:%v:D> <t:%v:T>\n(%v)",
-					m.User.ID.Time().Unix(), m.User.ID.Time().Unix(),
-					common.FormatTime(m.User.ID.Time().UTC()),
-				),
 			},
 		},
 
@@ -128,6 +121,22 @@ func (bot *Bot) slashMemberInfo(ctx *bcr.CommandContext) (err error) {
 		},
 		Timestamp: discord.NowTimestamp(),
 	}
+
+	if m.User.DisplayName != "" {
+		e.Fields = append(e.Fields, discord.EmbedField{
+			Name:   "Display name",
+			Value:  m.User.DisplayName,
+			Inline: true,
+		})
+	}
+
+	e.Fields = append(e.Fields, discord.EmbedField{
+		Name: "Created at",
+		Value: fmt.Sprintf("<t:%v:D> <t:%v:T>\n(%v)",
+			m.User.ID.Time().Unix(), m.User.ID.Time().Unix(),
+			common.FormatTime(m.User.ID.Time().UTC()),
+		),
+	})
 
 	if m.Avatar != "" {
 		e.Fields = append(e.Fields, discord.EmbedField{
@@ -192,7 +201,7 @@ func (bot *Bot) slashUserInfo(ctx *bcr.CommandContext) (err error) {
 
 	e := discord.Embed{
 		Author: &discord.EmbedAuthor{
-			Name: u.Username + "#" + u.Discriminator,
+			Name: u.Tag(),
 			Icon: u.AvatarURL(),
 		},
 		Thumbnail: &discord.EmbedThumbnail{
@@ -213,15 +222,8 @@ func (bot *Bot) slashUserInfo(ctx *bcr.CommandContext) (err error) {
 			},
 			{
 				Name:   "Username",
-				Value:  u.Username + "#" + u.Discriminator,
+				Value:  u.Tag(),
 				Inline: true,
-			},
-			{
-				Name: "Created at",
-				Value: fmt.Sprintf("<t:%v:D> <t:%v:T>\n(%v)",
-					u.ID.Time().Unix(), u.ID.Time().Unix(),
-					common.FormatTime(u.ID.Time().UTC()),
-				),
 			},
 		},
 
@@ -230,6 +232,22 @@ func (bot *Bot) slashUserInfo(ctx *bcr.CommandContext) (err error) {
 		},
 		Timestamp: discord.NowTimestamp(),
 	}
+
+	if u.DisplayName != "" {
+		e.Fields = append(e.Fields, discord.EmbedField{
+			Name:   "Display name",
+			Value:  u.DisplayName,
+			Inline: true,
+		})
+	}
+
+	e.Fields = append(e.Fields, discord.EmbedField{
+		Name: "Created at",
+		Value: fmt.Sprintf("<t:%v:D> <t:%v:T>\n(%v)",
+			u.ID.Time().Unix(), u.ID.Time().Unix(),
+			common.FormatTime(u.ID.Time().UTC()),
+		),
+	})
 
 	if u.Accent != 0 {
 		e.Color = u.Accent

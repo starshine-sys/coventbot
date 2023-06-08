@@ -44,7 +44,7 @@ func (bot *Bot) avatar(ctx *bcr.Context) (err error) {
 
 	_, err = ctx.Send("", discord.Embed{
 		Author: &discord.EmbedAuthor{
-			Name: u.Username + "#" + u.Discriminator,
+			Name: u.Tag(),
 			Icon: u.AvatarURL(),
 		},
 

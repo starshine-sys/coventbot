@@ -84,7 +84,7 @@ func (bot *Bot) nolevelsAdd(ctx *bcr.Context) (err error) {
 			Description: text,
 			Fields: []discord.EmbedField{{
 				Name:  "Responsible moderator",
-				Value: fmt.Sprintf("%v#%v (%v)", ctx.Author.Username, ctx.Author.Discriminator, ctx.Author.Mention()),
+				Value: fmt.Sprintf("%v (%v)", ctx.Author.Tag(), ctx.Author.Mention()),
 			}},
 			Color: bcr.ColourBlurple,
 		})
@@ -115,7 +115,7 @@ func (bot *Bot) nolevelsRemove(ctx *bcr.Context) (err error) {
 			Description: "Removed nolevels from " + u.Mention(),
 			Fields: []discord.EmbedField{{
 				Name:  "Responsible moderator",
-				Value: fmt.Sprintf("%v#%v (%v)", ctx.Author.Username, ctx.Author.Discriminator, ctx.Author.Mention()),
+				Value: fmt.Sprintf("%v (%v)", ctx.Author.Tag(), ctx.Author.Mention()),
 			}},
 			Color: bcr.ColourBlurple,
 		})

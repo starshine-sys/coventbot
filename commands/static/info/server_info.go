@@ -85,7 +85,7 @@ func (bot *Bot) serverInfo(ctx *bcr.Context) (err error) {
 		Fields: []discord.EmbedField{
 			{
 				Name:   "Owner",
-				Value:  owner.Username + "#" + owner.Discriminator,
+				Value:  owner.Tag(),
 				Inline: true,
 			},
 			{

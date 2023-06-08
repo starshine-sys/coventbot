@@ -32,13 +32,13 @@ func (bot *Bot) watchlistMemberAdd(m *gateway.GuildMemberAddEvent) {
 		Title: "User on watch list joined",
 		Color: bcr.ColourOrange,
 		Author: &discord.EmbedAuthor{
-			Name: m.User.Username + "#" + m.User.Discriminator,
+			Name: m.User.Tag(),
 			Icon: m.User.AvatarURL(),
 		},
 		Thumbnail: &discord.EmbedThumbnail{
 			URL: m.User.AvatarURL(),
 		},
-		Description: fmt.Sprintf("⚠️ **%v#%v** just joined the server and is on the watch list.", m.User.Username, m.User.Discriminator),
+		Description: fmt.Sprintf("⚠️ **%v** just joined the server and is on the watch list.", m.User.Tag()),
 		Footer: &discord.EmbedFooter{
 			Text: fmt.Sprintf("User ID: %v", m.User.ID),
 		},
