@@ -58,22 +58,25 @@ func (bot *Bot) activity(ctx *bcr.Context) (err error) {
 	}
 
 	if len(ctx.Args) < 2 {
-		_, err = ctx.Send("You didn't give both an activity type and activity.")
-		return
-	}
-
-	if strings.HasPrefix(strings.ToLower(ctx.RawArgs), "playing") {
-		s.ActivityType = "playing"
-		s.Activity = ctx.RawArgs[len("playing")+1:]
-	} else if strings.HasPrefix(strings.ToLower(ctx.RawArgs), "listening") {
-		s.ActivityType = "listening to"
-		s.Activity = ctx.RawArgs[len("listening")+1:]
-		if strings.HasPrefix(strings.ToLower(s.Activity), "to") {
-			s.Activity = s.Activity[len("to")+1:]
+		s.ActivityType = "custom"
+		s.Activity = ctx.RawArgs
+	} else {
+		if strings.HasPrefix(strings.ToLower(ctx.RawArgs), "playing") {
+			s.ActivityType = "playing"
+			s.Activity = ctx.RawArgs[len("playing")+1:]
+		} else if strings.HasPrefix(strings.ToLower(ctx.RawArgs), "listening") {
+			s.ActivityType = "listening to"
+			s.Activity = ctx.RawArgs[len("listening")+1:]
+			if strings.HasPrefix(strings.ToLower(s.Activity), "to") {
+				s.Activity = s.Activity[len("to")+1:]
+			}
+		} else if strings.HasPrefix(strings.ToLower(ctx.RawArgs), "watching") {
+			s.ActivityType = "watching"
+			s.Activity = ctx.RawArgs[len("watching")+1:]
+		} else {
+			s.ActivityType = "custom"
+			s.Activity = ctx.RawArgs
 		}
-	} else if strings.HasPrefix(strings.ToLower(ctx.RawArgs), "watching") {
-		s.ActivityType = "watching"
-		s.Activity = ctx.RawArgs[len("watching")+1:]
 	}
 
 	s.Activity = strings.TrimSpace(s.Activity)

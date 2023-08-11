@@ -27,11 +27,21 @@ func (bot *Bot) updateStatus(state *state.State) {
 			t = discord.WatchingActivity
 		case "playing":
 			t = discord.GameActivity
+		case "custom":
+			fallthrough
+		default:
+			t = discord.CustomActivity
+		}
+
+		state := s.Activity
+		if t != discord.CustomActivity {
+			state = ""
 		}
 
 		usd.Activities = []discord.Activity{{
-			Name: s.Activity,
-			Type: t,
+			Type:  t,
+			Name:  s.Activity,
+			State: state,
 		}}
 	}
 
