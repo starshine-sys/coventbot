@@ -157,7 +157,7 @@ func (bot *Bot) doReminders() {
 					if err == nil {
 						ch, err := state.Channel(r.ChannelID)
 						if err == nil {
-							perms := discord.CalcOverwrites(*g, *ch, m)
+							perms := discord.CalcOverrides(*g, *ch, m, g.Roles)
 							if perms.Has(discord.PermissionSendMessages | discord.PermissionViewChannel) {
 								shouldDM = false
 							}

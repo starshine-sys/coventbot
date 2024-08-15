@@ -59,7 +59,7 @@ func (bot *Bot) linktoSlash(ctx *bcr2.CommandContext) error {
 		return ctx.ReplyEphemeral("You're currently on cooldown.")
 	}
 
-	perms := discord.CalcOverwrites(*ctx.Guild, ch, *ctx.Member)
+	perms := discord.CalcOverrides(*ctx.Guild, ch, *ctx.Member, ctx.Guild.Roles)
 	if !perms.Has(discord.PermissionViewChannel) || !perms.Has(discord.PermissionSendMessages) {
 		return ctx.ReplyEphemeral("You can't send messages to " + ch.Mention() + "!")
 	}
@@ -147,7 +147,7 @@ func (bot *Bot) linkto(ctx *bcr.Context) (err error) {
 		return bot.Report(ctx, err)
 	}
 
-	perms := discord.CalcOverwrites(*ctx.GetGuild(), *ch, member)
+	perms := discord.CalcOverrides(*ctx.GetGuild(), *ch, member, ctx.GetGuild().Roles)
 	if !perms.Has(discord.PermissionViewChannel) || !perms.Has(discord.PermissionSendMessages) {
 		return ctx.SendEphemeral("You can't send messages to " + ch.Mention() + "!")
 	}
